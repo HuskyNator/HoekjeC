@@ -110,14 +110,19 @@ int main()
 
     // Maak Driehoek
     float hoeken[] = {
-        0.5, 0.5, 0, // RB
-        0.5, -0.5, 0, // RO
-        -0.5, -0.5, 0, // LO
-        0.5, 0.5, 0}; // LB
-    int driehoek[] = {
+        1, 1, 0, // RB
+        1, -1, 0, // RO
+        -1, -1, 0, // LO
+        -1, 1, 0}; // LB
+    unsigned int driehoek[] = {
         1, 2, 0,
         1, 2, 3
     };
+
+    // Maak Driehoek VAO
+    unsigned int driehoekVAO;
+    glGenVertexArrays(1, &driehoekVAO);
+    glBindVertexArray(driehoekVAO);
 
     // Maak Driehoek VBO
     unsigned int driehoekVBO;
@@ -131,21 +136,20 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, driehoekEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(driehoek), driehoek, GL_STATIC_DRAW);
 
-    // Maak Driehoek VAO
-    unsigned int driehoekVAO;
-    glGenVertexArrays(1, &driehoekVAO);
-    glBindVertexArray(driehoekVAO);
+    // Zet VAO Pointers
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void *)0);
     glEnableVertexAttribArray(0);
 
     glClearColor(0, 0.5, 0, 1);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(scherm))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shader_programma);
         glBindVertexArray(driehoekVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, sizeof(driehoek), GL_UNSIGNED_INT, 0);
+        
         glfwSwapBuffers(scherm);
         glfwPollEvents();
     }
