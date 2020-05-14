@@ -52,7 +52,7 @@ int main()
     // Maak Vertex Shader
     unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     char vertex_shader_string[SHADER_GROOTTE];
-    lees_bestand("./shaders/regenboog.vert", vertex_shader_string);
+    lees_bestand("./shaders/kleur.vert", vertex_shader_string);
     const GLchar *vertex_shader_string_ptr = vertex_shader_string;
     glShaderSource(vertex_shader, 1, &vertex_shader_string_ptr, NULL);
     glCompileShader(vertex_shader);
@@ -72,7 +72,7 @@ int main()
     // Maak Fragment Shader
     unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     char fragment_shader_string[SHADER_GROOTTE];
-    lees_bestand("./shaders/regenboog.frag", fragment_shader_string);
+    lees_bestand("./shaders/kleur.frag", fragment_shader_string);
     const GLchar *fragment_shader_string_ptr = fragment_shader_string;
     glShaderSource(fragment_shader, 1, &fragment_shader_string_ptr, NULL);
     glCompileShader(fragment_shader);
@@ -110,14 +110,18 @@ int main()
 
     // Maak Driehoek
     float hoeken[] = {
-        1, 1, 0, // RB
-        1, -1, 0, // RO
+        1, 1, 0,   // RB
+        1, 0, 0,   // Rood
+        1, -1, 0,  // RO
+        0, 0, 1,   // Blauw
         -1, -1, 0, // LO
-        -1, 1, 0}; // LB
+        1, 0, 1,   // Rood + Blauw
+        -1, 1, 0,  // LB
+        0, 1, 0    // Groen
+    };
     unsigned int driehoek[] = {
         1, 2, 0,
-        1, 2, 3
-    };
+        1, 2, 3};
 
     // Maak Driehoek VAO
     unsigned int driehoekVAO;
@@ -137,8 +141,10 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(driehoek), driehoek, GL_STATIC_DRAW);
 
     // Zet VAO Pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 2 * 3 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glClearColor(0, 0.5, 0, 1);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -153,7 +159,7 @@ int main()
 
         glBindVertexArray(driehoekVAO);
         glDrawElements(GL_TRIANGLES, sizeof(driehoek), GL_UNSIGNED_INT, 0);
-        
+
         glfwSwapBuffers(scherm);
         glfwPollEvents();
     }
