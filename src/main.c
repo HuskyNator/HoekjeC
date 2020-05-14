@@ -3,11 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "verver.h"
+
 #include "main.h"
 
 #define SCHERM_BREEDTE (1920 / 2)
 #define SCHERM_HOOGTE (1080 / 2)
-#define SHADER_GROOTTE 512
 
 int main()
 {
@@ -49,64 +50,7 @@ int main()
     // Zet Toets Terugroep Functie.
     glfwSetKeyCallback(scherm, toets_terugroep);
 
-    // Maak Vertex Shader
-    unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    char vertex_shader_string[SHADER_GROOTTE];
-    lees_bestand("./shaders/kleur.vert", vertex_shader_string);
-    const GLchar *vertex_shader_string_ptr = vertex_shader_string;
-    glShaderSource(vertex_shader, 1, &vertex_shader_string_ptr, NULL);
-    glCompileShader(vertex_shader);
-
-    // Toets Vertex Shader
-    int gelukt;
-    char info[512];
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &gelukt);
-    if (!gelukt)
-    {
-        glGetShaderInfoLog(vertex_shader, 512, NULL, info);
-        fputs(info, stderr);
-        puts(":C geen shader");
-        exit(-4);
-    }
-
-    // Maak Fragment Shader
-    unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    char fragment_shader_string[SHADER_GROOTTE];
-    lees_bestand("./shaders/kleur.frag", fragment_shader_string);
-    const GLchar *fragment_shader_string_ptr = fragment_shader_string;
-    glShaderSource(fragment_shader, 1, &fragment_shader_string_ptr, NULL);
-    glCompileShader(fragment_shader);
-
-    // Toets Fragment Shader
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &gelukt);
-    if (!gelukt)
-    {
-        glGetShaderInfoLog(fragment_shader, 512, NULL, info);
-        fputs(info, stderr);
-        puts(":C geen shader");
-        exit(-4);
-    }
-
-    // Maak Shader Programma
-    unsigned int shader_programma = glCreateProgram();
-    glAttachShader(shader_programma, vertex_shader);
-    glAttachShader(shader_programma, fragment_shader);
-    glLinkProgram(shader_programma);
-
-    // Toets Shader Programma
-    glGetProgramiv(shader_programma, GL_LINK_STATUS, &gelukt);
-    if (!gelukt)
-    {
-        glGetProgramInfoLog(shader_programma, 512, NULL, info);
-        fputs(info, stderr);
-        puts(":C geen programma");
-        exit(-5);
-    }
-
-    // Gebruik Shader Programma
-    glUseProgram(shader_programma);
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
+    Verver *verver = maakVerver("./shaders/kleur.vert", "./shaders/kleur.frag");
 
     // Maak Driehoek
     float hoeken[] = {
@@ -152,10 +96,9 @@ int main()
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shader_programma);
+        gebruikVerver(verver);
         float t = glfwGetTime();
-        unsigned int tijd = glGetUniformLocation(shader_programma, "tijd");
-        glUniform1f(tijd, t);
+        zetVerverInt(verver, "tijd", t);
 
         glBindVertexArray(driehoekVAO);
         glDrawElements(GL_TRIANGLES, sizeof(driehoek), GL_UNSIGNED_INT, 0);
@@ -169,7 +112,7 @@ int main()
     glfwTerminate();
 }
 
-void lees_bestand(char *bestandsnaam, char *bestand_string)
+void lees_bestand(const char *bestandsnaam, char *bestand_string)
 {
     FILE *bestand = fopen(bestandsnaam, "r");
     if (bestand == NULL)
