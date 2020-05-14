@@ -52,7 +52,7 @@ int main()
     // Maak Vertex Shader
     unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     char vertex_shader_string[SHADER_GROOTTE];
-    lees_bestand("./shaders/normaal.vert", vertex_shader_string);
+    lees_bestand("./shaders/regenboog.vert", vertex_shader_string);
     const GLchar *vertex_shader_string_ptr = vertex_shader_string;
     glShaderSource(vertex_shader, 1, &vertex_shader_string_ptr, NULL);
     glCompileShader(vertex_shader);
@@ -72,7 +72,7 @@ int main()
     // Maak Fragment Shader
     unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     char fragment_shader_string[SHADER_GROOTTE];
-    lees_bestand("./shaders/normaal.frag", fragment_shader_string);
+    lees_bestand("./shaders/regenboog.frag", fragment_shader_string);
     const GLchar *fragment_shader_string_ptr = fragment_shader_string;
     glShaderSource(fragment_shader, 1, &fragment_shader_string_ptr, NULL);
     glCompileShader(fragment_shader);
@@ -147,6 +147,10 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shader_programma);
+        float t = glfwGetTime();
+        unsigned int tijd = glGetUniformLocation(shader_programma, "tijd");
+        glUniform1f(tijd, t);
+
         glBindVertexArray(driehoekVAO);
         glDrawElements(GL_TRIANGLES, sizeof(driehoek), GL_UNSIGNED_INT, 0);
         
