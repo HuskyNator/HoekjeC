@@ -112,23 +112,20 @@ int main()
     glfwTerminate();
 }
 
-void lees_bestand(const char *bestandsnaam, char *bestand_string)
+void lees_bestand(const char *bestand_naam, char *bestand_string, size_t bestand_grootte)
 {
-    FILE *bestand = fopen(bestandsnaam, "r");
+    FILE *bestand = fopen(bestand_naam, "r");
     if (bestand == NULL)
     {
-        fprintf(stderr, "Bestand '%s' bestaat niet.", bestandsnaam);
+        fprintf(stderr, "Bestand '%s' bestaat niet.", bestand_naam);
         return;
     }
 
-    char *schrijfpunt = bestand_string;
-    char karakter;
-    while ((karakter = fgetc(bestand)) != EOF)
-    {
-        *schrijfpunt = karakter;
-        schrijfpunt += 1;
-    }
-    *schrijfpunt = '\0';
+    long gelezen = fread(bestand_string, sizeof(char), bestand_grootte, bestand);
+    if (gelezen == bestand_grootte)
+        *(bestand_string + bestand_grootte - 1) = '\0';
+    else *(bestand_string + gelezen) = '\0';
+
     fclose(bestand);
 }
 

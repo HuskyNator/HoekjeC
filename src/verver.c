@@ -20,7 +20,7 @@ Verver *maakVerver(const char *hoekVerfLocatie, const char *fragmentVerfLocatie)
 
     unsigned int hoekVerf = glCreateShader(GL_VERTEX_SHADER);
 
-    lees_bestand(hoekVerfLocatie, verfString);
+    lees_bestand(hoekVerfLocatie, verfString, VERVER_GROOTTE);
     glShaderSource(hoekVerf, 1, &verfStringVerwijzing, NULL);
     glCompileShader(hoekVerf);
 
@@ -34,7 +34,7 @@ Verver *maakVerver(const char *hoekVerfLocatie, const char *fragmentVerfLocatie)
     }
 
     unsigned int fragmentVerf = glCreateShader(GL_FRAGMENT_SHADER);
-    lees_bestand(fragmentVerfLocatie, verfString);
+    lees_bestand(fragmentVerfLocatie, verfString, VERVER_GROOTTE);
     glShaderSource(fragmentVerf, 1, &verfStringVerwijzing, NULL);
     glCompileShader(fragmentVerf);
 
