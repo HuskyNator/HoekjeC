@@ -5,6 +5,11 @@
 
 typedef struct Verver Verver;
 
+struct Verver
+{
+    unsigned int verfProgramma;
+};
+
 Verver *maakVerver(const char *hoekVerfLocatie, const char *scherfVerfLocatie);
 void verwijderVerver(Verver *verver);
 

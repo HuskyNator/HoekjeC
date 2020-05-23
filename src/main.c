@@ -2,9 +2,9 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "stb_image.h"
 
 #include "verver.h"
-
 #include "main.h"
 
 #define SCHERM_BREEDTE (1920 / 2)
@@ -50,48 +50,75 @@ int main()
     // Zet Toets Terugroep Functie.
     glfwSetKeyCallback(scherm, toets_terugroep);
 
-    Verver *verver = maakVerver("./shaders/kleur.vert", "./shaders/kleur.frag");
+    Verver *verver = maakVerver("./shaders/afbeelding.vert", "./shaders/afbeelding.frag");
 
     // Maak Driehoek
     float hoeken[] = {
-        1, 1, 0,   // RB
-        1, 0, 0,   // Rood
-        1, -1, 0,  // RO
-        0, 0, 1,   // Blauw
-        -1, -1, 0, // LO
-        1, 0, 1,   // Rood + Blauw
-        -1, 1, 0,  // LB
-        0, 1, 0    // Groen
-    };
+        -1, -1, 0, 0, 0,
+        1, -1, 0, 1, 0,
+        -1, 1, 0, 0, 1,
+        1, 1, 0, 1, 1};
+    // float afbeeldingplek[] = {
+    //     0, 0,
+    //     1, 0,
+    //     0.5, 1};
     unsigned int driehoek[] = {
-        1, 2, 0,
-        1, 2, 3};
+        0, 1, 2,  1, 3, 2};
+    unsigned int driehoekVAO, hoekVBO, afbeeldingVBO, driehoekEBO, afbeelding;
+
+    int breedte, hoogte, kanaalaantal;
+    stbi_set_flip_vertically_on_load(1);
+    unsigned char *afbeelding_inhoud = stbi_load("afbeelding.png", &breedte, &hoogte, &kanaalaantal, 0);
+
+    glGenTextures(1, &afbeelding);
+    glBindTexture(GL_TEXTURE_2D, afbeelding);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float grenskleur[] = {0, 0.5, 0.75, 1.0};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, grenskleur);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // TODO Antisotropic?
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, breedte, hoogte, 0, GL_RGBA, GL_UNSIGNED_BYTE, afbeelding_inhoud);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(afbeelding_inhoud);
 
     // Maak Driehoek VAO
-    unsigned int driehoekVAO;
     glGenVertexArrays(1, &driehoekVAO);
     glBindVertexArray(driehoekVAO);
 
-    // Maak Driehoek VBO
-    unsigned int driehoekVBO;
-    glGenBuffers(1, &driehoekVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, driehoekVBO);
+    // Maak Driehoek VBO's
+    glGenBuffers(1, &hoekVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, hoekVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(hoeken), hoeken, GL_STATIC_DRAW);
 
+    // glGenBuffers(1, &afbeeldingVBO);
+    // glBindBuffer(GL_ARRAY_BUFFER, afbeeldingVBO);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(afbeeldingplek), afbeeldingplek, GL_STATIC_DRAW);
+
     // Maak Driehoek EBO
-    unsigned int driehoekEBO;
     glGenBuffers(1, &driehoekEBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, driehoekEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(driehoek), driehoek, GL_STATIC_DRAW);
 
     // Zet VAO Pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * 3 * sizeof(float), (void *)0);
+    glBindBuffer(GL_ARRAY_BUFFER, hoekVBO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 2 * 3 * sizeof(float), (void *)(3 * sizeof(float)));
+
+    // glBindBuffer(GL_ARRAY_BUFFER, afbeeldingVBO);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     glClearColor(0, 0.5, 0, 1);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    gebruikVerver(verver);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, afbeelding);
+    zetVerverInt(verver, "afbeelding", 0);
     while (!glfwWindowShouldClose(scherm))
     {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -100,6 +127,8 @@ int main()
         float t = glfwGetTime();
         zetVerverInt(verver, "tijd", t);
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, afbeelding);
         glBindVertexArray(driehoekVAO);
         glDrawElements(GL_TRIANGLES, sizeof(driehoek), GL_UNSIGNED_INT, 0);
 
@@ -124,7 +153,8 @@ void lees_bestand(const char *bestand_naam, char *bestand_string, size_t bestand
     long gelezen = fread(bestand_string, sizeof(char), bestand_grootte, bestand);
     if (gelezen == bestand_grootte)
         *(bestand_string + bestand_grootte - 1) = '\0';
-    else *(bestand_string + gelezen) = '\0';
+    else
+        *(bestand_string + gelezen) = '\0';
 
     fclose(bestand);
 }

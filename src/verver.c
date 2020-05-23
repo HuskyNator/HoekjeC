@@ -6,11 +6,6 @@
 #include "main.h"
 #include "verver.h"
 
-struct Verver
-{
-    unsigned int verfProgramma;
-};
-
 Verver *maakVerver(const char *hoekVerfLocatie, const char *fragmentVerfLocatie)
 {
     Verver *verver = malloc(sizeof(Verver));
@@ -80,12 +75,12 @@ void gebruikVerver(Verver *verver)
 
 void zetVerverInt(Verver *verver, const char *naam, int waarde)
 {
-    unsigned int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+    int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
     glUniform1i(verwijzing, waarde);
 }
 
 void zetVerverFloat(Verver *verver, const char *naam, float waarde)
 {
-    unsigned int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+    int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
     glUniform1f(verwijzing, waarde);
 }
