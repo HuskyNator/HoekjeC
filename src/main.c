@@ -54,16 +54,17 @@ int main()
 
     // Maak Driehoek
     float hoeken[] = {
-        -1, -1, 0, 0, 0,
-        1, -1, 0, 1, 0,
-        -1, 1, 0, 0, 1,
-        1, 1, 0, 1, 1};
-    // float afbeeldingplek[] = {
-    //     0, 0,
-    //     1, 0,
-    //     0.5, 1};
+        -1, -1, 0,
+        1, -1, 0,
+        -1, 1, 0,
+        0.5, 0.5, 0};
+    float afbeeldingplek[] = {
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1};
     unsigned int driehoek[] = {
-        0, 1, 2,  1, 3, 2};
+        0, 1, 2, 1, 3, 2};
     unsigned int driehoekVAO, hoekVBO, afbeeldingVBO, driehoekEBO, afbeelding;
 
     int breedte, hoogte, kanaalaantal;
@@ -73,15 +74,15 @@ int main()
     glGenTextures(1, &afbeelding);
     glBindTexture(GL_TEXTURE_2D, afbeelding);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     float grenskleur[] = {0, 0.5, 0.75, 1.0};
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, grenskleur);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // TODO Antisotropic?
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, breedte, hoogte, 0, GL_RGBA, GL_UNSIGNED_BYTE, afbeelding_inhoud);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, breedte, hoogte, 0, GL_RGBA, GL_UNSIGNED_BYTE, afbeelding_inhoud);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(afbeelding_inhoud);
 
@@ -94,9 +95,9 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, hoekVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(hoeken), hoeken, GL_STATIC_DRAW);
 
-    // glGenBuffers(1, &afbeeldingVBO);
-    // glBindBuffer(GL_ARRAY_BUFFER, afbeeldingVBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(afbeeldingplek), afbeeldingplek, GL_STATIC_DRAW);
+    glGenBuffers(1, &afbeeldingVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, afbeeldingVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(afbeeldingplek), afbeeldingplek, GL_STATIC_DRAW);
 
     // Maak Driehoek EBO
     glGenBuffers(1, &driehoekEBO);
@@ -105,13 +106,15 @@ int main()
 
     // Zet VAO Pointers
     glBindBuffer(GL_ARRAY_BUFFER, hoekVBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
-    // glBindBuffer(GL_ARRAY_BUFFER, afbeeldingVBO);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    glBindBuffer(GL_ARRAY_BUFFER, afbeeldingVBO);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0, 0.5, 0, 1);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
