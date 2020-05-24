@@ -15,4 +15,6 @@ void schermgrootte_terugroep(GLFWwindow *scherm, int breedte, int hoogte);
 
 void toets_terugroep(GLFWwindow *scherm, int toets, int scancode, int handeling, int toevoeging);
 
+void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned int id, GLenum ernstigheid, GLsizei grootte, const char *bericht, const void *gebruikersParameter);
+
 #endif
