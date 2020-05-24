@@ -65,24 +65,43 @@ int main()
         1, 1};
     unsigned int driehoek[] = {
         0, 1, 2, 1, 3, 2};
-    unsigned int driehoekVAO, hoekVBO, afbeeldingVBO, driehoekEBO, afbeelding;
+    unsigned int driehoekVAO, hoekVBO, afbeeldingVBO, driehoekEBO, afbeelding, muur_afbeelding;
 
     int breedte, hoogte, kanaalaantal;
     stbi_set_flip_vertically_on_load(1);
-    unsigned char *afbeelding_inhoud = stbi_load("afbeelding.png", &breedte, &hoogte, &kanaalaantal, 0);
 
     glGenTextures(1, &afbeelding);
     glBindTexture(GL_TEXTURE_2D, afbeelding);
-
+    // float grenskleur[] = {0, 0.5, 0.75, 1.0};
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    float grenskleur[] = {0, 0.5, 0.75, 1.0};
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, grenskleur);
+    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, grenskleur);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // TODO Antisotropic?
 
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+
+    unsigned char *afbeelding_inhoud = stbi_load("afbeelding.png", &breedte, &hoogte, &kanaalaantal, 0);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, breedte, hoogte, 0, GL_RGBA, GL_UNSIGNED_BYTE, afbeelding_inhoud);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(afbeelding_inhoud);
+
+    glGenTextures(1, &muur_afbeelding);
+    glBindTexture(GL_TEXTURE_2D, muur_afbeelding);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, grenskleur);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    afbeelding_inhoud = stbi_load("muur.jpg", &breedte, &hoogte, &kanaalaantal, 0);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, breedte, hoogte, 0, GL_RGB, GL_UNSIGNED_BYTE, afbeelding_inhoud);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(afbeelding_inhoud);
 
@@ -113,25 +132,24 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0, 0.5, 0, 1);
+    // glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     gebruikVerver(verver);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, afbeelding);
-    zetVerverInt(verver, "afbeelding", 0);
+    zetVerverInt(verver, "muur_afbeelding", 0);
+    zetVerverInt(verver, "afbeelding", 1);
     while (!glfwWindowShouldClose(scherm))
     {
+        glClearColor(0, 0.5, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        gebruikVerver(verver);
-        float t = glfwGetTime();
-        zetVerverInt(verver, "tijd", t);
-
         glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, muur_afbeelding);
+        glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, afbeelding);
+
+        gebruikVerver(verver);
         glBindVertexArray(driehoekVAO);
         glDrawElements(GL_TRIANGLES, sizeof(driehoek), GL_UNSIGNED_INT, 0);
 
