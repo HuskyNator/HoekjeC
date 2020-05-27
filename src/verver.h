@@ -1,7 +1,7 @@
 #ifndef VERVER_H
 #define VERVER_H
 
-#define VERVER_GROOTTE 512
+#define VERVER_GROOTTE 1024
 
 typedef struct Verver Verver;
 
