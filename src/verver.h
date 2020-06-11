@@ -16,6 +16,7 @@ void verwijderVerver(Verver *verver);
 void gebruikVerver(Verver *verver);
 void zetVerverInt(Verver *verver, const char *naam, int waarde);
 void zetVerverFloat(Verver *verver, const char *naam, float waarde);
+void zetVerverFloat4v(Verver *verver, const char *naam, float waarden[]);
 // En Meer
 
 #endif

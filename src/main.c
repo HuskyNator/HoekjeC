@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "oneigen/stb_image.h"
 
 #include "verver.h"
+#include "voorwerp.h"
 #include "main.h"
 
 #define SCHERM_BREEDTE (1920 / 2)
@@ -13,10 +13,10 @@
 
 int main()
 {
+
     puts("Hellow");
 
-
-//      GLFW
+    //      GLFW
 
     if (!glfwInit())
     {
@@ -51,7 +51,7 @@ int main()
     // Zet Toets Terugroep Functie.
     glfwSetKeyCallback(scherm, toets_terugroep);
 
-//      OpenGL
+    //      OpenGL
 
     printf("Je gebruikt OpenGL versie: %s\n", glGetString(GL_VERSION));
     glEnable(GL_DEBUG_OUTPUT);
@@ -60,112 +60,40 @@ int main()
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
     glViewport(0, 0, SCHERM_BREEDTE, SCHERM_HOOGTE);
 
-//      Algemeen
+    //      Algemeen
 
-    Verver *verver = maakVerver("./shaders/afbeelding.vert", "./shaders/schilderij.frag");
+    Verver *verver = maakVerver("./shaders/normaal.vert", "./shaders/normaal.frag");
 
     // Maak Driehoek
     float hoeken[] = {
-        -1, -1, 0,
-        1, -1, 0,
-        -1, 1, 0,
-        0.5, 0.5, 0};
-    float afbeeldingplek[] = {
-        0, 0,
-        1, 0,
-        0, 1,
-        1, 1};
-    unsigned int driehoek[] = {
-        0, 1, 2, 1, 3, 2};
-    unsigned int driehoekVAO, hoekVBO, afbeeldingVBO, driehoekEBO, afbeelding, muur_afbeelding;
+        -1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.1, 1*0.01, 0,
+        -0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.1, -1*0.01, 0,
+        1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.1, 0.5*0.01, 0};
+    unsigned int hoektallen[] = {
+        0, 1, 2};
+    float hoeken2[] = {
+        (-1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.05)*0.1, (1+0.025)*0.1, 0,
+        (-0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.05)*0.1, (-1+0.025)*0.1, 0,
+        (1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.05)*0.1, (0.5+0.025)*0.1, 0};
 
-    int breedte, hoogte, kanaalaantal;
-    stbi_set_flip_vertically_on_load(1);
+    Voorwerp *driehoek = maakVoorwerp(hoeken, sizeof(hoeken), hoektallen, sizeof(hoektallen));
+    Voorwerp *driehoek2 = maakVoorwerp(hoeken2, sizeof(hoeken2), hoektallen, sizeof(hoektallen));
 
-    glGenTextures(1, &afbeelding);
-    glBindTexture(GL_TEXTURE_2D, afbeelding);
-    // float grenskleur[] = {0, 0.5, 0.75, 1.0};
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, grenskleur);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // TODO Antisotropic?
-
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-
-    unsigned char *afbeelding_inhoud = stbi_load("afbeelding.png", &breedte, &hoogte, &kanaalaantal, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, breedte, hoogte, 0, GL_RGBA, GL_UNSIGNED_BYTE, afbeelding_inhoud);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(afbeelding_inhoud);
-
-    glGenTextures(1, &muur_afbeelding);
-    glBindTexture(GL_TEXTURE_2D, muur_afbeelding);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, grenskleur);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    afbeelding_inhoud = stbi_load("muur.jpg", &breedte, &hoogte, &kanaalaantal, 0);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, breedte, hoogte, 0, GL_RGB, GL_UNSIGNED_BYTE, afbeelding_inhoud);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(afbeelding_inhoud);
-
-    // Maak Driehoek VAO
-    glGenVertexArrays(1, &driehoekVAO);
-    glBindVertexArray(driehoekVAO);
-
-    // Maak Driehoek VBO's
-    glGenBuffers(1, &hoekVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, hoekVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(hoeken), hoeken, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &afbeeldingVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, afbeeldingVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(afbeeldingplek), afbeeldingplek, GL_STATIC_DRAW);
-
-    // Maak Driehoek EBO
-    glGenBuffers(1, &driehoekEBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, driehoekEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(driehoek), driehoek, GL_STATIC_DRAW);
-
-    // Zet VAO Pointers
-    glBindBuffer(GL_ARRAY_BUFFER, hoekVBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, afbeeldingVBO);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(1);
-
-    // glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glEnable(GL_DEPTH_TEST);
 
     gebruikVerver(verver);
-    zetVerverInt(verver, "muur_afbeelding", 0);
-    zetVerverInt(verver, "afbeelding", 1);
+    float voorwerp_kleur[] = {1, 0, 0, 1};
+    float voorwerp_kleur2[] = {0, 0, 1, 1};
     while (!glfwWindowShouldClose(scherm))
     {
         glClearColor(0, 0.5, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, muur_afbeelding);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, afbeelding);
-
         gebruikVerver(verver);
-        glBindVertexArray(driehoekVAO);
-        glDrawElements(GL_TRIANGLES, sizeof(driehoek), GL_UNSIGNED_INT, 0);
-
+        zetVerverFloat4v(verver, "voorwerp_kleur", voorwerp_kleur);
+        tekenVoorwerp(driehoek);
+        zetVerverFloat4v(verver, "voorwerp_kleur", voorwerp_kleur2);
+        tekenVoorwerp(driehoek2);
         glfwSwapBuffers(scherm);
         glfwPollEvents();
     }

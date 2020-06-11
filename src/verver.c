@@ -84,3 +84,9 @@ void zetVerverFloat(Verver *verver, const char *naam, float waarde)
     int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
     glUniform1f(verwijzing, waarde);
 }
+
+void zetVerverFloat4v(Verver *verver, const char *naam, float waarden[])
+{
+    int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+    glUniform4fv(verwijzing, 1, waarden);
+}
