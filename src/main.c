@@ -15,7 +15,9 @@ int main()
 {
     puts("Hellow");
 
-    // Maak GLFW
+
+//      GLFW
+
     if (!glfwInit())
     {
         puts(":C geen glfw");
@@ -49,6 +51,8 @@ int main()
     // Zet Toets Terugroep Functie.
     glfwSetKeyCallback(scherm, toets_terugroep);
 
+//      OpenGL
+
     printf("Je gebruikt OpenGL versie: %s\n", glGetString(GL_VERSION));
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -56,7 +60,9 @@ int main()
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
     glViewport(0, 0, SCHERM_BREEDTE, SCHERM_HOOGTE);
 
-    Verver *verver = maakVerver("./shaders/afbeelding.vert", "./shaders/afbeelding.frag");
+//      Algemeen
+
+    Verver *verver = maakVerver("./shaders/afbeelding.vert", "./shaders/schilderij.frag");
 
     // Maak Driehoek
     float hoeken[] = {
@@ -141,6 +147,7 @@ int main()
     // glEnable(GL_BLEND);
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glEnable(GL_DEPTH_TEST);
 
     gebruikVerver(verver);
     zetVerverInt(verver, "muur_afbeelding", 0);
@@ -148,7 +155,7 @@ int main()
     while (!glfwWindowShouldClose(scherm))
     {
         glClearColor(0, 0.5, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, muur_afbeelding);
