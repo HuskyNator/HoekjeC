@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "stb_image.h"
+#include "oneigen/stb_image.h"
 
 #include "verver.h"
 #include "main.h"
