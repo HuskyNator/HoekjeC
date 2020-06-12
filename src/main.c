@@ -66,15 +66,15 @@ int main()
 
     // Maak Driehoek
     float hoeken[] = {
-        -1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.1, 1*0.01, 0,
-        -0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.1, -1*0.01, 0,
-        1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.1, 0.5*0.01, 0};
+        -0.9 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.15, 1*0.015, 0,
+        -0.7 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.15, -2.5*0.015, 0,
+        1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.15, 1*0.015, 0};
     unsigned int hoektallen[] = {
         0, 1, 2};
     float hoeken2[] = {
-        (-1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.05)*0.1, (1+0.025)*0.1, 0,
-        (-0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.05)*0.1, (-1+0.025)*0.1, 0,
-        (1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.05)*0.1, (0.5+0.025)*0.1, 0};
+        (-1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1)*0.15, (1+0.05)*0.15, 0,
+        (-0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1)*0.15, (-1+0.05)*0.15, 0,
+        (1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1)*0.15, (0.5+0.05)*0.15, 0};
 
     Voorwerp *driehoek = maakVoorwerp(hoeken, sizeof(hoeken), hoektallen, sizeof(hoektallen));
     Voorwerp *driehoek2 = maakVoorwerp(hoeken2, sizeof(hoeken2), hoektallen, sizeof(hoektallen));
