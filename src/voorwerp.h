@@ -7,7 +7,7 @@ struct Voorwerp
 {
     unsigned int grootte;
     unsigned int VAO;
-    unsigned int EBO;
+    // unsigned int EBO;
     //unsigned int VBOs[];
 };
 

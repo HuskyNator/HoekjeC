@@ -5,18 +5,19 @@
 
 Voorwerp *maakVoorwerp(float hoeken[], size_t hoekengrootte, unsigned int hoektallen[], size_t hoektallengrootte)
 {
-    Voorwerp *voorwerp = malloc(sizeof(voorwerp));
     if (hoektallengrootte % 3 != 0)
     {
         fputs("Hoektalaantal niet een veelvoud van 3.", stderr);
     }
-    voorwerp->grootte = hoektallengrootte / sizeof(unsigned int);
+    unsigned int grootte = hoektallengrootte / sizeof(unsigned int);
+    unsigned int VAO;
+    unsigned int EBO;
 
-    glCreateVertexArrays(1, &voorwerp->VAO);
-    glBindVertexArray(voorwerp->VAO);
+    glCreateVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
 
-    glCreateBuffers(1, &voorwerp->EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, voorwerp->EBO);
+    glCreateBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, hoektallengrootte, hoektallen, GL_STATIC_DRAW);
 
     unsigned int VBO;
@@ -30,6 +31,11 @@ Voorwerp *maakVoorwerp(float hoeken[], size_t hoekengrootte, unsigned int hoekta
 
     glBindVertexArray(0);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+
+    Voorwerp *voorwerp = malloc(sizeof(voorwerp));
+    voorwerp->VAO = VAO;
+    voorwerp->grootte = grootte;
     return voorwerp;
 }
 
