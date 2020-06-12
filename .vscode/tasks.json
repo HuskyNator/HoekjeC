@@ -8,6 +8,7 @@
             "args": [
                 "${workspaceFolder}\\src\\*.c",
                 "${workspaceFolder}\\src\\oneigen\\*.c",
+                "${workspaceFolder}\\afbeeldingen\\Logo\\Logo.coff",
                 "-g",
                 "-o",
                 "${workspaceFolder}\\hoekjec.exe",
