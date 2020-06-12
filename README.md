@@ -1,5 +1,7 @@
 # HoekjeC
 
+![](afbeeldingen/Logo/Logo_Scherm.png)
+
 #### Logo Aanpassen:
 - Een `<iconaam>`.ico aanmaken (bij voorbeeld met paint.net addon).
 - Een `<rcnaam>`.rc bestand de regel `id ICON "<iconaam>.ico"` geven.
