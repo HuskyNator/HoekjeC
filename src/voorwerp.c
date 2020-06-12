@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "voorwerp.h"
 
-Voorwerp *maakVoorwerp(float hoeken[], size_t hoekengrootte, unsigned int hoektallen[], size_t hoektallengrootte)
+Voorwerp *maakVoorwerp(const float hoeken[], size_t hoekengrootte, const unsigned int hoektallen[], size_t hoektallengrootte)
 {
     if (hoektallengrootte % 3 != 0)
     {
@@ -39,7 +39,7 @@ Voorwerp *maakVoorwerp(float hoeken[], size_t hoekengrootte, unsigned int hoekta
     return voorwerp;
 }
 
-void voorwerpVoegToe(Voorwerp *voorwerp, float inhoud[], size_t inhoudsgrootte, unsigned int onderdeelgrootte, unsigned int standplaats)
+void voorwerpVoegToe(Voorwerp *voorwerp, const float inhoud[], size_t inhoudsgrootte, unsigned int onderdeelgrootte, unsigned int standplaats)
 {
     unsigned int VBO;
     glCreateBuffers(1, &VBO);
@@ -54,7 +54,7 @@ void voorwerpVoegToe(Voorwerp *voorwerp, float inhoud[], size_t inhoudsgrootte, 
     glDeleteBuffers(1, &VBO);
 }
 
-void tekenVoorwerp(Voorwerp *voorwerp)
+void tekenVoorwerp(const Voorwerp *voorwerp)
 {
     glBindVertexArray(voorwerp->VAO);
     glDrawElements(GL_TRIANGLES, voorwerp->grootte, GL_UNSIGNED_INT, 0);

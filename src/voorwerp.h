@@ -18,7 +18,7 @@ struct Voorwerp
  * @param  hoektallen[]: Hoektal volgorde van het voorwerp.
  * @param  hoektallengrootte: Grootte van hoektallen in bytes.
  */
-Voorwerp *maakVoorwerp(float hoeken[], size_t hoekengrootte, unsigned int hoektallen[], size_t hoektallengrootte);
+Voorwerp *maakVoorwerp(const float hoeken[], const size_t hoekengrootte, const unsigned int hoektallen[], const size_t hoektallengrootte);
 
 /**
  * @brief  Voegt inhoud toe op de zoveelste standplaats van het voorwerp.
@@ -28,12 +28,12 @@ Voorwerp *maakVoorwerp(float hoeken[], size_t hoekengrootte, unsigned int hoekta
  * @param  onderdeelgrootte: de grootte van inhoudsonderdelen in floats.
  * @param  standplaats: de standplaats van de inhoud in de lijst van inhouden, mag niet overeen komen met al bezette standplaats (zoals standplaats 0).
  */
-void voorwerpVoegToe(Voorwerp *voorwerp, float inhoud[], size_t inhoudsgrootte, unsigned int onderdeelgrootte, unsigned int standplaats);
+void voorwerpVoegToe(Voorwerp *voorwerp, const float inhoud[], size_t inhoudsgrootte, unsigned int onderdeelgrootte, unsigned int standplaats);
 
 /**
  * Teken het voorwerp.
  */
-void tekenVoorwerp(Voorwerp *voorwerp);
+void tekenVoorwerp(const Voorwerp *voorwerp);
 
 void verwijderVoorwerp(Voorwerp *voorwerp);
 

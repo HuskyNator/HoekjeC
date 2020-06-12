@@ -6,6 +6,7 @@
 
 #include "verver.h"
 #include "voorwerp.h"
+#include "logo.h"
 #include "main.h"
 
 #define SCHERM_BREEDTE (1920 / 2)
@@ -60,40 +61,18 @@ int main()
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
     glViewport(0, 0, SCHERM_BREEDTE, SCHERM_HOOGTE);
 
-    //      Algemeen
-
-    Verver *verver = maakVerver("./shaders/normaal.vert", "./shaders/normaal.frag");
-
-    // Maak Driehoek
-    float hoeken[] = {
-        -0.9 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.15, 1*0.015, 0,
-        -0.7 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.15, -2.5*0.015, 0,
-        1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.15, 1*0.015, 0};
-    unsigned int hoektallen[] = {
-        0, 1, 2};
-    float hoeken2[] = {
-        (-1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1)*0.15, (1+0.05)*0.15, 0,
-        (-0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1)*0.15, (-1+0.05)*0.15, 0,
-        (1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1)*0.15, (0.5+0.05)*0.15, 0};
-
-    Voorwerp *driehoek = maakVoorwerp(hoeken, sizeof(hoeken), hoektallen, sizeof(hoektallen));
-    Voorwerp *driehoek2 = maakVoorwerp(hoeken2, sizeof(hoeken2), hoektallen, sizeof(hoektallen));
+    // Maak Logo
+    maakLogo();
 
     glEnable(GL_DEPTH_TEST);
 
-    gebruikVerver(verver);
-    float voorwerp_kleur[] = {1, 0, 0, 1};
-    float voorwerp_kleur2[] = {0, 0, 1, 1};
     while (!glfwWindowShouldClose(scherm))
     {
-        glClearColor(0, 0.5, 0, 1);
+        glClearColor(0.15, 0.15, 0.15, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        gebruikVerver(verver);
-        zetVerverFloat4v(verver, "voorwerp_kleur", voorwerp_kleur);
-        tekenVoorwerp(driehoek);
-        zetVerverFloat4v(verver, "voorwerp_kleur", voorwerp_kleur2);
-        tekenVoorwerp(driehoek2);
+        tekenLogo();
+
         glfwSwapBuffers(scherm);
         glfwPollEvents();
     }
