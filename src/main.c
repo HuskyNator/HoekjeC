@@ -7,6 +7,7 @@
 #include "verver.h"
 #include "voorwerp.h"
 #include "main.h"
+#include <time.h>
 
 #define SCHERM_BREEDTE (1920 / 2)
 #define SCHERM_HOOGTE (1080 / 2)
@@ -84,6 +85,8 @@ int main()
     gebruikVerver(verver);
     float voorwerp_kleur[] = {1, 0, 0, 1};
     float voorwerp_kleur2[] = {0, 0, 1, 1};
+    clock_t tijd = clock();
+    int t = 0;
     while (!glfwWindowShouldClose(scherm))
     {
         glClearColor(0, 0.5, 0, 1);
@@ -96,7 +99,10 @@ int main()
         tekenVoorwerp(driehoek2);
         glfwSwapBuffers(scherm);
         glfwPollEvents();
+        t++;
+        if(t==100)break;
     }
+    printf("Tijd: %f", (double)(clock()-tijd));
 
     //glDeleteProgram(shader_programma);
     //glfwDestroyWindow(scherm);
