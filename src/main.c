@@ -7,6 +7,7 @@
 #include "verver.h"
 #include "voorwerp.h"
 #include "main.h"
+#include <time.h>
 
 #define SCHERM_BREEDTE (1920 / 2)
 #define SCHERM_HOOGTE (1080 / 2)
@@ -66,24 +67,26 @@ int main()
 
     // Maak Driehoek
     float hoeken[] = {
-        -0.9 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.15, 1*0.015, 0,
-        -0.7 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.15, -2.5*0.015, 0,
-        1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE*0.15, 1*0.015, 0};
+        -0.9 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15, 1 * 0.015, 0,
+        -0.7 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15, -2.5 * 0.015, 0,
+        1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15, 1 * 0.015, 0};
     unsigned int hoektallen[] = {
         0, 1, 2};
     float hoeken2[] = {
-        (-1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1)*0.15, (1+0.05)*0.15, 0,
-        (-0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1)*0.15, (-1+0.05)*0.15, 0,
-        (1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1)*0.15, (0.5+0.05)*0.15, 0};
+        (-1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15, (1 + 0.05) * 0.15, 0,
+        (-0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15, (-1 + 0.05) * 0.15, 0,
+        (1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15, (0.5 + 0.05) * 0.15, 0};
 
-    Voorwerp *driehoek = maakVoorwerp(hoeken, sizeof(hoeken), hoektallen, sizeof(hoektallen));
-    Voorwerp *driehoek2 = maakVoorwerp(hoeken2, sizeof(hoeken2), hoektallen, sizeof(hoektallen));
+    Voorwerp driehoek = maakVoorwerp(hoeken, sizeof(hoeken), hoektallen, sizeof(hoektallen));
+    Voorwerp driehoek2 = maakVoorwerp(hoeken2, sizeof(hoeken2), hoektallen, sizeof(hoektallen));
 
     glEnable(GL_DEPTH_TEST);
 
     gebruikVerver(verver);
     float voorwerp_kleur[] = {1, 0, 0, 1};
     float voorwerp_kleur2[] = {0, 0, 1, 1};
+    clock_t tijd = clock();
+    int t = 0;
     while (!glfwWindowShouldClose(scherm))
     {
         glClearColor(0, 0.5, 0, 1);
@@ -96,7 +99,11 @@ int main()
         tekenVoorwerp(driehoek2);
         glfwSwapBuffers(scherm);
         glfwPollEvents();
+        t++;
+        if (t == 500)
+            break;
     }
+    printf("Tijd: %f", (double)(clock() - tijd));
 
     //glDeleteProgram(shader_programma);
     //glfwDestroyWindow(scherm);
