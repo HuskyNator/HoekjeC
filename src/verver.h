@@ -7,7 +7,7 @@ typedef struct Verver Verver;
 
 struct Verver
 {
-    unsigned int verfProgramma;
+	unsigned int verfProgramma;
 };
 
 Verver *maakVerver(const char *hoekVerfLocatie, const char *scherfVerfLocatie);

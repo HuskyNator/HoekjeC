@@ -5,10 +5,10 @@ typedef struct Voorwerp Voorwerp;
 
 struct Voorwerp
 {
-    unsigned int grootte;
-    unsigned int VAO;
-    // unsigned int EBO;
-    //unsigned int VBOs[];
+	unsigned int grootte;
+	unsigned int VAO;
+	// unsigned int EBO;
+	//unsigned int VBOs[];
 };
 
 /**

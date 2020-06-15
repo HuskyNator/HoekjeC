@@ -7,5 +7,5 @@ out vec4 kleur;
 uniform sampler2D afbeelding;
 
 void main(){
-   kleur = texture(afbeelding, afbeelding_plek);
+	kleur = texture(afbeelding, afbeelding_plek);
 }
