@@ -1,16 +1,16 @@
 
-#include <glad/glad.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-#include "main.h"
 #include "verver.h"
 
-Verver *maakVerver(const char *hoekVerfLocatie, const char *fragmentVerfLocatie)
-{
-	Verver *verver = malloc(sizeof(Verver));
+#include "main.h"
+
+#include <glad/glad.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+Verver* maakVerver(const char* hoekVerfLocatie, const char* fragmentVerfLocatie) {
+	Verver* verver = malloc(sizeof(Verver));
 	char verfString[VERVER_GROOTTE];
-	const GLchar *verfStringVerwijzing = verfString;
+	const GLchar* verfStringVerwijzing = verfString;
 	int makenGelukt;
 
 	unsigned int hoekVerf = glCreateShader(GL_VERTEX_SHADER);
@@ -20,12 +20,11 @@ Verver *maakVerver(const char *hoekVerfLocatie, const char *fragmentVerfLocatie)
 	glCompileShader(hoekVerf);
 
 	glGetShaderiv(hoekVerf, GL_COMPILE_STATUS, &makenGelukt);
-	if (!makenGelukt)
-	{
+	if (!makenGelukt) {
 		glGetShaderInfoLog(hoekVerf, VERVER_GROOTTE, NULL, verfString);
 		fputs(verfString, stderr);
 		puts("Hoekverf kon niet gemaakt worden.");
-		exit(-4); // TODO schoonmaken?
+		exit(-4);  // TODO schoonmaken?
 	}
 
 	unsigned int fragmentVerf = glCreateShader(GL_FRAGMENT_SHADER);
@@ -34,12 +33,11 @@ Verver *maakVerver(const char *hoekVerfLocatie, const char *fragmentVerfLocatie)
 	glCompileShader(fragmentVerf);
 
 	glGetShaderiv(fragmentVerf, GL_COMPILE_STATUS, &makenGelukt);
-	if (!makenGelukt)
-	{
+	if (!makenGelukt) {
 		glGetShaderInfoLog(fragmentVerf, VERVER_GROOTTE, NULL, verfString);
 		fputs(verfString, stderr);
 		puts("Fragmentverf kon niet gemaakt worden.");
-		exit(-4); // TODO schoonmaken?
+		exit(-4);  // TODO schoonmaken?
 	}
 
 	unsigned int verfProgramma = glCreateProgram();
@@ -48,12 +46,11 @@ Verver *maakVerver(const char *hoekVerfLocatie, const char *fragmentVerfLocatie)
 	glLinkProgram(verfProgramma);
 
 	glGetProgramiv(verfProgramma, GL_LINK_STATUS, &makenGelukt);
-	if (!makenGelukt)
-	{
+	if (!makenGelukt) {
 		glGetProgramInfoLog(verfProgramma, VERVER_GROOTTE, NULL, verfString);
 		fputs(verfString, stderr);
 		puts("Verver kon niet gemaakt worden.");
-		exit(-5); // TODO schoonmaken?
+		exit(-5);  // TODO schoonmaken?
 	}
 
 	glDeleteShader(hoekVerf);
@@ -62,31 +59,24 @@ Verver *maakVerver(const char *hoekVerfLocatie, const char *fragmentVerfLocatie)
 	return verver;
 }
 
-void verwijderVerver(Verver *verver)
-{
+void verwijderVerver(Verver* verver) {
 	glDeleteProgram(verver->verfProgramma);
 	free(verver);
 }
 
-void gebruikVerver(Verver *verver)
-{
-	glUseProgram(verver->verfProgramma);
-}
+void gebruikVerver(Verver* verver) { glUseProgram(verver->verfProgramma); }
 
-void zetVerverInt(Verver *verver, const char *naam, int waarde)
-{
+void zetVerverInt(Verver* verver, const char* naam, int waarde) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform1i(verwijzing, waarde);
 }
 
-void zetVerverFloat(Verver *verver, const char *naam, float waarde)
-{
+void zetVerverFloat(Verver* verver, const char* naam, float waarde) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform1f(verwijzing, waarde);
 }
 
-void zetVerverFloat4v(Verver *verver, const char *naam, float waarden[])
-{
+void zetVerverFloat4v(Verver* verver, const char* naam, float waarden[]) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform4fv(verwijzing, 1, waarden);
 }

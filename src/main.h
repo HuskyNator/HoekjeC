@@ -9,12 +9,13 @@
  * @param  bestand_grootte: grootte van de buffer.
  * @retval None
  */
-void lees_bestand(const char *bestand_naam, char *bestand_string, size_t bestand_grootte);
+void lees_bestand(const char* bestand_naam, char* bestand_string, size_t bestand_grootte);
 
-void schermgrootte_terugroep(GLFWwindow *scherm, int breedte, int hoogte);
+void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte);
 
-void toets_terugroep(GLFWwindow *scherm, int toets, int scancode, int handeling, int toevoeging);
+void toets_terugroep(GLFWwindow* scherm, int toets, int scancode, int handeling, int toevoeging);
 
-void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned int id, GLenum ernstigheid, GLsizei grootte, const char *bericht, const void *gebruikersParameter);
+void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned int id, GLenum ernstigheid, GLsizei grootte,
+									const char* bericht, const void* gebruikersParameter);
 
 #endif
