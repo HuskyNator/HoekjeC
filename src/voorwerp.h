@@ -1,6 +1,8 @@
 #ifndef VOORWERP_H
 #define VOORWERP_H
 
+#include <stddef.h>
+
 typedef struct Voorwerp Voorwerp;
 
 struct Voorwerp {

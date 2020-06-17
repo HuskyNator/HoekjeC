@@ -1,6 +1,6 @@
 #include "voorwerp.h"
 
-#include <glad/glad.h>
+#include <GL/glew.h>
 #include <stdio.h>
 #include <stdlib.h>
 

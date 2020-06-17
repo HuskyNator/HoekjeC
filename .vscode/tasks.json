@@ -4,21 +4,24 @@
 		{
 			"type": "shell",
 			"label": "build hoekjec",
-			"command": "C:/msys64/mingw64/bin/gcc.exe",
+			"command": "C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/gcc.exe",
 			"args": [
 				"${workspaceFolder}\\src\\*.c",
-				"${workspaceFolder}\\src\\oneigen\\*.c",
 				"${workspaceFolder}\\afbeeldingen\\Logo\\Logo.coff",
+				"${workspaceFolder}\\lib\\*.a",
 				"-g",
-				"-o",
-				"${workspaceFolder}\\hoekjec.exe",
+				"-Wall",
+				"-o${workspaceFolder}\\hoekjec.exe",
 				"-I${workspaceFolder}\\include",
-				"-lglfw3",
+				"-L${workspaceFolder}\\lib",
+				"-lglew32",
+				"-lglfw3dll",
 				"-lgdi32",
-				"-lopengl32"
+				"-lopengl32",
+				"-DGLEW_STATIC"
 			],
 			"options": {
-				"cwd": "C:/msys64/mingw64/bin"
+				"cwd": "C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin"
 			},
 			"problemMatcher": [
 				"$gcc"

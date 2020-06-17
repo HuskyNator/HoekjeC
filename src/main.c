@@ -4,11 +4,12 @@
 #include "verver.h"
 #include "voorwerp.h"
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glad/glad.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
+
 
 #define SCHERM_BREEDTE (1920 / 2)
 #define SCHERM_HOOGTE (1080 / 2)
@@ -37,9 +38,9 @@ int main() {
 	glfwMakeContextCurrent(scherm);
 
 	// Maak Functies
-	int blij = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	if (!blij) {
-		puts(":C geen functies");
+	int fout = glewInit();
+	if (fout != GLEW_OK) {
+		fprintf(stderr, "Fout: %s\n", glewGetErrorString(fout));
 		exit(-3);
 	}
 
@@ -92,7 +93,9 @@ void lees_bestand(const char* bestand_naam, char* bestand_string, size_t bestand
 	fclose(bestand);
 }
 
-void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte) { glViewport(0, 0, breedte, hoogte); }
+void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte) {
+	glViewport(0, 0, breedte, hoogte);
+}
 
 void toets_terugroep(GLFWwindow* scherm, int toets, int scancode, int handeling, int toevoeging) {
 	if (handeling == GLFW_PRESS) {

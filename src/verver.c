@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-#include <glad/glad.h>
+#include <GL/glew.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -64,7 +64,9 @@ void verwijderVerver(Verver* verver) {
 	free(verver);
 }
 
-void gebruikVerver(Verver* verver) { glUseProgram(verver->verfProgramma); }
+void gebruikVerver(Verver* verver) {
+	glUseProgram(verver->verfProgramma);
+}
 
 void zetVerverInt(Verver* verver, const char* naam, int waarde) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);

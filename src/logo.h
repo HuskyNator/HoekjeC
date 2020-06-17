@@ -2,7 +2,7 @@
 #include "verver.h"
 #include "voorwerp.h"
 
-#include <glad/glad.h>
+#include <GL/glew.h>
 #include <stdlib.h>
 
 #define SCHERM_BREEDTE (1920 / 2)
