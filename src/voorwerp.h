@@ -5,13 +5,6 @@
 
 typedef struct Voorwerp Voorwerp;
 
-struct Voorwerp {
-	unsigned int grootte;
-	unsigned int VAO;
-	// unsigned int EBO;
-	// unsigned int VBOs[];
-};
-
 /**
  * @brief  Maakt een voorwerp.
  * @param  hoeken[]: Hoeken van het voorwerp.

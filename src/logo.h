@@ -35,7 +35,7 @@ void maakLogo(/*unsigned int grootte*/) {
 }
 
 void tekenLogo() {
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); Standard.
 	gebruikVerver(logo_verver);
 	zetVerverFloat4v(logo_verver, "voorwerp_kleur", BLAUW);
 	tekenVoorwerp(blauw_driehoek);
@@ -47,4 +47,5 @@ void tekenLogo() {
 	zetVerverFloat4v(logo_verver, "voorwerp_kleur", WIT);
 	tekenVoorwerp(rood_driehoek);
 	tekenVoorwerp(blauw_driehoek);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	// Reset.
 }

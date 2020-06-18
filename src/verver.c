@@ -2,6 +2,7 @@
 #include "verver.h"
 
 #include "main.h"
+#include "wiskunst/lineair.h"
 
 #include <GL/glew.h>
 #include <stdio.h>
@@ -81,4 +82,9 @@ void zetVerverFloat(Verver* verver, const char* naam, float waarde) {
 void zetVerverFloat4v(Verver* verver, const char* naam, float waarden[]) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform4fv(verwijzing, 1, waarden);
+}
+
+void zetVerverMat4f(Verver* verver, const char* naam, Mat4f* mat) {
+	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+	glUniformMatrix4fv(verwijzing, 1, GL_FALSE, (float*)mat);
 }

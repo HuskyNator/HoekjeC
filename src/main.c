@@ -3,6 +3,7 @@
 #include "logo.h"
 #include "verver.h"
 #include "voorwerp.h"
+#include "wiskunst/lineair.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -61,6 +62,16 @@ int main() {
 	// Maak Logo
 	maakLogo();
 
+	Verver* verver = maakVerver("shaders/normaal.vert", "shaders/test.frag");
+	gebruikVerver(verver);
+
+	Mat4f mat = (Mat4f){{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+	zetVerverMat4f(verver, "testMat", &mat);
+
+	float hoeken[] = {-1, -1, 0, 1, 1, 0, 1, -1, 0};
+	unsigned int hoektallen[] = {0, 2, 1};
+	Voorwerp* vw = maakVoorwerp(hoeken, sizeof(hoeken), hoektallen, sizeof(hoektallen));
+
 	glEnable(GL_DEPTH_TEST);
 
 	while (!glfwWindowShouldClose(scherm)) {
@@ -68,6 +79,8 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		tekenLogo();
+		gebruikVerver(verver);
+		tekenVoorwerp(vw);
 
 		glfwSwapBuffers(scherm);
 		glfwPollEvents();

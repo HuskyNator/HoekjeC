@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+struct Voorwerp {
+	unsigned int grootte;
+	unsigned int VAO;
+};
+
 Voorwerp* maakVoorwerp(const float hoeken[], size_t hoekengrootte, const unsigned int hoektallen[],
 					   size_t hoektallengrootte) {
 	if (hoektallengrootte % 3 != 0) {
