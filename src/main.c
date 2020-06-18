@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 
 
 #define SCHERM_BREEDTE (1920 / 2)
@@ -17,6 +18,9 @@
 
 int main() {
 	puts("Hellow");
+
+	Sleep(1000);
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
 
 	//      GLFW
 

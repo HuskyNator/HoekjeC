@@ -18,7 +18,8 @@
 				"-lglfw3dll",
 				"-lgdi32",
 				"-lopengl32",
-				"-DGLEW_STATIC"
+				"-DGLEW_STATIC",
+				// "-mwindows"
 			],
 			"options": {
 				"cwd": "C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin"
