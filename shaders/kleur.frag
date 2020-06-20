@@ -1,9 +1,7 @@
 #version 460 core
 
-in vec3 hoekkleur;
+out vec4 scherf_kleur;
 
-out vec4 scherfkleur;
+uniform vec4 voorwerp_kleur;
 
-void main() {
-	scherfkleur = vec4(hoekkleur, 1.0);
-}
+void main() { scherf_kleur = voorwerp_kleur; }

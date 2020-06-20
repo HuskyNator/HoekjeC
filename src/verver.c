@@ -1,8 +1,8 @@
 
 #include "verver.h"
 
+#include "lineair.h"
 #include "main.h"
-#include "wiskunst/lineair.h"
 
 #include <GL/glew.h>
 #include <stdio.h>
@@ -65,26 +65,24 @@ void verwijderVerver(Verver* verver) {
 	free(verver);
 }
 
-void gebruikVerver(Verver* verver) {
-	glUseProgram(verver->verfProgramma);
-}
+void gebruikVerver(const Verver* verver) { glUseProgram(verver->verfProgramma); }
 
-void zetVerverInt(Verver* verver, const char* naam, int waarde) {
+void zetVerverInt(const Verver* verver, const char* naam, int waarde) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform1i(verwijzing, waarde);
 }
 
-void zetVerverFloat(Verver* verver, const char* naam, float waarde) {
+void zetVerverFloat(const Verver* verver, const char* naam, float waarde) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform1f(verwijzing, waarde);
 }
 
-void zetVerverFloat4v(Verver* verver, const char* naam, float waarden[]) {
+void zetVerverFloat4v(const Verver* verver, const char* naam, float waarden[]) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform4fv(verwijzing, 1, waarden);
 }
 
-void zetVerverMat4f(Verver* verver, const char* naam, Mat4f* mat) {
+void zetVerverMat4f(const Verver* verver, const char* naam, const Mat4f* mat) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniformMatrix4fv(verwijzing, 1, GL_FALSE, (float*)mat);
 }

@@ -1,6 +1,6 @@
 
 #include "verver.h"
-#include "voorwerp.h"
+#include "vorm.h"
 
 #include <GL/glew.h>
 #include <stdlib.h>
@@ -12,8 +12,8 @@ static float ROOD[] = {1, 0, 0, 1};
 static float BLAUW[] = {0, 0, 1, 1};
 static float WIT[] = {1, 1, 1, 1};
 
-static Voorwerp* rood_driehoek;
-static Voorwerp* blauw_driehoek;
+static Vorm* rood_driehoek;
+static Vorm* blauw_driehoek;
 static Verver* logo_verver;
 
 void maakLogo(/*unsigned int grootte*/) {
@@ -29,23 +29,23 @@ void maakLogo(/*unsigned int grootte*/) {
 
 	const unsigned int hoektallen[] = {0, 1, 2};
 
-	rood_driehoek = maakVoorwerp(rode_hoeken, sizeof(rode_hoeken), hoektallen, sizeof(hoektallen));
+	rood_driehoek = maakVorm(rode_hoeken, sizeof(rode_hoeken), hoektallen, sizeof(hoektallen));
 
-	blauw_driehoek = maakVoorwerp(blauwe_hoeken, sizeof(blauwe_hoeken), hoektallen, sizeof(hoektallen));
+	blauw_driehoek = maakVorm(blauwe_hoeken, sizeof(blauwe_hoeken), hoektallen, sizeof(hoektallen));
 }
 
 void tekenLogo() {
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); Standard.
 	gebruikVerver(logo_verver);
 	zetVerverFloat4v(logo_verver, "voorwerp_kleur", BLAUW);
-	tekenVoorwerp(blauw_driehoek);
+	tekenVorm(blauw_driehoek);
 	zetVerverFloat4v(logo_verver, "voorwerp_kleur", ROOD);
-	tekenVoorwerp(rood_driehoek);
+	tekenVorm(rood_driehoek);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(4);
 	zetVerverFloat4v(logo_verver, "voorwerp_kleur", WIT);
-	tekenVoorwerp(rood_driehoek);
-	tekenVoorwerp(blauw_driehoek);
+	tekenVorm(rood_driehoek);
+	tekenVorm(blauw_driehoek);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	// Reset.
 }

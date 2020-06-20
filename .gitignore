@@ -1,3 +1,6 @@
 
 # Geen executable, zeer groot.
 *.exe
+
+# Geen workspace.
+*.code-workspace
