@@ -1,7 +1,28 @@
 #ifndef MAIN_H
 #define MAIN_H
+#include "lineair.h"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#define SCHERM_BREEDTE (1920.0 / 2.0)
+#define SCHERM_HOOGTE (1080.0 / 2.0)
+#define VOORVLAK 0.1
+#define ACHTERVLAK 50.0
+#define ZICHTHOEK 100.0
+
+typedef enum { onwaar = 0, waar = 1 } booleaan;
+
+Mat4f projectieZichtMatrix;
+booleaan projectieZichtMatrixBijgewerkt;
+int schermbreedte;
+int schermhoogte;
+float voorvlak;
+float achtervlak;
+float zichthoek;
+
+void werkZichtMatrixBij();
+void werkProjectieMatrixBij();
 
 /**
  * @brief  Leest bestand naar string.
@@ -11,14 +32,5 @@
  * @retval None
  */
 void lees_bestand(const char* bestand_naam, char* bestand_string, size_t bestand_grootte);
-
-void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte);
-
-void toets_terugroep(GLFWwindow* scherm, int toets, int scancode, int handeling, int toevoeging);
-
-void muisplek_terugroep(GLFWwindow* scherm, double x, double y);
-
-void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned int id, GLenum ernstigheid, GLsizei grootte,
-									const char* bericht, const void* gebruikersParameter);
 
 #endif

@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 struct vorm {
 	unsigned int grootte;
 	unsigned int VAO;
@@ -64,11 +63,6 @@ void tekenVorm(const Vorm* vorm) {
 	glBindVertexArray(vorm->VAO);
 	glDrawElements(GL_TRIANGLES, vorm->grootte, GL_UNSIGNED_INT, 0);
 }
-
-// void tekenVoorwerp(const Vorm* voorwerp) {
-// 	glBindVertexArray(voorwerp->VAO);
-// 	glDrawElements(GL_TRIANGLES, voorwerp->grootte, GL_UNSIGNED_INT, 0);
-// }
 
 void verwijderVoorwerp(Vorm* voorwerp) {
 	glDeleteVertexArrays(1, &voorwerp->VAO);

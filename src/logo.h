@@ -1,12 +1,11 @@
-
+#define SCHERM_BREEDTE (1920.0 / 2.0)
+#define SCHERM_HOOGTE (1080.0 / 2.0)
 #include "verver.h"
 #include "vorm.h"
 
 #include <GL/glew.h>
 #include <stdlib.h>
 
-#define SCHERM_BREEDTE (1920 / 2)
-#define SCHERM_HOOGTE (1080 / 2)
 
 static float ROOD[] = {1, 0, 0, 1};
 static float BLAUW[] = {0, 0, 1, 1};

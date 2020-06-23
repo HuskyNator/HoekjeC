@@ -3,7 +3,6 @@ IndentWidth: 4
 UseTab: Always
 TabWidth: 4
 AllowShortIfStatementsOnASingleLine: Always
-AllowShortFunctionsOnASingleLine: All
 ColumnLimit: 120
 AccessModifierOffset: -4
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -13,3 +12,7 @@ IncludeCategories:
     Priority:        2
   - Regex:           '.*'
     Priority:        1
+
+---
+Language: Cpp
+AllowShortFunctionsOnASingleLine: All

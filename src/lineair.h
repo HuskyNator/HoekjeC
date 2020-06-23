@@ -1,28 +1,7 @@
 #ifndef LINEAR_H
 #define LINEAR_H
 
-typedef enum { false, true } bool;
-
 // Vectoren.
-typedef struct vec2b Vec2b;
-typedef struct vec3b Vec3b;
-typedef struct vec4b Vec4b;
-
-struct vec2b {
-	bool x;
-	bool y;
-};
-struct vec3b {
-	bool x;
-	bool y;
-	bool z;
-};
-struct vec4b {
-	bool x;
-	bool y;
-	bool z;
-	bool w;
-};
 
 typedef struct vec2i Vec2i;
 typedef struct vec3i Vec3i;
@@ -85,25 +64,6 @@ struct vec4f {
 };
 
 // Matrixen.
-typedef struct mat2b Mat2b;
-typedef struct mat3b Mat3b;
-typedef struct mat4b Mat4b;
-
-struct mat2b {
-	Vec2b r1;
-	Vec2b r2;
-};
-struct mat3b {
-	Vec3b r1;
-	Vec3b r2;
-	Vec3b r3;
-};
-struct mat4b {
-	Vec4b r1;
-	Vec4b r2;
-	Vec4b r3;
-	Vec4b r4;
-};
 
 typedef struct mat2i Mat2i;
 typedef struct mat3i Mat3i;
@@ -146,9 +106,6 @@ struct mat4f {
 };
 
 // Inproducten.
-bool inproduct2b(Vec2b a, Vec2b b);
-bool inproduct3b(Vec3b a, Vec3b b);
-bool inproduct4b(Vec4b a, Vec4b b);
 
 int inproduct2i(Vec2i a, Vec2i b);
 int inproduct3i(Vec3i a, Vec3i b);
@@ -159,14 +116,18 @@ float inproduct3f(Vec3f a, Vec3f b);
 float inproduct4f(Vec4f a, Vec4f b);
 
 // Uitproducten.
-Vec3b uitproductb(Vec3b a, Vec3b b);
+
 Vec3i uitproducti(Vec3i a, Vec3i b);
 Vec3f uitproductf(Vec3f a, Vec3f b);
 
-// Matrix Toepassingen.
+// Toepassingen
+
 Mat4f identiteitsMatrix();
 
-Mat4f vermenigvuldigMatrix(Mat4f L, Mat4f R);
+Vec4f Vec3n4f(Vec3f v, float w);
+Vec4f Vec4ff(Vec4f v, float f);
+Mat4f Mat4fMat4f(Mat4f L, Mat4f R);
+Vec4f Mat4fVec4f(Mat4f L, Vec4f R);
 
 Mat4f verplaatsMatrix(float x, float y, float z);
 
@@ -176,5 +137,9 @@ Mat4f draaiMatrixz(float draai);
 
 Mat4f perspectiefMatrix(float voorvlak, float achtervlak, double zichthoek, float schermverhouding);
 Mat4f voorwerpMatrixPG(Vec3f P, Vec3f G);
+
+// Print
+void printVec4f(const Vec4f* v);
+void printMat4f(const Mat4f* m);
 
 #endif

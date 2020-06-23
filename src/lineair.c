@@ -1,11 +1,9 @@
 #include "lineair.h"
-
-#include "math.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <stdio.h>
 
 // Inproducten.
-bool inproduct2b(Vec2b a, Vec2b b) { return a.x && b.x || a.y && b.y; }
-bool inproduct3b(Vec3b a, Vec3b b) { return a.x && b.x || a.y && b.y || a.z && b.z; }
-bool inproduct4b(Vec4b a, Vec4b b) { return a.x && b.x || a.y && b.y || a.z && b.z || a.w && b.w; }
 
 int inproduct2i(Vec2i a, Vec2i b) { return a.x * b.x + a.y * b.y; }
 int inproduct3i(Vec3i a, Vec3i b) { return a.x * b.x + a.y * b.y + a.z * b.y; }
@@ -16,9 +14,6 @@ float inproduct3f(Vec3f a, Vec3f b) { return a.x * b.x + a.y * b.y + a.z * b.z; 
 float inproduct4f(Vec4f a, Vec4f b) { return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w; }
 
 // Uitproducten.
-Vec3b uitproductb(Vec3b a, Vec3b b) {
-	return (Vec3b){a.y && b.z || !(b.y && a.z), a.z && b.x || !(b.z * a.x), a.x && b.y || !(b.x * a.y)};
-}
 
 Vec3i uitproducti(Vec3i a, Vec3i b) {
 	return (Vec3i){a.y * b.z - b.y * a.z, a.z * b.x - b.z * a.x, a.x * b.y - b.x * a.y};
@@ -29,9 +24,14 @@ Vec3f uitproductf(Vec3f a, Vec3f b) {
 }
 
 // Matrix Toepassingen.
+
 Mat4f identiteitsMatrix() { return (Mat4f){{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}}; }
 
-Mat4f vermenigvuldigMatrix(Mat4f L, Mat4f R) {
+Vec4f Vec3n4f(Vec3f v, float w) { return (Vec4f){v.x, v.y, v.z, w}; }
+
+Vec4f Vec4ff(Vec4f v, float f) { return (Vec4f){v.x * f, v.y * f, v.z * f, v.w * f}; }
+
+Mat4f Mat4fMat4f(Mat4f L, Mat4f R) {
 	return (Mat4f){{L.r1.x * R.r1.x + L.r1.y * R.r2.x + L.r1.z * R.r3.x + L.r1.w * R.r4.x,
 					L.r1.x * R.r1.y + L.r1.y * R.r2.y + L.r1.z * R.r3.y + L.r1.w * R.r4.y,
 					L.r1.x * R.r1.z + L.r1.y * R.r2.z + L.r1.z * R.r3.z + L.r1.w * R.r4.z,
@@ -50,7 +50,16 @@ Mat4f vermenigvuldigMatrix(Mat4f L, Mat4f R) {
 					L.r4.x * R.r1.w + L.r4.y * R.r2.w + L.r4.z * R.r3.w + L.r4.w * R.r4.w}};
 }
 
-Mat4f verplaatsMatrix(float x, float y, float z) { return (Mat4f){{1, 0, 0, x}, {0, 1, 0, y}, {0, 0, 1, z}, {0, 0, 0, 1}}; }
+Vec4f Mat4fVec4f(Mat4f L, Vec4f R) {
+	return (Vec4f){L.r1.x * R.x + L.r1.y * R.y + L.r1.z * R.z + L.r1.w * R.w,
+				   L.r2.x * R.x + L.r2.y * R.y + L.r2.z * R.z + L.r2.w * R.w,
+				   L.r3.x * R.x + L.r3.y * R.y + L.r3.z * R.z + L.r3.w * R.w,
+				   L.r4.x * R.x + L.r4.y * R.y + L.r4.z * R.z + L.r4.w * R.w};
+}
+
+Mat4f verplaatsMatrix(float x, float y, float z) {
+	return (Mat4f){{1, 0, 0, x}, {0, 1, 0, y}, {0, 0, 1, z}, {0, 0, 0, 1}};
+}
 
 Mat4f draaiMatrixx(float draai) {
 	return (Mat4f){{1, 0, 0, 0}, {0, cosf(draai), -sinf(draai), 0}, {0, sinf(draai), cosf(draai), 0}, {0, 0, 0, 1}};
@@ -80,7 +89,7 @@ Mat4f draaiMatrixz(float draai) {
 }
 
 Mat4f perspectiefMatrix(float voorvlak, float achtervlak, double zichthoek, float schermverhouding) {
-	float zichthoek_verhouding = 1 / tan(zichthoek / 2);
+	float zichthoek_verhouding = 1 / tan(M_PI / 180.0 * zichthoek / 2.0);
 	float delta = 1 / (achtervlak - voorvlak);
 	return (Mat4f){{zichthoek_verhouding, 0, 0, 0},
 				   {0, schermverhouding * zichthoek_verhouding, 0, 0},
@@ -95,4 +104,15 @@ Mat4f perspectiefMatrix(float voorvlak, float achtervlak, double zichthoek, floa
 
 Mat4f voorwerpMatrixPG(Vec3f P, Vec3f G) {
 	return (Mat4f){{G.x, 0, 0, P.x}, {0, G.y, 0, P.y}, {0, 0, G.z, P.z}, {0, 0, 0, 1}};
+}
+
+void printVec4f(const Vec4f* v) { printf("[%f, %f, %f, %f]\n", v->x, v->y, v->z, v->w); }
+void printMat4f(const Mat4f* m) {
+	putchar('{');
+	putchar('\n');
+	printVec4f(&m->r1);
+	printVec4f(&m->r2);
+	printVec4f(&m->r3);
+	printVec4f(&m->r4);
+	putchar('}');
 }

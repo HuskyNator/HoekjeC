@@ -12,16 +12,49 @@
 #include <stdlib.h>
 #include <windows.h>
 
-#define SCHERM_BREEDTE (1920 / 2)
-#define SCHERM_HOOGTE (1080 / 2)
-#define VOORVLAK 0.1
-#define ACHTERVLAK 100
-#define ZICHTHOEK 100
-#define DELTA 0.5
+int schermbreedte = SCHERM_BREEDTE;
+int schermhoogte = SCHERM_HOOGTE;
+float voorvlak = VOORVLAK;
+float achtervlak = ACHTERVLAK;
+float zichthoek = ZICHTHOEK;
 
-float draaix = 0;
-float draaiy = 0;
-boolean gedraaid = false;
+static double plekx = SCHERM_BREEDTE / 2;
+static double pleky = SCHERM_HOOGTE / 2;
+static float draaix = 0;
+static float draaiy = 0;
+static Mat4f projectieMatrix;
+static Mat4f zichtMatrix;
+
+void muisplek_terugroep(GLFWwindow* scherm, double x, double y) {
+	draaiy -= plekx - x;
+	draaix += pleky - y;
+	plekx = x;
+	pleky = y;
+	werkZichtMatrixBij();
+}
+
+static void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte) {
+	glViewport(0, 0, breedte, hoogte);
+	schermbreedte = breedte;
+	schermhoogte = hoogte;
+	werkProjectieMatrixBij();
+}
+
+static void toets_terugroep(GLFWwindow* scherm, int toets, int scancode, int handeling, int toevoeging) {
+	if (handeling == GLFW_PRESS) {
+		switch (toets) {
+			case GLFW_KEY_ESCAPE:
+				glfwSetWindowShouldClose(scherm, GLFW_TRUE);
+		}
+	}
+}
+
+static void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned int id, GLenum ernstigheid,
+										   GLsizei grootte, const char* bericht, const void* gebruikersParameter) {
+	if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
+	fputs("----\n", stderr);
+	fprintf(stderr, "Foutmelding #%u: %s\n", id, bericht);
+}
 
 int main() {
 	puts("Hellow");
@@ -75,47 +108,38 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	// Daadwerkelijk.
-	maakLogo();
 
-	Mat4f zichtMatrix = identiteitsMatrix();
-	Mat4f projectieMatrix = perspectiefMatrix(VOORVLAK, ACHTERVLAK, ZICHTHOEK, SCHERM_BREEDTE / SCHERM_HOOGTE);
+	werkProjectieMatrixBij();
+	werkZichtMatrixBij();
 
 	Verver* verver = maakVerver("shaders/voorwerp.vert", "shaders/normaal.frag");
 	gebruikVerver(verver);
-	zetVerverMat4f(verver, "projectie_matrix", &projectieMatrix);
-	zetVerverMat4f(verver, "zichtMatrix", &zichtMatrix);
 
-	Vec3f hoeken[] = {{-1, -1, -1}, {-1, -1, 1}, {-1, 1, -1}, {-1, 1, 1},
-					  {1, -1, -1},	{1, -1, 1},	 {1, 1, -1},  {1, 1, 1}};
-	Vec4ui hoektallen[] = {{1, 0, 2}, {1, 2, 3}, {2, 0, 4}, {2, 4, 6}, {4, 5, 6}, {5, 7, 6},
-						   {5, 1, 7}, {1, 3, 7}, {1, 4, 0}, {1, 5, 4}, {3, 2, 6}, {3, 6, 7}};
+	Vec3f hoeken[] = {{-0.5, -0.5, 0}, {0.5, -0.5, 0}, {0, 0.5, 0}};
+	Vec3ui hoektallen[] = {{0, 1, 2}};
 	Vorm* vorm = maakVorm((float*)&hoeken, sizeof(hoeken), (unsigned int*)&hoektallen, sizeof(hoektallen));
-	Vec3f plaats = {0, 0, -2};
+	Vec3f plaats = {0, 0, 0.1};
 	Vec3f grootte = {1, 1, 1};
-	Voorwerp voorwerpA = maakVoorwerp(vorm, plaats, grootte, 0, 0, 0);
+	Vec3f draai = {0, 0, 0};
+	Voorwerp* voorwerpA = maakVoorwerp(vorm, plaats, grootte, draai);
 	Vec4f voorwerpKleur = {0.1, 0.8, 0, 1};
 
 	zetVerverFloat4v(verver, "voorwerp_kleur", (float*)&voorwerpKleur);
 
-	glClearColor(0.15, 0.15, 0.15, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	tekenLogo();
-	glfwSwapBuffers(scherm);
-	Sleep(2000);
+	// glClearColor(0.15, 0.15, 0.15, 1);
+	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// maakLogo();
+	// tekenLogo();
+	// glfwSwapBuffers(scherm);
+	// Sleep(2000);
 
 	while (!glfwWindowShouldClose(scherm)) {
 		glClearColor(0.15, 0.15, 0.15, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if (gedraaid) {
-			gedraaid = false;
-			zichtMatrix = vermenigvuldigMatrix(draaiMatrixx(-draaix), draaiMatrixy(-draaiy));
-			zetVerverMat4f(verver, "zichtMatrix", &zichtMatrix);
-		}
+		tekenVoorwerp(voorwerpA, verver);
 
-		gebruikVerver(verver);
-		tekenVoorwerp(&voorwerpA, verver);
-
+		projectieZichtMatrixBijgewerkt = onwaar;
 		glfwSwapBuffers(scherm);
 		glfwPollEvents();
 	}
@@ -123,6 +147,18 @@ int main() {
 	// glDeleteProgram(shader_programma);
 	// glfwDestroyWindow(scherm);
 	glfwTerminate();
+}
+
+void werkZichtMatrixBij() {
+	projectieMatrix = Mat4fMat4f(draaiMatrixx(-draaix), draaiMatrixy(-draaiy));
+	projectieZichtMatrix = Mat4fMat4f(projectieMatrix, zichtMatrix);
+	projectieZichtMatrixBijgewerkt = waar;
+}
+
+void werkProjectieMatrixBij() {
+	projectieMatrix = perspectiefMatrix(voorvlak, achtervlak, zichthoek, schermhoogte / schermbreedte);
+	projectieZichtMatrix = Mat4fMat4f(projectieMatrix, zichtMatrix);
+	projectieZichtMatrixBijgewerkt = waar;
 }
 
 void lees_bestand(const char* bestand_naam, char* bestand_string, size_t bestand_grootte) {
@@ -138,32 +174,4 @@ void lees_bestand(const char* bestand_naam, char* bestand_string, size_t bestand
 		*(bestand_string + gelezen) = '\0';
 
 	fclose(bestand);
-}
-
-void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte) { glViewport(0, 0, breedte, hoogte); }
-
-void toets_terugroep(GLFWwindow* scherm, int toets, int scancode, int handeling, int toevoeging) {
-	if (handeling == GLFW_PRESS) {
-		switch (toets) {
-			case GLFW_KEY_ESCAPE:
-				glfwSetWindowShouldClose(scherm, GLFW_TRUE);
-		}
-	}
-}
-
-void muisplek_terugroep(GLFWwindow* scherm, double x, double y) {
-	static double plekx = SCHERM_BREEDTE / 2;
-	static double pleky = SCHERM_HOOGTE / 2;
-	draaiy -= plekx - x;
-	draaix += pleky - y;
-	plekx = x;
-	pleky = y;
-	gedraaid = true;
-}
-
-void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned int id, GLenum ernstigheid, GLsizei grootte,
-									const char* bericht, const void* gebruikersParameter) {
-	if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
-	fputs("----\n", stderr);
-	fprintf(stderr, "Foutmelding #%u: %s\n", id, bericht);
 }
