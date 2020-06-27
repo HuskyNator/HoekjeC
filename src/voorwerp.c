@@ -46,5 +46,6 @@ void tekenVoorwerp(Voorwerp* voorwerp, const Verver* verver) {
 		werkTekenMatrixBij(voorwerp);
 	}
 	zetVerverMat4f(verver, "teken_matrix", &voorwerp->tekenMatrix);
+	TIJDELIJK = voorwerp->tekenMatrix;
 	tekenVorm(voorwerp->vorm);
 }

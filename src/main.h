@@ -11,6 +11,8 @@
 #define ACHTERVLAK 50.0
 #define ZICHTHOEK 100.0
 
+Mat4f TIJDELIJK;
+
 Mat4f projectieZichtMatrix;
 booleaan projectieZichtMatrixBijgewerkt;
 int schermbreedte;

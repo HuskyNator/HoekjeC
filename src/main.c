@@ -26,7 +26,7 @@ static Mat4f projectieMatrix;
 static Mat4f zichtMatrix;
 
 void muisplek_terugroep(GLFWwindow* scherm, double x, double y) {
-	draaiy -= plekx - x;
+	draaiy += plekx - x;
 	draaix += pleky - y;
 	plekx = x;
 	pleky = y;
@@ -105,7 +105,7 @@ int main() {
 	glDebugMessageCallback(foutmelding_terugroep, NULL);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glViewport(0, 0, SCHERM_BREEDTE, SCHERM_HOOGTE);
-	// glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
 	// Daadwerkelijk.
 
@@ -116,7 +116,7 @@ int main() {
 	Verver* verver = maakVerver("shaders/voorwerp.vert", "shaders/normaal.frag");
 	gebruikVerver(verver);
 
-	Vec3f hoeken[] = {{-0.5, -0.5, 1}, {0.5, -0.5, 1}, {0, 0.5, 1}};
+	Vec3f hoeken[] = {{-1, -1, 2}, {1, -1, 2}, {0, 0, 2}};
 	Vec3ui hoektallen[] = {{0, 1, 2}};
 	Vorm* vorm = maakVorm((float*)&hoeken, sizeof(hoeken), (unsigned int*)&hoektallen, sizeof(hoektallen));
 	Vec3f plaats = {0, 0, 0.1};
@@ -125,7 +125,15 @@ int main() {
 	Voorwerp* voorwerpA = maakVoorwerp(vorm, plaats, grootte, draai);
 	Vec4f voorwerpKleur = {0.1, 0.8, 0, 1};
 
-	zetVerverFloat4v(verver, "voorwerp_kleur", (float*)&voorwerpKleur);
+	Vec3f vloerHoeken[] = {{-5, -1, -5}, {0, -1, 5}, {5, -1, -5}};
+	Vec3ui vloerHoektallen[] = {{0, 1, 2}};
+	Vorm* vloerVorm =
+		maakVorm((float*)&vloerHoeken, sizeof(vloerHoeken), (unsigned int*)&vloerHoektallen, sizeof(vloerHoektallen));
+	Vec3f vloerPlaats = {0, 0, 0};
+	Vec3f vloerGrootte = {1, 1, 1};
+	Vec3f vloerDraai = {0, 0, 0};
+	Voorwerp* vloerVoorwerp = maakVoorwerp(vloerVorm, vloerPlaats, vloerGrootte, vloerDraai);
+	Vec4f vloerKleur = {0, 0, 1, 1};
 
 	// glClearColor(0.15, 0.15, 0.15, 1);
 	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -138,7 +146,10 @@ int main() {
 		glClearColor(0.15, 0.15, 0.15, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		zetVerverFloat4v(verver, "voorwerp_kleur", (float*)&voorwerpKleur);
 		tekenVoorwerp(voorwerpA, verver);
+		zetVerverFloat4v(verver, "voorwerp_kleur", (float*)&vloerKleur);
+		tekenVoorwerp(vloerVoorwerp, verver);
 
 		projectieZichtMatrixBijgewerkt = onwaar;
 		glfwSwapBuffers(scherm);
@@ -151,7 +162,7 @@ int main() {
 }
 
 void werkZichtMatrixBij() {
-	zichtMatrix = Mat4fMat4f(draaiMatrixx(-draaix * 0.01), draaiMatrixy(-draaiy * 0.01));
+	zichtMatrix = Mat4fMat4f(draaiMatrixx(draaix * 0.01), draaiMatrixy(draaiy * 0.01));
 	projectieZichtMatrix = Mat4fMat4f(projectieMatrix, zichtMatrix);
 	projectieZichtMatrixBijgewerkt = waar;
 }

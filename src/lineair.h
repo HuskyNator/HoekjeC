@@ -92,19 +92,19 @@ typedef struct mat3f Mat3f;
 typedef struct mat4f Mat4f;
 
 struct mat2f {
-	Vec2f r1;
-	Vec2f r2;
+	Vec2f k1;
+	Vec2f k2;
 };
 struct mat3f {
-	Vec3f r1;
-	Vec3f r2;
-	Vec3f r3;
+	Vec3f k1;
+	Vec3f k2;
+	Vec3f k3;
 };
 struct mat4f {
-	Vec4f r1;
-	Vec4f r2;
-	Vec4f r3;
-	Vec4f r4;
+	Vec4f k1;
+	Vec4f k2;
+	Vec4f k3;
+	Vec4f k4;
 };
 
 // Inproducten
@@ -126,6 +126,7 @@ Vec3f uitproductf(Vec3f a, Vec3f b);
 
 Vec4f Vec3n4f(Vec3f v, float w);
 Vec3f Vec4n3f(Vec4f v, booleaan normalizeren);
+Mat4f kantelMat4f(Mat4f m);
 
 // Vermenigvuldigingen
 
