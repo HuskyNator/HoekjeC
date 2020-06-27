@@ -11,8 +11,6 @@
 #define ACHTERVLAK 50.0
 #define ZICHTHOEK 100.0
 
-typedef enum { onwaar = 0, waar = 1 } booleaan;
-
 Mat4f projectieZichtMatrix;
 booleaan projectieZichtMatrixBijgewerkt;
 int schermbreedte;

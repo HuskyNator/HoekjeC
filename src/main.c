@@ -105,17 +105,18 @@ int main() {
 	glDebugMessageCallback(foutmelding_terugroep, NULL);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 	glViewport(0, 0, SCHERM_BREEDTE, SCHERM_HOOGTE);
-	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_DEPTH_TEST);
 
 	// Daadwerkelijk.
 
 	werkProjectieMatrixBij();
 	werkZichtMatrixBij();
+	glfwGetCursorPos(scherm, &plekx, &pleky);
 
 	Verver* verver = maakVerver("shaders/voorwerp.vert", "shaders/normaal.frag");
 	gebruikVerver(verver);
 
-	Vec3f hoeken[] = {{-0.5, -0.5, 0}, {0.5, -0.5, 0}, {0, 0.5, 0}};
+	Vec3f hoeken[] = {{-0.5, -0.5, 1}, {0.5, -0.5, 1}, {0, 0.5, 1}};
 	Vec3ui hoektallen[] = {{0, 1, 2}};
 	Vorm* vorm = maakVorm((float*)&hoeken, sizeof(hoeken), (unsigned int*)&hoektallen, sizeof(hoektallen));
 	Vec3f plaats = {0, 0, 0.1};
@@ -150,13 +151,13 @@ int main() {
 }
 
 void werkZichtMatrixBij() {
-	projectieMatrix = Mat4fMat4f(draaiMatrixx(-draaix), draaiMatrixy(-draaiy));
+	zichtMatrix = Mat4fMat4f(draaiMatrixx(-draaix * 0.01), draaiMatrixy(-draaiy * 0.01));
 	projectieZichtMatrix = Mat4fMat4f(projectieMatrix, zichtMatrix);
 	projectieZichtMatrixBijgewerkt = waar;
 }
 
 void werkProjectieMatrixBij() {
-	projectieMatrix = perspectiefMatrix(voorvlak, achtervlak, zichthoek, schermhoogte / schermbreedte);
+	projectieMatrix = perspectiefMatrix(voorvlak, achtervlak, zichthoek, (double)schermhoogte / (double)schermbreedte);
 	projectieZichtMatrix = Mat4fMat4f(projectieMatrix, zichtMatrix);
 	projectieZichtMatrixBijgewerkt = waar;
 }

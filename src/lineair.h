@@ -1,7 +1,9 @@
 #ifndef LINEAR_H
 #define LINEAR_H
 
-// Vectoren.
+#include "booleaan.h"
+
+// Vectoren
 
 typedef struct vec2i Vec2i;
 typedef struct vec3i Vec3i;
@@ -105,7 +107,7 @@ struct mat4f {
 	Vec4f r4;
 };
 
-// Inproducten.
+// Inproducten
 
 int inproduct2i(Vec2i a, Vec2i b);
 int inproduct3i(Vec3i a, Vec3i b);
@@ -115,31 +117,39 @@ float inproduct2f(Vec2f a, Vec2f b);
 float inproduct3f(Vec3f a, Vec3f b);
 float inproduct4f(Vec4f a, Vec4f b);
 
-// Uitproducten.
+// Uitproducten
 
 Vec3i uitproducti(Vec3i a, Vec3i b);
 Vec3f uitproductf(Vec3f a, Vec3f b);
 
-// Toepassingen
-
-Mat4f identiteitsMatrix();
+// Overgangen
 
 Vec4f Vec3n4f(Vec3f v, float w);
+Vec3f Vec4n3f(Vec4f v, booleaan normalizeren);
+
+// Vermenigvuldigingen
+
 Vec4f Vec4ff(Vec4f v, float f);
+Vec3f Vec3ff(Vec3f v, float f);
 Mat4f Mat4fMat4f(Mat4f L, Mat4f R);
 Vec4f Mat4fVec4f(Mat4f L, Vec4f R);
 
-Mat4f verplaatsMatrix(float x, float y, float z);
+// Draaiingen
 
 Mat4f draaiMatrixx(float draai);
 Mat4f draaiMatrixy(float draai);
 Mat4f draaiMatrixz(float draai);
 
+// Matrixen
+
+Mat4f identiteitsMatrix();
+Mat4f verplaatsMatrix(float x, float y, float z);
 Mat4f perspectiefMatrix(float voorvlak, float achtervlak, double zichthoek, float schermverhouding);
 Mat4f voorwerpMatrixPG(Vec3f P, Vec3f G);
 
-// Print
-void printVec4f(const Vec4f* v);
-void printMat4f(const Mat4f* m);
+// Printen
+void printVec4f(Vec4f v);
+void printVec3f(Vec3f v);
+void printMat4f(Mat4f m);
 
 #endif
