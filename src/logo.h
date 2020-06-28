@@ -6,14 +6,13 @@
 #include <GL/glew.h>
 #include <stdlib.h>
 
-
 static float ROOD[] = {1, 0, 0, 1};
 static float BLAUW[] = {0, 0, 1, 1};
 static float WIT[] = {1, 1, 1, 1};
 
+static Verver* logo_verver;
 static Vorm* rood_driehoek;
 static Vorm* blauw_driehoek;
-static Verver* logo_verver;
 
 void maakLogo(/*unsigned int grootte*/) {
 	logo_verver = maakVerver("./shaders/normaal.vert", "./shaders/normaal.frag");
@@ -47,4 +46,10 @@ void tekenLogo() {
 	tekenVorm(rood_driehoek);
 	tekenVorm(blauw_driehoek);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	// Reset.
+}
+
+void verwijderLogo() {
+	verwijderVerver(logo_verver);
+	verwijderVorm(rood_driehoek);
+	verwijderVorm(blauw_driehoek);
 }

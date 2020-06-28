@@ -29,6 +29,6 @@ void vormVoegInhoudToe(Vorm* vorm, const float inhoud[], size_t inhoudsgrootte, 
 
 void tekenVorm(const Vorm* vorm);
 
-void verwijderVoorwerp(Vorm* vorm);
+void verwijderVorm(Vorm* vorm);
 
 #endif

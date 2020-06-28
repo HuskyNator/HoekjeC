@@ -10,19 +10,29 @@
 #define VOORVLAK 0.1
 #define ACHTERVLAK 50.0
 #define ZICHTHOEK 100.0
+#define LOOPSNELHEID 1.2 // m/s
 
-Mat4f TIJDELIJK;
+Mat4f zichtMatrix;
+booleaan zichtMatrixBijgewerkt;
 
-Mat4f projectieZichtMatrix;
-booleaan projectieZichtMatrixBijgewerkt;
-int schermbreedte;
-int schermhoogte;
-float voorvlak;
-float achtervlak;
-float zichthoek;
+extern int schermbreedte;
+extern int schermhoogte;
+extern float voorvlak;
+extern float achtervlak;
+extern float zichthoek;
+extern float loopsnelheid;
 
-void werkZichtMatrixBij();
+extern double plekx;
+extern double pleky;
+extern double plekz;
+extern int loopx;
+extern int loopz;
+
+void loop();
+void werkPlekMatrixBij();
+void werkDraaiMatrixBij();
 void werkProjectieMatrixBij();
+void werkZichtMatrixBij();
 
 /**
  * @brief  Leest bestand naar string.

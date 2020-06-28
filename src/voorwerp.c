@@ -26,7 +26,7 @@ static void werkVoorwerpMatrixBij(Voorwerp* voorwerp) {
 }
 
 static void werkTekenMatrixBij(Voorwerp* voorwerp) {
-	voorwerp->tekenMatrix = Mat4fMat4f(projectieZichtMatrix, voorwerp->voorwerpMatrix);
+	voorwerp->tekenMatrix = Mat4fMat4f(zichtMatrix, voorwerp->voorwerpMatrix);
 }
 
 Voorwerp* maakVoorwerp(Vorm* vorm, Vec3f plaats, Vec3f grootte, Vec3f draai) {
@@ -42,10 +42,9 @@ Voorwerp* maakVoorwerp(Vorm* vorm, Vec3f plaats, Vec3f grootte, Vec3f draai) {
 
 void tekenVoorwerp(Voorwerp* voorwerp, const Verver* verver) {
 	gebruikVerver(verver);
-	if (projectieZichtMatrixBijgewerkt) {
+	if (zichtMatrixBijgewerkt) {
 		werkTekenMatrixBij(voorwerp);
 	}
 	zetVerverMat4f(verver, "teken_matrix", &voorwerp->tekenMatrix);
-	TIJDELIJK = voorwerp->tekenMatrix;
 	tekenVorm(voorwerp->vorm);
 }

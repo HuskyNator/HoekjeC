@@ -45,22 +45,22 @@ Mat4f kantelMat4f(Mat4f m) {
 Vec4f Vec4ff(Vec4f v, float f) { return (Vec4f){v.x * f, v.y * f, v.z * f, v.w * f}; }
 Vec3f Vec3ff(Vec3f v, float f) { return (Vec3f){v.x * f, v.y * f, v.z * f}; }
 Mat4f Mat4fMat4f(Mat4f L, Mat4f R) {
-	return (Mat4f){{{L.k1.x * R.k1.x + L.k2.x * R.k1.y + L.k3.x * R.k1.z + L.k4.x * R.k1.w},
-					{L.k1.y * R.k1.x + L.k2.y * R.k1.y + L.k3.y * R.k1.z + L.k4.y * R.k1.w},
-					{L.k1.z * R.k1.x + L.k2.z * R.k1.y + L.k3.z * R.k1.z + L.k4.z * R.k1.w},
-					{L.k1.w * R.k1.x + L.k2.w * R.k1.y + L.k3.w * R.k1.z + L.k4.w * R.k1.w}},
-				   {{L.k1.x * R.k2.x + L.k2.x * R.k2.y + L.k3.x * R.k2.z + L.k4.x * R.k2.w},
-					{L.k1.y * R.k2.x + L.k2.y * R.k2.y + L.k3.y * R.k2.z + L.k4.y * R.k2.w},
-					{L.k1.z * R.k2.x + L.k2.z * R.k2.y + L.k3.z * R.k2.z + L.k4.z * R.k2.w},
-					{L.k1.w * R.k2.x + L.k2.w * R.k2.y + L.k3.w * R.k2.z + L.k4.w * R.k2.w}},
-				   {{L.k1.x * R.k3.x + L.k2.x * R.k3.y + L.k3.x * R.k3.z + L.k4.x * R.k3.w},
-					{L.k1.y * R.k3.x + L.k2.y * R.k3.y + L.k3.y * R.k3.z + L.k4.y * R.k3.w},
-					{L.k1.z * R.k3.x + L.k2.z * R.k3.y + L.k3.z * R.k3.z + L.k4.z * R.k3.w},
-					{L.k1.w * R.k3.x + L.k2.w * R.k3.y + L.k3.w * R.k3.z + L.k4.w * R.k3.w}},
-				   {{L.k1.x * R.k4.x + L.k2.x * R.k4.y + L.k3.x * R.k4.z + L.k4.x * R.k4.w},
-					{L.k1.y * R.k4.x + L.k2.y * R.k4.y + L.k3.y * R.k4.z + L.k4.y * R.k4.w},
-					{L.k1.z * R.k4.x + L.k2.z * R.k4.y + L.k3.z * R.k4.z + L.k4.z * R.k4.w},
-					{L.k1.w * R.k4.x + L.k2.w * R.k4.y + L.k3.w * R.k4.z + L.k4.w * R.k4.w}}};
+	return (Mat4f){{L.k1.x * R.k1.x + L.k2.x * R.k1.y + L.k3.x * R.k1.z + L.k4.x * R.k1.w,
+					L.k1.y * R.k1.x + L.k2.y * R.k1.y + L.k3.y * R.k1.z + L.k4.y * R.k1.w,
+					L.k1.z * R.k1.x + L.k2.z * R.k1.y + L.k3.z * R.k1.z + L.k4.z * R.k1.w,
+					L.k1.w * R.k1.x + L.k2.w * R.k1.y + L.k3.w * R.k1.z + L.k4.w * R.k1.w},
+				   {L.k1.x * R.k2.x + L.k2.x * R.k2.y + L.k3.x * R.k2.z + L.k4.x * R.k2.w,
+					L.k1.y * R.k2.x + L.k2.y * R.k2.y + L.k3.y * R.k2.z + L.k4.y * R.k2.w,
+					L.k1.z * R.k2.x + L.k2.z * R.k2.y + L.k3.z * R.k2.z + L.k4.z * R.k2.w,
+					L.k1.w * R.k2.x + L.k2.w * R.k2.y + L.k3.w * R.k2.z + L.k4.w * R.k2.w},
+				   {L.k1.x * R.k3.x + L.k2.x * R.k3.y + L.k3.x * R.k3.z + L.k4.x * R.k3.w,
+					L.k1.y * R.k3.x + L.k2.y * R.k3.y + L.k3.y * R.k3.z + L.k4.y * R.k3.w,
+					L.k1.z * R.k3.x + L.k2.z * R.k3.y + L.k3.z * R.k3.z + L.k4.z * R.k3.w,
+					L.k1.w * R.k3.x + L.k2.w * R.k3.y + L.k3.w * R.k3.z + L.k4.w * R.k3.w},
+				   {L.k1.x * R.k4.x + L.k2.x * R.k4.y + L.k3.x * R.k4.z + L.k4.x * R.k4.w,
+					L.k1.y * R.k4.x + L.k2.y * R.k4.y + L.k3.y * R.k4.z + L.k4.y * R.k4.w,
+					L.k1.z * R.k4.x + L.k2.z * R.k4.y + L.k3.z * R.k4.z + L.k4.z * R.k4.w,
+					L.k1.w * R.k4.x + L.k2.w * R.k4.y + L.k3.w * R.k4.z + L.k4.w * R.k4.w}};
 }
 
 Vec4f Mat4fVec4f(Mat4f L, Vec4f R) {

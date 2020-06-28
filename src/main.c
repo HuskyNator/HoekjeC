@@ -5,8 +5,10 @@
 #include "verver.h"
 #include "voorwerp.h"
 
+#define _USE_MATH_DEFINES
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,20 +19,31 @@ int schermhoogte = SCHERM_HOOGTE;
 float voorvlak = VOORVLAK;
 float achtervlak = ACHTERVLAK;
 float zichthoek = ZICHTHOEK;
+float loopsnelheid = LOOPSNELHEID;
 
-static double plekx = SCHERM_BREEDTE / 2;
-static double pleky = SCHERM_HOOGTE / 2;
+double plekx = 0;
+double pleky = 0;
+double plekz = 0;
+int loopx = 0;
+int loopz = 0;
+
+static double muisplekx;
+static double muispleky;
 static float draaix = 0;
 static float draaiy = 0;
+static Vec3f xRichting;
+static Vec3f zRichting;
+
 static Mat4f projectieMatrix;
-static Mat4f zichtMatrix;
+static Mat4f draaiMatrix;
+static Mat4f plekMatrix;
 
 void muisplek_terugroep(GLFWwindow* scherm, double x, double y) {
-	draaiy += plekx - x;
-	draaix += pleky - y;
-	plekx = x;
-	pleky = y;
-	werkZichtMatrixBij();
+	draaiy += x - muisplekx;
+	draaix += y - muispleky;
+	muisplekx = x;
+	muispleky = y;
+	werkDraaiMatrixBij();
 }
 
 static void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte) {
@@ -43,8 +56,39 @@ static void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte)
 static void toets_terugroep(GLFWwindow* scherm, int toets, int scancode, int handeling, int toevoeging) {
 	if (handeling == GLFW_PRESS) {
 		switch (toets) {
+			case GLFW_KEY_W:
+				loopz += 1;
+				break;
+			case GLFW_KEY_S:
+				loopz -= 1;
+				break;
+			case GLFW_KEY_A:
+				loopx -= 1;
+				break;
+			case GLFW_KEY_D:
+				loopx += 1;
+				break;
 			case GLFW_KEY_ESCAPE:
 				glfwSetWindowShouldClose(scherm, GLFW_TRUE);
+				break;
+			case GLFW_KEY_GRAVE_ACCENT:
+				ShowWindow(GetConsoleWindow(), SW_SHOW);
+				break;
+		}
+	} else if (handeling == GLFW_RELEASE) {
+		switch (toets) {
+			case GLFW_KEY_W:
+				loopz -= 1;
+				break;
+			case GLFW_KEY_S:
+				loopz += 1;
+				break;
+			case GLFW_KEY_A:
+				loopx += 1;
+				break;
+			case GLFW_KEY_D:
+				loopx -= 1;
+				break;
 		}
 	}
 }
@@ -59,8 +103,8 @@ static void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned i
 int main() {
 	puts("Hellow");
 
-	// Sleep(1000);
-	// ShowWindow(GetConsoleWindow(), SW_HIDE);
+	HWND achtergrondScherm = GetConsoleWindow();
+	ShowWindow(achtergrondScherm, SW_HIDE);
 
 	//      GLFW
 
@@ -110,8 +154,9 @@ int main() {
 	// Daadwerkelijk.
 
 	werkProjectieMatrixBij();
-	werkZichtMatrixBij();
-	glfwGetCursorPos(scherm, &plekx, &pleky);
+	werkDraaiMatrixBij();
+	werkPlekMatrixBij();
+	glfwGetCursorPos(scherm, &muisplekx, &muispleky);
 
 	Verver* verver = maakVerver("shaders/voorwerp.vert", "shaders/normaal.frag");
 	gebruikVerver(verver);
@@ -135,42 +180,70 @@ int main() {
 	Voorwerp* vloerVoorwerp = maakVoorwerp(vloerVorm, vloerPlaats, vloerGrootte, vloerDraai);
 	Vec4f vloerKleur = {0, 0, 1, 1};
 
-	// glClearColor(0.15, 0.15, 0.15, 1);
-	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// maakLogo();
-	// tekenLogo();
-	// glfwSwapBuffers(scherm);
-	// Sleep(2000);
+	glClearColor(0.15, 0.15, 0.15, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	maakLogo();
+	tekenLogo();
+	glfwSwapBuffers(scherm);
+	verwijderLogo();
+	Sleep(2000);
 
+	gebruikVerver(verver);
 	while (!glfwWindowShouldClose(scherm)) {
 		glClearColor(0.15, 0.15, 0.15, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		loop();
 
 		zetVerverFloat4v(verver, "voorwerp_kleur", (float*)&voorwerpKleur);
 		tekenVoorwerp(voorwerpA, verver);
 		zetVerverFloat4v(verver, "voorwerp_kleur", (float*)&vloerKleur);
 		tekenVoorwerp(vloerVoorwerp, verver);
 
-		projectieZichtMatrixBijgewerkt = onwaar;
+		zichtMatrixBijgewerkt = onwaar;
 		glfwSwapBuffers(scherm);
 		glfwPollEvents();
 	}
 
-	// glDeleteProgram(shader_programma);
-	// glfwDestroyWindow(scherm);
+	verwijderVorm(vorm);
+	verwijderVorm(vloerVorm);
+	verwijderVerver(verver);
+
+	glfwDestroyWindow(scherm);
 	glfwTerminate();
 }
 
-void werkZichtMatrixBij() {
-	zichtMatrix = Mat4fMat4f(draaiMatrixx(draaix * 0.01), draaiMatrixy(draaiy * 0.01));
-	projectieZichtMatrix = Mat4fMat4f(projectieMatrix, zichtMatrix);
-	projectieZichtMatrixBijgewerkt = waar;
+void loop() {
+	if (loopx != 0 || loopz != 0) {
+		werkPlekMatrixBij();
+	}
 }
 
-void werkProjectieMatrixBij() {
+void werkPlekMatrixBij() {
+	plekx += loopx * xRichting.x * loopsnelheid + loopz * zRichting.x * loopsnelheid;
+	plekz += loopx * xRichting.z * loopsnelheid + loopz * zRichting.z * loopsnelheid;
+	plekMatrix = verplaatsMatrix(-plekx, -pleky, -plekz);
+	werkZichtMatrixBij();
+}
+
+void werkDraaiMatrixBij() {
+	Mat4f draaixMatrix = draaiMatrixx(-draaix * 0.01);
+	Mat4f draaiyMatrix = draaiMatrixy(-draaiy * 0.01);
+	draaiMatrix = Mat4fMat4f(draaixMatrix, draaiyMatrix);
+	werkZichtMatrixBij();
+	Mat4f richtingMatrix = draaiMatrixy(draaiy * 0.01);
+	xRichting = Vec4n3f(Mat4fVec4f(richtingMatrix, (Vec4f){1, 0, 0, 1}), waar);
+	zRichting = Vec4n3f(Mat4fVec4f(richtingMatrix, (Vec4f){0, 0, 1, 1}), waar);
+}
+
+void werkProjectieMatrixBij() {	 // Gebeurt niet vaak.
 	projectieMatrix = perspectiefMatrix(voorvlak, achtervlak, zichthoek, (double)schermhoogte / (double)schermbreedte);
-	projectieZichtMatrix = Mat4fMat4f(projectieMatrix, zichtMatrix);
-	projectieZichtMatrixBijgewerkt = waar;
+	werkZichtMatrixBij();
+}
+
+void werkZichtMatrixBij() {
+	zichtMatrix = Mat4fMat4f(projectieMatrix, Mat4fMat4f(draaiMatrix, plekMatrix));
+	zichtMatrixBijgewerkt = waar;
 }
 
 void lees_bestand(const char* bestand_naam, char* bestand_string, size_t bestand_grootte) {

@@ -37,20 +37,20 @@ Vorm* maakVorm(const float hoeken[], size_t hoekengrootte, const unsigned int ho
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
-	Vorm* voorwerp = malloc(sizeof(voorwerp));
-	voorwerp->VAO = VAO;
-	voorwerp->grootte = grootte;
-	return voorwerp;
+	Vorm* vorm = malloc(sizeof(vorm));
+	vorm->VAO = VAO;
+	vorm->grootte = grootte;
+	return vorm;
 }
 
-void vormVoegInhoudToe(Vorm* voorwerp, const float inhoud[], size_t inhoudsgrootte, unsigned int onderdeelgrootte,
+void vormVoegInhoudToe(Vorm* vorm, const float inhoud[], size_t inhoudsgrootte, unsigned int onderdeelgrootte,
 					   unsigned int standplaats) {
 	unsigned int VBO;
 	glCreateBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, inhoudsgrootte, inhoud, GL_STATIC_DRAW);
 
-	glBindVertexArray(voorwerp->VAO);
+	glBindVertexArray(vorm->VAO);
 	glVertexAttribPointer(standplaats, onderdeelgrootte, GL_FLOAT, GL_FALSE, onderdeelgrootte * sizeof(float),
 						  (void*)0);
 	glEnableVertexAttribArray(standplaats);
@@ -64,7 +64,7 @@ void tekenVorm(const Vorm* vorm) {
 	glDrawElements(GL_TRIANGLES, vorm->grootte, GL_UNSIGNED_INT, 0);
 }
 
-void verwijderVoorwerp(Vorm* voorwerp) {
-	glDeleteVertexArrays(1, &voorwerp->VAO);
-	free(voorwerp);
+void verwijderVorm(Vorm* vorm) {
+	glDeleteVertexArrays(1, &vorm->VAO);
+	free(vorm);
 }
