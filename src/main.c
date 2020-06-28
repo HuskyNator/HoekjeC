@@ -20,12 +20,14 @@ float voorvlak = VOORVLAK;
 float achtervlak = ACHTERVLAK;
 float zichthoek = ZICHTHOEK;
 float loopsnelheid = LOOPSNELHEID;
+float rensnelheid = RENSNELHEID;
 
 double plekx = 0;
 double pleky = 0;
 double plekz = 0;
 int loopx = 0;
 int loopz = 0;
+booleaan rent = onwaar;
 
 static double muisplekx;
 static double muispleky;
@@ -37,6 +39,10 @@ static Vec3f zRichting;
 static Mat4f projectieMatrix;
 static Mat4f draaiMatrix;
 static Mat4f plekMatrix;
+
+// Lus tijd in seconden:
+static double vorigeTijd;
+static double tijdsverschil;
 
 void muisplek_terugroep(GLFWwindow* scherm, double x, double y) {
 	draaiy += x - muisplekx;
@@ -68,6 +74,9 @@ static void toets_terugroep(GLFWwindow* scherm, int toets, int scancode, int han
 			case GLFW_KEY_D:
 				loopx += 1;
 				break;
+			case GLFW_KEY_LEFT_SHIFT:
+				rent = waar;
+				break;
 			case GLFW_KEY_ESCAPE:
 				glfwSetWindowShouldClose(scherm, GLFW_TRUE);
 				break;
@@ -88,6 +97,9 @@ static void toets_terugroep(GLFWwindow* scherm, int toets, int scancode, int han
 				break;
 			case GLFW_KEY_D:
 				loopx -= 1;
+				break;
+			case GLFW_KEY_LEFT_SHIFT:
+				rent = onwaar;
 				break;
 		}
 	}
@@ -157,11 +169,12 @@ int main() {
 	werkDraaiMatrixBij();
 	werkPlekMatrixBij();
 	glfwGetCursorPos(scherm, &muisplekx, &muispleky);
+	vorigeTijd = glfwGetTime();
 
 	Verver* verver = maakVerver("shaders/voorwerp.vert", "shaders/normaal.frag");
 	gebruikVerver(verver);
 
-	Vec3f hoeken[] = {{-1, -1, 2}, {1, -1, 2}, {0, 0, 2}};
+	Vec3f hoeken[] = {{-1, -1.6, 2}, {1, -1.6, 2}, {0, 0, 2}};
 	Vec3ui hoektallen[] = {{0, 1, 2}};
 	Vorm* vorm = maakVorm((float*)&hoeken, sizeof(hoeken), (unsigned int*)&hoektallen, sizeof(hoektallen));
 	Vec3f plaats = {0, 0, 0.1};
@@ -170,7 +183,7 @@ int main() {
 	Voorwerp* voorwerpA = maakVoorwerp(vorm, plaats, grootte, draai);
 	Vec4f voorwerpKleur = {0.1, 0.8, 0, 1};
 
-	Vec3f vloerHoeken[] = {{-5, -1, -5}, {0, -1, 5}, {5, -1, -5}};
+	Vec3f vloerHoeken[] = {{-5, -1.6, -5}, {0, -1.6, 5}, {5, -1.6, -5}};
 	Vec3ui vloerHoektallen[] = {{0, 1, 2}};
 	Vorm* vloerVorm =
 		maakVorm((float*)&vloerHoeken, sizeof(vloerHoeken), (unsigned int*)&vloerHoektallen, sizeof(vloerHoektallen));
@@ -200,6 +213,10 @@ int main() {
 		zetVerverFloat4v(verver, "voorwerp_kleur", (float*)&vloerKleur);
 		tekenVoorwerp(vloerVoorwerp, verver);
 
+		double nieuweTijd = glfwGetTime();
+		tijdsverschil = nieuweTijd - vorigeTijd;
+		vorigeTijd = nieuweTijd;
+
 		zichtMatrixBijgewerkt = onwaar;
 		glfwSwapBuffers(scherm);
 		glfwPollEvents();
@@ -220,8 +237,8 @@ void loop() {
 }
 
 void werkPlekMatrixBij() {
-	plekx += loopx * xRichting.x * loopsnelheid + loopz * zRichting.x * loopsnelheid;
-	plekz += loopx * xRichting.z * loopsnelheid + loopz * zRichting.z * loopsnelheid;
+	plekx += (loopx * xRichting.x + loopz * zRichting.x) * (rent?rensnelheid:loopsnelheid) * tijdsverschil;
+	plekz += (loopx * xRichting.z + loopz * zRichting.z) * (rent?rensnelheid:loopsnelheid) * tijdsverschil;
 	plekMatrix = verplaatsMatrix(-plekx, -pleky, -plekz);
 	werkZichtMatrixBij();
 }
