@@ -36,13 +36,4 @@ void werkDraaiMatrixBij();
 void werkProjectieMatrixBij();
 void werkZichtMatrixBij();
 
-/**
- * @brief  Leest bestand naar string.
- * @param  *bestand_naam: de naam van het bestand.
- * @param  *bestand_string: de buffer waar naar geschreven moet wordt.
- * @param  bestand_grootte: grootte van de buffer.
- * @retval None
- */
-void lees_bestand(const char* bestand_naam, char* bestand_string, size_t bestand_grootte);
-
 #endif

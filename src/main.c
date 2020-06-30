@@ -263,17 +263,3 @@ void werkZichtMatrixBij() {
 	zichtMatrixBijgewerkt = waar;
 }
 
-void lees_bestand(const char* bestand_naam, char* bestand_string, size_t bestand_grootte) {
-	FILE* bestand = fopen(bestand_naam, "r");
-	if (bestand == NULL) {
-		fprintf(stderr, "Bestand '%s' bestaat niet.", bestand_naam);
-		return;
-	}
-
-	long gelezen = fread(bestand_string, sizeof(char), bestand_grootte, bestand);
-	if (gelezen == bestand_grootte) *(bestand_string + bestand_grootte - 1) = '\0';
-	else
-		*(bestand_string + gelezen) = '\0';
-
-	fclose(bestand);
-}

@@ -3,8 +3,6 @@
 
 #include "lineair.h"
 
-#define VERVER_GROOTTE 1024
-
 typedef struct Verver Verver;
 
 struct Verver {

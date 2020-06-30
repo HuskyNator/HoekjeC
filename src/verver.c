@@ -1,44 +1,47 @@
 
 #include "verver.h"
 
+#include "bestandslezer.h"
 #include "lineair.h"
-#include "main.h"
 
 #include <GL/glew.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#define FOUTMELDING_GROOTTE 512
+
 Verver* maakVerver(const char* hoekVerfLocatie, const char* fragmentVerfLocatie) {
 	Verver* verver = malloc(sizeof(Verver));
-	char verfString[VERVER_GROOTTE];
-	const GLchar* verfStringVerwijzing = verfString;
+	char foutmelding[FOUTMELDING_GROOTTE];
 	int makenGelukt;
 
 	unsigned int hoekVerf = glCreateShader(GL_VERTEX_SHADER);
 
-	lees_bestand(hoekVerfLocatie, verfString, VERVER_GROOTTE);
-	glShaderSource(hoekVerf, 1, &verfStringVerwijzing, NULL);
+	char* hoekVerfString = leesBestand(hoekVerfLocatie);
+	glShaderSource(hoekVerf, 1, (const char**)&hoekVerfString, NULL);
 	glCompileShader(hoekVerf);
+	free(hoekVerfString);
 
 	glGetShaderiv(hoekVerf, GL_COMPILE_STATUS, &makenGelukt);
 	if (!makenGelukt) {
-		glGetShaderInfoLog(hoekVerf, VERVER_GROOTTE, NULL, verfString);
-		fputs(verfString, stderr);
+		glGetShaderInfoLog(hoekVerf, FOUTMELDING_GROOTTE, NULL, foutmelding);
+		fputs(foutmelding, stderr);
 		puts("Hoekverf kon niet gemaakt worden.");
-		exit(-4);  // TODO schoonmaken?
+		exit(-1);
 	}
 
 	unsigned int fragmentVerf = glCreateShader(GL_FRAGMENT_SHADER);
-	lees_bestand(fragmentVerfLocatie, verfString, VERVER_GROOTTE);
-	glShaderSource(fragmentVerf, 1, &verfStringVerwijzing, NULL);
+	char* fragmentVerfString = leesBestand(fragmentVerfLocatie);
+	glShaderSource(fragmentVerf, 1, (const char**)&fragmentVerfString, NULL);
 	glCompileShader(fragmentVerf);
+	free(fragmentVerfString);
 
 	glGetShaderiv(fragmentVerf, GL_COMPILE_STATUS, &makenGelukt);
 	if (!makenGelukt) {
-		glGetShaderInfoLog(fragmentVerf, VERVER_GROOTTE, NULL, verfString);
-		fputs(verfString, stderr);
+		glGetShaderInfoLog(hoekVerf, FOUTMELDING_GROOTTE, NULL, foutmelding);
+		fputs(foutmelding, stderr);
 		puts("Fragmentverf kon niet gemaakt worden.");
-		exit(-4);  // TODO schoonmaken?
+		exit(-1);
 	}
 
 	unsigned int verfProgramma = glCreateProgram();
@@ -48,10 +51,10 @@ Verver* maakVerver(const char* hoekVerfLocatie, const char* fragmentVerfLocatie)
 
 	glGetProgramiv(verfProgramma, GL_LINK_STATUS, &makenGelukt);
 	if (!makenGelukt) {
-		glGetProgramInfoLog(verfProgramma, VERVER_GROOTTE, NULL, verfString);
-		fputs(verfString, stderr);
+		glGetProgramInfoLog(verfProgramma, FOUTMELDING_GROOTTE, NULL, foutmelding);
+		fputs(foutmelding, stderr);
 		puts("Verver kon niet gemaakt worden.");
-		exit(-5);  // TODO schoonmaken?
+		exit(-1);
 	}
 
 	glDeleteShader(hoekVerf);
