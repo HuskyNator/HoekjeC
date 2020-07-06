@@ -45,7 +45,7 @@ static char* leesWoord() {
 		}
 		if (woordTel == woordGrootte) {
 			woordGrootte += 5;
-			realloc(woord, woordGrootte + 1);
+			woord = realloc(woord, woordGrootte + 1);
 		}
 		woord[woordTel] = teken;
 		woordTel++;
@@ -66,7 +66,7 @@ static void leesRegel() {
 	while (woord != NULL) {
 		if (regelTel == regelGrootte) {
 			regelGrootte += 5;
-			realloc(regel, regelGrootte * sizeof(char*));
+			regel = realloc(regel, regelGrootte * sizeof(char*));
 			memset(regel + regelTel, 0, (regelGrootte - regelTel) * sizeof(char*));
 		}
 		free(regel[regelTel]);
@@ -128,47 +128,28 @@ static Vec3ui leesHoektal(char* hoektal) {
 	return h;
 }
 
-static void verdriehoek() {
-	Vec3ui oorsprong = leesHoektal(regel[0]);
-	Vec3ui tweede = leesHoektal(regel[1]);
-	for (int i = 2; i < regelTel; i++) {
-		Vec3ui derde = leesHoektal(regel[i]);
-		if (hoektallenTel == hoektallenGrootte) {
-			hoektallenGrootte *= 2;
-			realloc(hoektallen, hoektallenGrootte * sizeof(Vec3ui));
-			realloc(hoekVerfTallen, hoektallenGrootte * sizeof(Vec3ui));
-			realloc(hoekNormaalTallen, hoektallenGrootte * sizeof(Vec3ui));
-		}
-		hoektallen[hoektallenTel] = (Vec3ui){oorsprong.x, tweede.x, derde.x};
-		hoekVerfTallen[hoektallenTel] = (Vec3ui){oorsprong.y, tweede.y, derde.y};
-		hoekNormaalTallen[hoektallenTel] = (Vec3ui){oorsprong.z, tweede.z, derde.z};
-		hoektallenTel++;
-		tweede = derde;
-	}
-}
-
 // TODO meer dan 3 hoeken
 static void leesVlak() {
 	leesRegel();
 	if (regelTel < 3) {
 		fprintf(stderr, "Fout aantal hoeken in vlak: %d", regelTel);
 		exit(-1);
-	} else if (regelTel > 3) {
-		verdriehoek();
-	} else {
-		Vec3ui hoektal1 = leesHoektal(regel[0]);
-		Vec3ui hoektal2 = leesHoektal(regel[1]);
-		Vec3ui hoektal3 = leesHoektal(regel[2]);
+	}
+	Vec3ui oorsprong = leesHoektal(regel[0]);
+	Vec3ui tweede = leesHoektal(regel[1]);
+	for (int i = 2; i < regelTel; i++) {
+		Vec3ui derde = leesHoektal(regel[i]);
 		if (hoektallenTel == hoektallenGrootte) {
 			hoektallenGrootte *= 2;
-			realloc(hoektallen, hoektallenGrootte * sizeof(Vec3ui));
-			realloc(hoekVerfTallen, hoektallenGrootte * sizeof(Vec3ui));
-			realloc(hoekNormaalTallen, hoektallenGrootte * sizeof(Vec3ui));
+			hoektallen = realloc(hoektallen, hoektallenGrootte * sizeof(Vec3ui));
+			hoekVerfTallen = realloc(hoekVerfTallen, hoektallenGrootte * sizeof(Vec3ui));
+			hoekNormaalTallen = realloc(hoekNormaalTallen, hoektallenGrootte * sizeof(Vec3ui));
 		}
-		hoektallen[hoektallenTel] = (Vec3ui){hoektal1.x, hoektal2.x, hoektal3.x};
-		hoekVerfTallen[hoektallenTel] = (Vec3ui){hoektal1.y, hoektal2.y, hoektal3.y};
-		hoekNormaalTallen[hoektallenTel] = (Vec3ui){hoektal1.z, hoektal2.z, hoektal3.z};
+		hoektallen[hoektallenTel] = (Vec3ui){oorsprong.x, tweede.x, derde.x};
+		hoekVerfTallen[hoektallenTel] = (Vec3ui){oorsprong.y, tweede.y, derde.y};
+		hoekNormaalTallen[hoektallenTel] = (Vec3ui){oorsprong.z, tweede.z, derde.z};
 		hoektallenTel++;
+		tweede = derde;
 	}
 }
 
