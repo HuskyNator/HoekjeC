@@ -2,6 +2,7 @@
 #define VORM_H
 
 #include <stddef.h>
+#include "lineair.h"
 
 typedef struct vorm Vorm;
 
@@ -12,7 +13,7 @@ typedef struct vorm Vorm;
  * @param  hoektallen[]: Hoektal volgorde van de vorm.
  * @param  hoektallengrootte: Grootte van hoektallen in bytes.
  */
-Vorm* maakVorm(const float hoeken[], const size_t hoekengrootte, const unsigned int hoektallen[],
+Vorm* maakVorm(const Vec3f* hoeken, const size_t hoekengrootte, const Vec3ui* hoektallen,
 			   const size_t hoektallengrootte);
 
 /**

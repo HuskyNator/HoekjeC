@@ -16,16 +16,16 @@ static Vorm* blauw_driehoek;
 
 void maakLogo(/*unsigned int grootte*/) {
 	logo_verver = maakVerver("./shaders/normaal.vert", "./shaders/normaal.frag");
-	const float rode_hoeken[] = {-0.9 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, 1 * 0.015 * 2,	 -0.1,
-								 -0.7 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, -2.5 * 0.015 * 2, -0.1,
-								 1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2,  1 * 0.015 * 2,	 -0.1};
+	const Vec3f rode_hoeken[] = {{-0.9 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, 1 * 0.015 * 2, -0.1},
+								 {-0.7 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, -2.5 * 0.015 * 2, -0.1},
+								 {1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, 1 * 0.015 * 2, -0.1}};
 
-	const float blauwe_hoeken[] = {
-		(-1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (1 + 0.05) * 0.15 * 2,   0,
-		(-0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (-1 + 0.05) * 0.15 * 2,  0,
-		(1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2,  (0.5 + 0.05) * 0.15 * 2, 0};
+	const Vec3f blauwe_hoeken[] = {
+		{(-1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (1 + 0.05) * 0.15 * 2, 0},
+		{(-0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (-1 + 0.05) * 0.15 * 2, 0},
+		{(1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (0.5 + 0.05) * 0.15 * 2, 0}};
 
-	const unsigned int hoektallen[] = {0, 1, 2};
+	const Vec3ui hoektallen[] = {{0, 1, 2}};
 
 	rood_driehoek = maakVorm(rode_hoeken, sizeof(rode_hoeken), hoektallen, sizeof(hoektallen));
 

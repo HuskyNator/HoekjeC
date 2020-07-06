@@ -5,109 +5,146 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 FILE* bestand;
-char teken;
-char* woord;
-unsigned char woordGrootte, woordTel;
-Vec3f* hoeken;
-unsigned int hoekenGrootte, hoekenTel;
-Vec3ui* hoektallen;
+booleaan EOF_gevonden;
+char** regel;
+unsigned char regelGrootte, regelTel;
+
+Vec3f *hoeken, *normalen;
+unsigned int hoekenGrootte, hoekenTel, normalenGrootte, normalenTel;
+
+Vec3ui *hoektallen, *hoekVerfTallen, *hoekNormaalTallen;
 unsigned int hoektallenGrootte, hoektallenTel;
 
-// Lees alle witruimte.
-static void leesWitRuimte() {
-	while (teken == ' ' || teken == '\t' || teken == '\r' || teken == '\n') {
+static char verwerpRuimte() {
+	char teken = getc(bestand);
+	while (teken == ' ' || teken == '\t' || teken == '\r' /*|| teken == '\n'*/) {
 		teken = getc(bestand);
 	}
+	return teken;
 }
 
-// Lees alle witruimte op \n na.
-static void leesWitRegel() {
-	while (teken == ' ' || teken == '\t') {
-		teken = getc(bestand);
-	}
-}
-
-static void leesRegel() {
+static void verwerpRegel() {
+	char teken;
 	while (teken != '\n' && teken != EOF) {
 		teken = getc(bestand);
 	}
 }
 
-// Leest een woord beginnend met het teken.
-// Woordtel is hierbij gelijk aan de uiteindelijke grootte.
-static void leesWoord() {
-	woordTel = 0;
-	while (teken != ' ' && teken != '\n' && teken != '\t' && teken != EOF) {
-		if (woordTel >= woordGrootte) {
-			woordGrootte += 10;
-			woord = realloc(woord, woordGrootte + 1);
+static char* leesWoord() {
+	unsigned char woordTel = 0;
+	unsigned char woordGrootte = 10;
+	char* woord = malloc(woordGrootte + 1);
+	char teken = verwerpRuimte();
+	while (teken != ' ' && teken != '\n' && teken != '\t' && teken != '\r' && teken != EOF) {
+		if (teken == '#') {
+			verwerpRegel();
+			break;
+		}
+		if (woordTel == woordGrootte) {
+			woordGrootte += 5;
+			realloc(woord, woordGrootte + 1);
 		}
 		woord[woordTel] = teken;
 		woordTel++;
 		teken = getc(bestand);
 	}
+	if (teken == EOF) EOF_gevonden = waar;
+	if (woordTel == 0) {
+		free(woord);
+		return NULL;
+	}
 	woord[woordTel] = '\0';
+	return woord;
+}
+
+static void leesRegel() {
+	regelTel = 0;
+	char* woord = leesWoord();
+	while (woord != NULL) {
+		if (regelTel == regelGrootte) {
+			regelGrootte += 5;
+			realloc(regel, regelGrootte * sizeof(char*));
+			memset(regel + regelTel, 0, (regelGrootte - regelTel) * sizeof(char*));
+		}
+		free(regel[regelTel]);
+		regel[regelTel] = woord;
+		regelTel++;
+		if (EOF_gevonden) break;
+		woord = leesWoord();
+	}
+}
+
+static unsigned int vervang(char* woord, char aanwezig, char vervanging) {
+	unsigned int tel;
+	char teken;
+	for (int i = 0; teken != '\0'; i++) {
+		teken = woord[i];
+		if (teken == aanwezig) {
+			woord[i] = vervanging;
+			tel++;
+		}
+	}
+	return tel;
 }
 
 static void leesHoek() {
-	teken = getc(bestand);
-	leesWitRegel();
-	leesWoord();
-	float getal1 = strtof(woord, NULL);
-	leesWitRegel();
-	leesWoord();
-	float getal2 = strtof(woord, NULL);
-	leesWitRegel();
-	leesWoord();
-	float getal3 = strtof(woord, NULL);
-	Vec3f v = (Vec3f){getal1, getal2, getal3};
-	if (hoekenTel >= hoekenGrootte) {
+	leesRegel();
+	if (regelTel < 3 || regelTel > 4) {
+		fprintf(stderr, "Fout aantal woorden in obj hoek: %d", regelTel);
+		exit(-1);
+	}
+	float x = strtof(regel[0], NULL);
+	float y = strtof(regel[1], NULL);
+	float z = strtof(regel[2], NULL);
+	float w = 1;
+	if (regelTel == 4) w = strtof(regel[3], NULL);
+	Vec4f v = (Vec4f){x, y, z, w};
+	Vec3f v2 = Vec4n3f(v, waar);
+	if (hoekenTel == hoekenGrootte) {
 		hoekenGrootte *= 2;
 		hoeken = realloc(hoeken, hoekenGrootte * sizeof(Vec3f));
 	}
-	hoeken[hoekenTel] = v;
+	hoeken[hoekenTel] = v2;
 	hoekenTel++;
 }
 
 // TODO meer dan 3 hoeken
 static void leesVlak() {
-	teken = getc(bestand);
-
-	unsigned char getaltel = 0;
-	unsigned char getallengrootte = 3;
-	unsigned int* getallen = malloc(getallengrootte * sizeof(unsigned int));
-	while (1) {
-		leesWitRegel();
-		if (teken == '\n' || teken == EOF) break;
-		if (getaltel >= getallengrootte) {
-			getallengrootte *= 2;
-			getallen = realloc(getallen, getallengrootte * sizeof(long));
+	leesRegel();
+	if (regelTel < 3) {
+		fprintf(stderr, "Fout aantal hoeken in vlak: %d", regelTel);
+		exit(-1);
+	} else if (regelTel > 3) {
+		// TODO verdriehoek
+		fputs("Niet driehoekige vlakken zijn nog niet ondersteund.", stderr);
+	}
+	// TODO verzeker regelTel%3=0
+	for (int h = 0; h < regelTel / 3; h++) {
+		Vec3ui vlakHoeken[3] = {};
+		for (int i = 0; i < 3; i++) {
+			char* getal_begin;
+			getal_begin = *(regel + 3 * h + i);
+			booleaan geenMiddelste = strstr(getal_begin, "\\\\") == NULL;
+			vervang(getal_begin, '\\', ' ');
+			// Lees alle aanwezige getallen. Indien ze ontbreken worden ze simpelweg nul.
+			((unsigned int*)&vlakHoeken[0])[i] = strtoul(getal_begin, &getal_begin, 10) - 1;
+			if (!geenMiddelste) ((unsigned int*)&vlakHoeken[1])[i] = strtoul(getal_begin, &getal_begin, 10) - 1;
+			((unsigned int*)&vlakHoeken[2])[i] = strtoul(getal_begin, NULL, 10) - 1;
 		}
-
-		leesWoord();
-		unsigned int getal = strtol(woord, NULL, 10);
-
-		if (getal < 0) {
-			getallen[getaltel] = hoekenTel + getal;
-		} else
-			getallen[getaltel] = getal - 1;
-		getaltel++;
+		if (hoektallenTel == hoektallenGrootte) {
+			hoektallenGrootte *= 2;
+			realloc(hoektallen, hoektallenGrootte * sizeof(Vec3ui));
+			realloc(hoekVerfTallen, hoektallenGrootte * sizeof(Vec3ui));
+			realloc(hoekNormaalTallen, hoektallenGrootte * sizeof(Vec3ui));
+		}
+		hoektallen[hoektallenTel] = vlakHoeken[0];
+		hoekVerfTallen[hoektallenTel] = vlakHoeken[1];
+		hoekNormaalTallen[hoektallenTel] = vlakHoeken[2];
+		hoektallenTel++;
 	}
-
-	if (getaltel != 3) {
-		// TODO
-		fprintf(stderr, "Vlak met meer of minder dan 3 hoeken: %d\n", getaltel);
-	}
-
-	Vec3ui v = (Vec3ui){getallen[0], getallen[1], getallen[2]};
-	if (hoektallenTel == hoektallenGrootte) {
-		hoektallenGrootte *= 2;
-		realloc(hoektallen, hoektallenGrootte);
-	}
-	hoektallen[hoektallenTel] = v;
-	hoektallenTel++;
 }
 
 char* leesBestand(const char* bestandsnaam) {
@@ -136,47 +173,47 @@ Vorm* leesObj(const char* bestandsnaam) {
 		return NULL;
 	}
 
-	woordGrootte = 50;
-	woord = malloc(woordGrootte + 1);
-
 	hoekenGrootte = 8;
-	hoeken = malloc(hoekenGrootte * sizeof(Vec3f));
 	hoekenTel = 0;
+	hoeken = malloc(hoekenGrootte * sizeof(Vec3f));
 
 	hoektallenGrootte = 8;
-	hoektallen = malloc(hoektallenGrootte * sizeof(Vec3ui));
 	hoektallenTel = 0;
+	hoektallen = malloc(hoektallenGrootte * sizeof(Vec3ui));
+	hoekVerfTallen = malloc(hoektallenGrootte * sizeof(Vec3ui));
+	hoekNormaalTallen = malloc(hoektallenGrootte * sizeof(Vec3ui));
 
-	while (1) {
+	regelGrootte = 5;
+	regelTel = 0;
+	regel = calloc(regelGrootte, sizeof(char*));
+
+	while (!EOF_gevonden) {
 		// Leidende Ruimte
-		teken = getc(bestand);
-		leesWitRuimte();
-		if (teken == EOF) break;
+		char* woord = leesWoord();
+		if (woord == NULL) continue;
 
 		// Aantekeningen
-		if (teken == '#') {
-			leesRegel();
-		} else if (teken == 'v') {
+		if (strcmp(woord, "#") == 0) {
+			verwerpRegel();
+		} else if (strcmp(woord, "v") == 0) {
 			leesHoek();
-		} else if (teken == 'f') {
+		} else if (strcmp(woord, "f") == 0) {
 			leesVlak();
 		}
 
 		else {
-			fputs("Onbekend begin van obj regel: ", stderr);
-			putc(teken, stderr);
-			puts("");
+			fprintf(stderr, "Onbekend begin van obj regel: %s", woord);
 			exit(-1);
 		}
-
-		if (teken == EOF) break;
-		// else '\n'
 	}
 
 	Vorm* vorm = maakVorm(hoeken, hoekenTel * sizeof(Vec3f), hoektallen, hoektallenTel * sizeof(Vec3ui));
 	fclose(bestand);
-	free(woord);
 	free(hoeken);
 	free(hoektallen);
+	free(hoekVerfTallen);
+	free(hoekNormaalTallen);
+	for (int i = 0; i < regelGrootte; i++) free(regel[i]);
+	free(regel);
 	return vorm;
 }

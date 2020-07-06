@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include "bestandslezer.h"
 #include "lineair.h"
 #include "logo.h"
 #include "verver.h"
@@ -176,7 +177,7 @@ int main() {
 
 	Vec3f hoeken[] = {{-1, -1.6, 2}, {1, -1.6, 2}, {0, 0, 2}};
 	Vec3ui hoektallen[] = {{0, 1, 2}};
-	Vorm* vorm = maakVorm((float*)&hoeken, sizeof(hoeken), (unsigned int*)&hoektallen, sizeof(hoektallen));
+	Vorm* vorm = maakVorm(hoeken, sizeof(hoeken), hoektallen, sizeof(hoektallen));
 	Vec3f plaats = {0, 0, 0.1};
 	Vec3f grootte = {1, 1, 1};
 	Vec3f draai = {0, 0, 0};
@@ -186,12 +187,18 @@ int main() {
 	Vec3f vloerHoeken[] = {{-5, -1.6, -5}, {0, -1.6, 5}, {5, -1.6, -5}};
 	Vec3ui vloerHoektallen[] = {{0, 1, 2}};
 	Vorm* vloerVorm =
-		maakVorm((float*)&vloerHoeken, sizeof(vloerHoeken), (unsigned int*)&vloerHoektallen, sizeof(vloerHoektallen));
+		maakVorm(vloerHoeken, sizeof(vloerHoeken), vloerHoektallen, sizeof(vloerHoektallen));
 	Vec3f vloerPlaats = {0, 0, 0};
 	Vec3f vloerGrootte = {1, 1, 1};
 	Vec3f vloerDraai = {0, 0, 0};
 	Voorwerp* vloerVoorwerp = maakVoorwerp(vloerVorm, vloerPlaats, vloerGrootte, vloerDraai);
 	Vec4f vloerKleur = {0, 0, 1, 1};
+
+	Vorm* blok = leesObj("vormen/driehoek.obj");
+	Vec3f blokPlaats = {0, 0, 0};
+	Vec3f blokGrootte = {1, 1, 1};
+	Vec3f blokDraai = {0, 0, 0};
+	Voorwerp* blokVoorwerp = maakVoorwerp(blok, blokPlaats, blokGrootte, blokDraai);
 
 	glClearColor(0.15, 0.15, 0.15, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -209,9 +216,10 @@ int main() {
 		loop();
 
 		zetVerverFloat4v(verver, "voorwerp_kleur", (float*)&voorwerpKleur);
-		tekenVoorwerp(voorwerpA, verver);
-		zetVerverFloat4v(verver, "voorwerp_kleur", (float*)&vloerKleur);
-		tekenVoorwerp(vloerVoorwerp, verver);
+		// tekenVoorwerp(voorwerpA, verver);
+		// zetVerverFloat4v(verver, "voorwerp_kleur", (float*)&vloerKleur);
+		// tekenVoorwerp(vloerVoorwerp, verver);
+		tekenVoorwerp(blokVoorwerp, verver);
 
 		double nieuweTijd = glfwGetTime();
 		tijdsverschil = nieuweTijd - vorigeTijd;
@@ -237,8 +245,8 @@ void loop() {
 }
 
 void werkPlekMatrixBij() {
-	plekx += (loopx * xRichting.x + loopz * zRichting.x) * (rent?rensnelheid:loopsnelheid) * tijdsverschil;
-	plekz += (loopx * xRichting.z + loopz * zRichting.z) * (rent?rensnelheid:loopsnelheid) * tijdsverschil;
+	plekx += (loopx * xRichting.x + loopz * zRichting.x) * (rent ? rensnelheid : loopsnelheid) * tijdsverschil;
+	plekz += (loopx * xRichting.z + loopz * zRichting.z) * (rent ? rensnelheid : loopsnelheid) * tijdsverschil;
 	plekMatrix = verplaatsMatrix(-plekx, -pleky, -plekz);
 	werkZichtMatrixBij();
 }
@@ -262,4 +270,3 @@ void werkZichtMatrixBij() {
 	zichtMatrix = Mat4fMat4f(projectieMatrix, Mat4fMat4f(draaiMatrix, plekMatrix));
 	zichtMatrixBijgewerkt = waar;
 }
-
