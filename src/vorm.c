@@ -11,9 +11,6 @@ struct vorm {
 
 Vorm* maakVorm(const Vec3f* hoeken, const size_t hoekengrootte, const Vec3ui* hoektallen,
 			   const size_t hoektallengrootte) {
-	if (hoektallengrootte % 3 != 0) {
-		fputs("Hoektalaantal niet een veelvoud van 3.", stderr);
-	}
 	unsigned int grootte = hoektallengrootte / sizeof(unsigned int);
 	unsigned int VAO;
 	unsigned int EBO;

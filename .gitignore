@@ -4,3 +4,6 @@
 
 # Geen workspace.
 *.code-workspace
+
+# Geen .gradle
+.gradle

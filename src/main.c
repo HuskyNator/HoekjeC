@@ -194,8 +194,8 @@ int main() {
 	Voorwerp* vloerVoorwerp = maakVoorwerp(vloerVorm, vloerPlaats, vloerGrootte, vloerDraai);
 	Vec4f vloerKleur = {0, 0, 1, 1};
 
-	Vorm* blok = leesObj("vormen/driehoek.obj");
-	Vec3f blokPlaats = {0, 0, 0};
+	Vorm* blok = leesObj("vormen/vierkant.obj");
+	Vec3f blokPlaats = {0, 0, 1};
 	Vec3f blokGrootte = {1, 1, 1};
 	Vec3f blokDraai = {0, 0, 0};
 	Voorwerp* blokVoorwerp = maakVoorwerp(blok, blokPlaats, blokGrootte, blokDraai);

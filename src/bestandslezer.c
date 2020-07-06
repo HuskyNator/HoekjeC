@@ -111,6 +111,42 @@ static void leesHoek() {
 	hoekenTel++;
 }
 
+static Vec3ui leesHoektal(char* hoektal) {
+	Vec3ui h = {};
+	char* getal_eind;
+	vervang(hoektal, '\\', ' ');
+	h.x = strtoul(hoektal, &getal_eind, 10);
+	if (h.x != 0) {
+		h.x -= 1;
+		h.y = strtoul(getal_eind, &getal_eind, 10);
+		if (h.y != 0) {
+			h.y -= 1;
+			h.z = strtoul(getal_eind, NULL, 10);
+			if (h.z != 0) h.z -= 1;
+		}
+	}
+	return h;
+}
+
+static void verdriehoek() {
+	Vec3ui oorsprong = leesHoektal(regel[0]);
+	Vec3ui tweede = leesHoektal(regel[1]);
+	for (int i = 2; i < regelTel; i++) {
+		Vec3ui derde = leesHoektal(regel[i]);
+		if (hoektallenTel == hoektallenGrootte) {
+			hoektallenGrootte *= 2;
+			realloc(hoektallen, hoektallenGrootte * sizeof(Vec3ui));
+			realloc(hoekVerfTallen, hoektallenGrootte * sizeof(Vec3ui));
+			realloc(hoekNormaalTallen, hoektallenGrootte * sizeof(Vec3ui));
+		}
+		hoektallen[hoektallenTel] = (Vec3ui){oorsprong.x, tweede.x, derde.x};
+		hoekVerfTallen[hoektallenTel] = (Vec3ui){oorsprong.y, tweede.y, derde.y};
+		hoekNormaalTallen[hoektallenTel] = (Vec3ui){oorsprong.z, tweede.z, derde.z};
+		hoektallenTel++;
+		tweede = derde;
+	}
+}
+
 // TODO meer dan 3 hoeken
 static void leesVlak() {
 	leesRegel();
@@ -118,31 +154,20 @@ static void leesVlak() {
 		fprintf(stderr, "Fout aantal hoeken in vlak: %d", regelTel);
 		exit(-1);
 	} else if (regelTel > 3) {
-		// TODO verdriehoek
-		fputs("Niet driehoekige vlakken zijn nog niet ondersteund.", stderr);
-	}
-	// TODO verzeker regelTel%3=0
-	for (int h = 0; h < regelTel / 3; h++) {
-		Vec3ui vlakHoeken[3] = {};
-		for (int i = 0; i < 3; i++) {
-			char* getal_begin;
-			getal_begin = *(regel + 3 * h + i);
-			booleaan geenMiddelste = strstr(getal_begin, "\\\\") == NULL;
-			vervang(getal_begin, '\\', ' ');
-			// Lees alle aanwezige getallen. Indien ze ontbreken worden ze simpelweg nul.
-			((unsigned int*)&vlakHoeken[0])[i] = strtoul(getal_begin, &getal_begin, 10) - 1;
-			if (!geenMiddelste) ((unsigned int*)&vlakHoeken[1])[i] = strtoul(getal_begin, &getal_begin, 10) - 1;
-			((unsigned int*)&vlakHoeken[2])[i] = strtoul(getal_begin, NULL, 10) - 1;
-		}
+		verdriehoek();
+	} else {
+		Vec3ui hoektal1 = leesHoektal(regel[0]);
+		Vec3ui hoektal2 = leesHoektal(regel[1]);
+		Vec3ui hoektal3 = leesHoektal(regel[2]);
 		if (hoektallenTel == hoektallenGrootte) {
 			hoektallenGrootte *= 2;
 			realloc(hoektallen, hoektallenGrootte * sizeof(Vec3ui));
 			realloc(hoekVerfTallen, hoektallenGrootte * sizeof(Vec3ui));
 			realloc(hoekNormaalTallen, hoektallenGrootte * sizeof(Vec3ui));
 		}
-		hoektallen[hoektallenTel] = vlakHoeken[0];
-		hoekVerfTallen[hoektallenTel] = vlakHoeken[1];
-		hoekNormaalTallen[hoektallenTel] = vlakHoeken[2];
+		hoektallen[hoektallenTel] = (Vec3ui){hoektal1.x, hoektal2.x, hoektal3.x};
+		hoekVerfTallen[hoektallenTel] = (Vec3ui){hoektal1.y, hoektal2.y, hoektal3.y};
+		hoekNormaalTallen[hoektallenTel] = (Vec3ui){hoektal1.z, hoektal2.z, hoektal3.z};
 		hoektallenTel++;
 	}
 }
