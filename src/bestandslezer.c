@@ -8,9 +8,9 @@
 #include <string.h>
 
 FILE* bestand;
-booleaan EOF_gevonden;
+booleaan EOF_gevonden, regeleind_gevonden;
 char** regel;
-unsigned char regelGrootte, regelTel;
+unsigned int regelGrootte, regelTel;
 
 Vec3f *hoeken, *normalen;
 unsigned int hoekenGrootte, hoekenTel, normalenGrootte, normalenTel;
@@ -36,6 +36,7 @@ static void verwerpRegel() {
 static char* leesWoord() {
 	unsigned char woordTel = 0;
 	unsigned char woordGrootte = 10;
+	regeleind_gevonden = onwaar;
 	char* woord = malloc(woordGrootte + 1);
 	char teken = verwerpRuimte();
 	while (teken != ' ' && teken != '\n' && teken != '\t' && teken != '\r' && teken != EOF) {
@@ -52,6 +53,8 @@ static char* leesWoord() {
 		teken = getc(bestand);
 	}
 	if (teken == EOF) EOF_gevonden = waar;
+	else if (teken == '\n')
+		regeleind_gevonden = waar;
 	if (woordTel == 0) {
 		free(woord);
 		return NULL;
@@ -72,7 +75,7 @@ static void leesRegel() {
 		free(regel[regelTel]);
 		regel[regelTel] = woord;
 		regelTel++;
-		if (EOF_gevonden) break;
+		if (EOF_gevonden || regeleind_gevonden) break;
 		woord = leesWoord();
 	}
 }
@@ -208,8 +211,8 @@ Vorm* leesObj(const char* bestandsnaam) {
 		}
 
 		else {
-			fprintf(stderr, "Onbekend begin van obj regel: %s", woord);
-			exit(-1);
+			fprintf(stderr, "Onbekend begin van obj regel: %s\n", woord);
+			if(!regeleind_gevonden) verwerpRegel();
 		}
 	}
 

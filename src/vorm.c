@@ -4,14 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct vorm {
-	unsigned int grootte;
-	unsigned int VAO;
-};
-
 Vorm* maakVorm(const Vec3f* hoeken, const size_t hoekengrootte, const Vec3ui* hoektallen,
 			   const size_t hoektallengrootte) {
-	unsigned int grootte = hoektallengrootte / sizeof(unsigned int);
+	unsigned int hoek_aantal = hoekengrootte / (3 * sizeof(float));
+	unsigned int vlak_aantal = hoektallengrootte / (3 * sizeof(unsigned int));
 	unsigned int VAO;
 	unsigned int EBO;
 
@@ -35,9 +31,10 @@ Vorm* maakVorm(const Vec3f* hoeken, const size_t hoekengrootte, const Vec3ui* ho
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
-	Vorm* vorm = malloc(sizeof(vorm));
+	Vorm* vorm = malloc(sizeof(Vorm));
+	vorm->hoek_aantal = hoek_aantal;
+	vorm->vlak_aantal = vlak_aantal;
 	vorm->VAO = VAO;
-	vorm->grootte = grootte;
 	return vorm;
 }
 
@@ -59,7 +56,7 @@ void vormVoegInhoudToe(Vorm* vorm, const float inhoud[], size_t inhoudsgrootte, 
 
 void tekenVorm(const Vorm* vorm) {
 	glBindVertexArray(vorm->VAO);
-	glDrawElements(GL_TRIANGLES, vorm->grootte, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, 3 * vorm->vlak_aantal, GL_UNSIGNED_INT, 0);
 }
 
 void verwijderVorm(Vorm* vorm) {

@@ -1,10 +1,17 @@
 #ifndef VORM_H
 #define VORM_H
 
-#include <stddef.h>
 #include "lineair.h"
 
+#include <stddef.h>
+
 typedef struct vorm Vorm;
+
+struct vorm {
+	unsigned int hoek_aantal;
+	unsigned int vlak_aantal;
+	unsigned int VAO;
+};
 
 /**
  * @brief  Maakt een vorm.
@@ -22,8 +29,9 @@ Vorm* maakVorm(const Vec3f* hoeken, const size_t hoekengrootte, const Vec3ui* ho
  * @param  inhoud[]: de inhoud om toe te voegen.
  * @param  inhoudsgrootte: grootte van de inhoud in bytes.
  * @param  onderdeelgrootte: de grootte van inhoudsonderdelen in floats.
- * @param  standplaats: de standplaats van de inhoud in de lijst van inhouden, mag niet overeen komen met al bezette
- * standplaats (zoals standplaats 0).
+ * @param  standplaats: de standplaats van de inhoud in de lijst van inhouden.
+ * De standplaats mag niet overeen komen met al bezette standplaats (zoals 0).
+ * Moet evenveel onderdelen hebben als het hoek_aantal van de vorm.
  */
 void vormVoegInhoudToe(Vorm* vorm, const float inhoud[], size_t inhoudsgrootte, unsigned int onderdeelgrootte,
 					   unsigned int standplaats);

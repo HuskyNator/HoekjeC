@@ -172,7 +172,7 @@ int main() {
 	glfwGetCursorPos(scherm, &muisplekx, &muispleky);
 	vorigeTijd = glfwGetTime();
 
-	Verver* verver = maakVerver("shaders/voorwerp.vert", "shaders/normaal.frag");
+	Verver* verver = maakVerver("shaders/voorwerp.vert", "shaders/voorwerp.frag");
 	gebruikVerver(verver);
 
 	Vec3f hoeken[] = {{-1, -1.6, 2}, {1, -1.6, 2}, {0, 0, 2}};
@@ -186,15 +186,24 @@ int main() {
 
 	Vec3f vloerHoeken[] = {{-5, -1.6, -5}, {0, -1.6, 5}, {5, -1.6, -5}};
 	Vec3ui vloerHoektallen[] = {{0, 1, 2}};
-	Vorm* vloerVorm =
-		maakVorm(vloerHoeken, sizeof(vloerHoeken), vloerHoektallen, sizeof(vloerHoektallen));
+	Vorm* vloerVorm = maakVorm(vloerHoeken, sizeof(vloerHoeken), vloerHoektallen, sizeof(vloerHoektallen));
 	Vec3f vloerPlaats = {0, 0, 0};
 	Vec3f vloerGrootte = {1, 1, 1};
 	Vec3f vloerDraai = {0, 0, 0};
 	Voorwerp* vloerVoorwerp = maakVoorwerp(vloerVorm, vloerPlaats, vloerGrootte, vloerDraai);
 	Vec4f vloerKleur = {0, 0, 1, 1};
 
-	Vorm* blok = leesObj("vormen/blok.obj");
+	Vorm* blok = leesObj("vormen/wagen.obj");
+
+	Vec4f blokKleuren[blok->hoek_aantal];
+	for (int h = 0; h < blok->hoek_aantal; h++) {
+		float r = (float)rand() / RAND_MAX;
+		float g = (float)rand() / RAND_MAX;
+		float b = (float)rand() / RAND_MAX;
+		blokKleuren[h] = (Vec4f){r, g, b, 1};
+	}
+	vormVoegInhoudToe(blok, (float*)blokKleuren, sizeof(blokKleuren), 4, 1);
+
 	Vec3f blokPlaats = {0, 0, 1};
 	Vec3f blokGrootte = {1, 1, 1};
 	Vec3f blokDraai = {0, 0, 0};

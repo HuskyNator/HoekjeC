@@ -1,3 +1,6 @@
+#ifndef LOGO_H
+#define LOGO_H
+
 #define SCHERM_BREEDTE (1920.0 / 2.0)
 #define SCHERM_HOOGTE (1080.0 / 2.0)
 #include "verver.h"
@@ -53,3 +56,5 @@ void verwijderLogo() {
 	verwijderVorm(rood_driehoek);
 	verwijderVorm(blauw_driehoek);
 }
+
+#endif
