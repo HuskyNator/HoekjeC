@@ -3,7 +3,7 @@
 
 #include "GL/glew.h"
 #include "lineair.h"
-#include "main.h"
+#include "koppeling.h"
 #include "verver.h"
 
 #include <stdlib.h>

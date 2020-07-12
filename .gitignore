@@ -1,6 +1,8 @@
 
-# Geen executable, zeer groot.
+# Geen grote bestanden.
 *.exe
+*.pdf
+*.rar
 
 # Geen workspace.
 *.code-workspace
