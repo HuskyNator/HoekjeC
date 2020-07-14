@@ -124,7 +124,7 @@ Mat4f perspectiefMatrix(float voorvlak, float achtervlak, double zichthoek, floa
 	// |0			0			(A+V)/(A-V)	-2AV/(A-V)	|
 	// |0			0			1			0			|
 }
-Mat4f voorwerpMatrixPG(Vec3f P, Vec3f G) {
+Mat4f voorwerpMatrixPlekGrootte(Vec3f P, Vec3f G) {
 	return (Mat4f){{G.x, 0, 0, 0}, {0, G.y, 0, 0}, {0, 0, G.z, 0}, {P.x, P.y, P.z, 1}};
 }
 

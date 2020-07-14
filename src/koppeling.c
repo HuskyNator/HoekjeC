@@ -15,167 +15,131 @@
 #include <stdlib.h>
 #include <windows.h>
 
-// Scherm & zicht eigenschappen.
+/**		GLFW		**/
 
 static GLFWwindow* scherm;
-static int schermbreedte, schermhoogte;
+
+/**		ZICHT		**/
+
+static booleaan bijwerkbaar_projectieM = waar;
+static booleaan bijwerkbaar_draaiM = waar;
+static booleaan bijwerkbaar_plekM = waar;
+static boolean bijwerkbaark_zichtM = waar;
+
+/**		KRIJG & ZET OPDRACHTEN		**/
+
+/*	SCHERM EIGENSCHAPPEN	*/
+
+static int schermbreedte = SCHERM_BREEDTE;
+static int schermhoogte = SCHERM_HOOGTE;
+static double schermverhouding = (double)SCHERM_BREEDTE / (double)SCHERM_HOOGTE;
+
+int krijg_schermbreedte() { return schermbreedte; }
+int krijg_schermhoogte() { return schermhoogte; }
+double krijg_schermverhouding() { return schermverhouding; }
+
+/*	PROJECTIE EIGENSCHAPPEN	*/
+
 static float voorvlak = VOORVLAK;
 static float achtervlak = ACHTERVLAK;
 static float zichthoek = ZICHTHOEK;
 
-static Mat4f projectieMatrix;
-static Mat4f draaiMatrix;
-static Mat4f plekMatrix;
+float krijg_voorvlak() { return voorvlak; }
+float krijg_achtervlak() { return achtervlak; }
+float krijg_zichthoek() { return zichthoek; }
 
-float loopsnelheid = LOOPSNELHEID;
-float rensnelheid = RENSNELHEID;
+void zet_voorvlak(float nieuw) {
+	voorvlak = nieuw;
+	bijwerkbaar_projectieM = waar;
+}
+void zet_achtervlak(float nieuw) {
+	achtervlak = nieuw;
+	bijwerkbaar_projectieM = waar;
+}
+void zet_zichthoek(float nieuw) {
+	zichthoek = nieuw;
+	bijwerkbaar_projectieM = waar;
+}
+
+/*	PLEK	*/
 
 static double plekx = 0;
 static double pleky = 0;
 static double plekz = 0;
-static int loopx = 0;
-static int loopz = 0;
-booleaan rent = onwaar;
 
-static double muisplekx;
-static double muispleky;
-static float draaix = 0;
-static float draaiy = 0;
-static Vec3f xRichting;
-static Vec3f zRichting;
+double krijg_plekx() { return plekx; }
+double krijg_pleky() { return pleky; }
+double krijg_plekz() { return plekz; }
+void zet_plekx(double nieuw) {
+	plekx = nieuw;
+	bijwerkbaar_plekM = waar;
+}
+void zet_pleky(double nieuw) {
+	pleky = nieuw;
+	bijwerkbaar_plekM = waar;
+}
+void zet_plekz(double nieuw) {
+	plekz = nieuw;
+	bijwerkbaar_plekM = waar;
+}
+void zet_plek(double x, double y, double z) {
+	plekx = x;
+	pleky = y;
+	plekz = z;
+	bijwerkbaar_plekM = waar;
+}
 
-int krijg_schermbreedte() { return schermbreedte; }
-int krijg_schermhoogte() { return schermhoogte; }
-float krijg_voorvlak() { return voorvlak; }
-float krijg_achtervlak() { return achtervlak; }
-float krijg_zichthoek() { return zichthoek; }
-float zet_voorvlak(float nieuw_voorvlak) {
-	voorvlak = nieuw_voorvlak;
-	werkProjectieMatrixBij();
+/*	MUISPLEK	*/
+
+static double muisx;
+static double muisy;
+double krijg_muisx() { return muisx; }
+double krijg_muisy() { return muisy; }
+void zet_muis(double x, double y) {
+	glfwSetCursorPos(scherm, x, y);
+	muisx = x;
+	muisy = y;
+	bijwerkbaar_draaiM = waar;
 }
-float zet_achtervlak(float nieuw_achtervlak) {
-	achtervlak = nieuw_achtervlak;
-	werkProjectieMatrixBij();
-}
-float zet_zichthoek(float nieuwe_zichthoek) {
-	zichthoek = nieuwe_zichthoek;
-	werkProjectieMatrixBij();
-}
+
+/*	TPS	*/
 
 // Tijd van vorige teken oproep.
 static double vorigeTijd;
 // Tijd tussen laatste en voorlopende teken oproepen.
 static double tijdsverschil;
-
 double krijg_TPS() { return 1 / tijdsverschil; }
 
-// Gebruikte opdrachten.
-
-static teken_opdracht tekenaar;
+/**		TERUGROEPEN		**/
+/*	TOETSEN	*/
 static toets_terugroep_opdracht toets_terugroeper;
-static muisplek_terugroep_opdracht muisplek_terugroeper;
-
-// Matrixen
-
-static void werkZichtMatrixBij() {
-	zichtMatrix = Mat4fMat4f(projectieMatrix, Mat4fMat4f(draaiMatrix, plekMatrix));
-	zichtMatrixBijgewerkt = waar;
+static void toets_terugroep(GLFWwindow* scherm, int toets, int toets2, int handeling, int toevoeging) {
+	toets_terugroeper(toets, toets2, handeling, toevoeging);
 }
 
-void werkPlekMatrixBij() {
-	plekx += (loopx * xRichting.x + loopz * zRichting.x) * (rent ? rensnelheid : loopsnelheid) * tijdsverschil;
-	plekz += (loopx * xRichting.z + loopz * zRichting.z) * (rent ? rensnelheid : loopsnelheid) * tijdsverschil;
-	plekMatrix = verplaatsMatrix(-plekx, -pleky, -plekz);
-	werkZichtMatrixBij();
+void zet_toets_terugroeper(toets_terugroep_opdracht opdracht) {
+	toets_terugroeper = (opdracht == NULL) ? standaard_toets_terugroeper : opdracht;
 }
+void standaard_toets_terugroeper(int toets, int toets2, int handeling, int toevoeging) {}
 
-void werkDraaiMatrixBij() {
-	Mat4f draaixMatrix = draaiMatrixx(-draaix * 0.01);
-	Mat4f draaiyMatrix = draaiMatrixy(-draaiy * 0.01);
-	draaiMatrix = Mat4fMat4f(draaixMatrix, draaiyMatrix);
-	werkZichtMatrixBij();
-	Mat4f richtingMatrix = draaiMatrixy(draaiy * 0.01);
-	xRichting = Vec4n3f(Mat4fVec4f(richtingMatrix, (Vec4f){1, 0, 0, 1}), waar);
-	zRichting = Vec4n3f(Mat4fVec4f(richtingMatrix, (Vec4f){0, 0, 1, 1}), waar);
-}
-
-void werkProjectieMatrixBij() {
-	glfwGetWindowSize(scherm, &schermbreedte, &schermhoogte);
-	projectieMatrix = perspectiefMatrix(voorvlak, achtervlak, zichthoek, (double)schermbreedte / (double)schermhoogte);
-	werkZichtMatrixBij();
-}
-
-// // Werk plek bij als er gelopen wordt.
-// static void loop() {
-// 	if (loopx != 0 || loopz != 0) {
-// 		werkPlekMatrixBij();
-// 	}
-// }
-
-// Terugroepen
+/*	MUIS	*/
 
 static void muisplek_terugroep(GLFWwindow* scherm, double x, double y) {
-	gebruikte_muis_terugroeper(x, y);
-	// draaiy += x - muisplekx;
-	// draaix += y - muispleky;
-	// muisplekx = x;
-	// muispleky = y;
-	// werkDraaiMatrixBij();
+	muisx = x;
+	muisy = y;
+	bijwerkbaar_draaiM = waar;
 }
+
+/*	SCHERM	*/
 
 static void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte) {
 	glViewport(0, 0, breedte, hoogte);
 	schermbreedte = breedte;
 	schermhoogte = hoogte;
-	werkProjectieMatrixBij();
+	bijwerkbaar_projectieM = waar;
 }
 
-static void toets_terugroep(GLFWwindow* scherm, int toets, int toets2, int handeling, int toevoeging) {
-	gebruikte_toets_terugroeper(toets, toets2, handeling, toevoeging);
-	// 	if (handeling == GLFW_PRESS) {
-	// 		switch (toets) {
-	// 			case GLFW_KEY_W:
-	// 				loopz += 1;
-	// 				break;
-	// 			case GLFW_KEY_S:
-	// 				loopz -= 1;
-	// 				break;
-	// 			case GLFW_KEY_A:
-	// 				loopx -= 1;
-	// 				break;
-	// 			case GLFW_KEY_D:
-	// 				loopx += 1;
-	// 				break;
-	// 			case GLFW_KEY_LEFT_SHIFT:
-	// 				rent = waar;
-	// 				break;
-	// 			case GLFW_KEY_ESCAPE:
-	// 				glfwSetWindowShouldClose(scherm, GLFW_TRUE);
-	// 				break;
-	// 			case GLFW_KEY_GRAVE_ACCENT:
-	// 				ShowWindow(GetConsoleWindow(), SW_SHOW);
-	// 				break;
-	// 		}
-	// 	} else if (handeling == GLFW_RELEASE) {
-	// 		switch (toets) {
-	// 			case GLFW_KEY_W:
-	// 				loopz -= 1;
-	// 				break;
-	// 			case GLFW_KEY_S:
-	// 				loopz += 1;
-	// 				break;
-	// 			case GLFW_KEY_A:
-	// 				loopx += 1;
-	// 				break;
-	// 			case GLFW_KEY_D:
-	// 				loopx -= 1;
-	// 				break;
-	// 			case GLFW_KEY_LEFT_SHIFT:
-	// 				rent = onwaar;
-	// 				break;
-	// 		}
-	// 	}
-}
+/*	OPENGL	*/
 
 static void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned int id, GLenum ernstigheid,
 										   GLsizei grootte, const char* bericht, const void* gebruikersParameter) {
@@ -184,33 +148,100 @@ static void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned i
 	fprintf(stderr, "Foutmelding #%u: %s\n", id, bericht);
 }
 
-// Krijg & zet opdrachten.
+/**		MATRIXEN 		**/
+/*	MAKEN	*/
 
-// Gebruikte opdrachten.
+static projectie_maak_opdracht projectie_maker = standaard_projectie_maker;
+static draai_maak_opdracht draai_maker = standaard_draai_maker;
+static plek_maak_opdracht plek_maker = standaard_plek_maker;
 
-void zet_teken_opdracht(teken_opdracht opdracht) { tekenaar = opdracht; }
-void zet_muisplek_terugroepper(muisplek_terugroep_opdracht opdracht) { muisplek_terugroeper = opdracht; }
-void zet_toets_terugroepper(toets_terugroep_opdracht opdracht) { toets_terugroeper = opdracht; }
+void zet_projectie_maker(projectie_maak_opdracht opdracht) {
+	projectie_maker = (opdracht == NULL) ? standaard_projectie_maker : opdracht;
+	bijwerkbaar_projectieM = waar;
+}
+void zet_draai_maker(draai_maak_opdracht opdracht) {
+	draai_maker = (opdracht == NULL) ? standaard_draai_maker : opdracht;
+	bijwerkbaar_draaiM = waar;
+}
+void zet_plek_maker(plek_maak_opdracht opdracht) {
+	plek_maker = (opdracht == NULL) ? standaard_plek_maker : opdracht;
+	bijwerkbaar_plekM = waar;
+}
 
-teken_opdracht krijg_teken_opdracht() { return tekenaar; }
-muisplek_terugroep_opdracht krijg_muisplek_terugroepper() { return muisplek_terugroeper; }
-toets_terugroep_opdracht krijg_toets_terugroepper() { return toets_terugroeper; }
+/*	STANDAARD	*/
 
-// Teken opdrachten.
+Mat4f standaard_projectie_maker(float voorvlak, float achtervlak, float zichthoek, double schermverhouding) {
+	return perspectiefMatrix(voorvlak, achtervlak, zichthoek, schermverhouding);
+}
+
+Mat4f standaard_draai_maker(double muisx, double muisy) {
+	Mat4f draaixMatrix = draaiMatrixx(-muisy * 0.01);
+	Mat4f draaiyMatrix = draaiMatrixy(-muisx * 0.01);
+	return Mat4fMat4f(draaixMatrix, draaiyMatrix);
+}
+
+Mat4f standaard_plek_maker(double plekx, double pleky, double plekz) { return verplaatsMatrix(-plekx, -pleky, -plekz); }
+
+/*	BIJWERKEN	*/
+
+static void werk_projectieM_bij() {
+	projectieM = projectie_maker(voorvlak, achtervlak, zichthoek, schermverhouding);
+	bijwerkbaar_projectieM = onwaar;
+	bijwerkbaark_zichtM = waar;
+}
+static void werk_draaiM_bij() {
+	draaiM = draai_maker(muisx, muisy);
+	bijwerkbaar_draaiM = onwaar;
+	bijwerkbaark_zichtM = waar;
+}
+static void werk_plekM_bij() {
+	plekM = plek_maker(plekx, pleky, plekz);
+	bijwerkbaar_plekM = onwaar;
+	bijwerkbaark_zichtM = waar;
+}
+
+static void werk_zichtM_bij() {
+	zichtM = Mat4fMat4f(projectieM, Mat4fMat4f(draaiM, plekM));
+	zichtM_bijgewerkt = waar;
+	bijwerkbaark_zichtM = onwaar;
+}
+
+void werk_M_bij() {
+	if (bijwerkbaar_plekM) werk_plekM_bij();
+	if (bijwerkbaar_draaiM) werk_draaiM_bij();
+	if (bijwerkbaar_projectieM) werk_projectieM_bij();
+	if (bijwerkbaark_zichtM) werk_zichtM_bij();
+}
+
+/**		TEKENEN		**/
+/*	DENKER	*/
+
+static denk_opdracht denker;
+void zet_denker(denk_opdracht opdracht) { denker = (opdracht == NULL) ? standaard_denker : opdracht; }
+void standaard_denker(double tijdsverschil) {}
+
+/*	TEKENAAR	*/
+
+static teken_opdracht tekenaar;
+void zet_tekenaar(teken_opdracht opdracht) { tekenaar = (opdracht == NULL) ? standaard_tekenaar : opdracht; }
+void standaard_tekenaar() {}
+
+/*	BESTURING	*/
 
 void opzetten() {
-	// GLFW
+	// # GLFW
 	if (!glfwInit()) {
 		puts(":C geen glfw");
 		exit(-1);
 	}
 
+	// > OpenGL
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
 
-	// Maak Scherm
+	// > Maak Scherm
 	scherm = glfwCreateWindow(SCHERM_BREEDTE, SCHERM_HOOGTE, VENSTER_NAAM, NULL, NULL);
 	if (scherm == NULL) {
 		puts(":C geen scherm");
@@ -218,22 +249,15 @@ void opzetten() {
 	}
 	glfwMakeContextCurrent(scherm);
 
-	// Maak Functies
+	// # OpenGL
+	// > GLEW
 	int fout = glewInit();
 	if (fout != GLEW_OK) {
 		fprintf(stderr, "Fout: %s\n", glewGetErrorString(fout));
 		exit(-1);
 	}
 
-	// Toon Versie & Geef Schermgrootte Aan OpenGL
-	glfwSetWindowSizeCallback(scherm, schermgrootte_terugroep);
-	// Zet Toets Terugroep Functie.
-	glfwSetKeyCallback(scherm, toets_terugroep);
-	// Zet Muis Terugroep Functie.
-	glfwSetInputMode(scherm, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(scherm, muisplek_terugroep);
-
-	//      OpenGL
+	// > OpenGL
 	printf("Je gebruikt OpenGL versie: %s\n", glGetString(GL_VERSION));
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -242,11 +266,47 @@ void opzetten() {
 	glViewport(0, 0, SCHERM_BREEDTE, SCHERM_HOOGTE);
 	glEnable(GL_DEPTH_TEST);
 
-	werkProjectieMatrixBij();
-	werkDraaiMatrixBij();
-	werkPlekMatrixBij();
-	glfwGetCursorPos(scherm, &muisplekx, &muispleky);
+	// # HoekjeC
+	// > TPS
 	vorigeTijd = glfwGetTime();
+	tijdsverschil = 1;
+
+	// > Terugroepen
+	zet_toets_terugroeper(NULL);
+	glfwSetKeyCallback(scherm, toets_terugroep);
+
+	glfwSetCursorPosCallback(scherm, muisplek_terugroep);
+	glfwSetInputMode(scherm, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	zet_muis(0, 0);
+
+	glfwSetWindowSizeCallback(scherm, schermgrootte_terugroep);
+
+	// > Matrixen
+	werk_M_bij();
+
+	// > Tekenen
+	zet_denker(NULL);
+	zet_tekenaar(NULL);
+}
+
+static void afbreken() {
+	glfwDestroyWindow(scherm);
+	glfwTerminate();
+}
+
+static void teken() {
+	glClearColor(0.15, 0.15, 0.15, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	double nieuweTijd = glfwGetTime();
+	tijdsverschil = nieuweTijd - vorigeTijd;
+	vorigeTijd = nieuweTijd;
+
+	denker(tijdsverschil);
+	werk_M_bij();
+	tekenaar();
+
+	glfwSwapBuffers(scherm);
 }
 
 void lus() {
@@ -254,35 +314,15 @@ void lus() {
 		teken();
 		glfwPollEvents();
 	}
-
-	glfwDestroyWindow(scherm);
-	glfwTerminate();
+	afbreken();
 }
 
-void teken() {
-	glClearColor(0.15, 0.15, 0.15, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	loop();	 // Werk plaats bij.
-
-	tekenaar();
-
-	glfwSwapBuffers(scherm);
-
-	double nieuweTijd = glfwGetTime();
-	tijdsverschil = nieuweTijd - vorigeTijd;
-	vorigeTijd = nieuweTijd;
-
-	// Herstel vlag.
-	zichtMatrixBijgewerkt = onwaar;
-}
-
-void logo() {
-	glClearColor(0.15, 0.15, 0.15, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void logo(float tijd) {
 	maakLogo();
 	tekenLogo();
 	glfwSwapBuffers(scherm);
+	Sleep(tijd);
 	verwijderLogo();
-	Sleep(2000);
 }
+
+void sluit_scherm() { glfwSetWindowShouldClose(scherm, waar); }

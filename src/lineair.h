@@ -65,6 +65,26 @@ struct vec4f {
 	float w;
 };
 
+typedef struct vec2d Vec2d;
+typedef struct vec3d Vec3d;
+typedef struct vec4d Vec4d;
+
+struct vec2d {
+	double x;
+	double y;
+};
+struct vec3d {
+	double x;
+	double y;
+	double z;
+};
+struct vec4d {
+	double x;
+	double y;
+	double z;
+	double w;
+};
+
 // Matrixen.
 
 typedef struct mat2i Mat2i;
@@ -146,7 +166,7 @@ Mat4f draaiMatrixz(float draai);
 Mat4f identiteitsMatrix();
 Mat4f verplaatsMatrix(float x, float y, float z);
 Mat4f perspectiefMatrix(float voorvlak, float achtervlak, double zichthoek, float schermverhouding);
-Mat4f voorwerpMatrixPG(Vec3f P, Vec3f G);
+Mat4f voorwerpMatrixPlekGrootte(Vec3f plek, Vec3f grootte);
 
 // Printen
 void printVec4f(Vec4f v);

@@ -1,6 +1,6 @@
 #include "bestandslezer.h"
-#include "lineair.h"
 #include "koppeling.h"
+#include "lineair.h"
 #include "verver.h"
 #include "voorwerp.h"
 #include "vorm.h"
@@ -9,6 +9,11 @@
 #include <stdlib.h>
 #include <windows.h>
 
+Voorwerp* blokVoorwerp;
+Verver* verver;
+
+static void tekenaar() { tekenVoorwerp(blokVoorwerp, verver); }
+
 int main() {
 	puts("Hellow");
 
@@ -16,9 +21,9 @@ int main() {
 	ShowWindow(achtergrondScherm, SW_HIDE);
 
 	opzetten();
-	logo();
+	logo(2000);
 
-	Verver* verver = maakVerver("shaders/kleur_voorwerp.vert", "shaders/kleur_voorwerp.frag");
+	verver = maakVerver("shaders/kleur_voorwerp.vert", "shaders/kleur_voorwerp.frag");
 	gebruikVerver(verver);
 
 	Vec3f hoeken[] = {{-1, -1.6, 2}, {1, -1.6, 2}, {0, 0, 2}};
@@ -53,5 +58,8 @@ int main() {
 	Vec3f blokPlaats = {0, 0, 1};
 	Vec3f blokGrootte = {1, 1, 1};
 	Vec3f blokDraai = {0, 0, 0};
-	Voorwerp* blokVoorwerp = maakVoorwerp(blok, blokPlaats, blokGrootte, blokDraai);
+	blokVoorwerp = maakVoorwerp(blok, blokPlaats, blokGrootte, blokDraai);
+
+	zet_tekenaar(tekenaar);
+	lus();
 }

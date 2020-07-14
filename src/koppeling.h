@@ -10,73 +10,127 @@
 #define VOORVLAK 0.1
 #define ACHTERVLAK 50.0
 #define ZICHTHOEK 100.0
-#define LOOPSNELHEID 1.5  // m/s
-#define RENSNELHEID 2.9
 
 #define VENSTER_NAAM ":3"
 
-// Zicht.
+/**		ZICHT		**/
 
 /**
- * Matrix bestaande uit de projectie, draai en plek matrixen.
- * Vertaalt de wereld, zo dat het zicht gedraaid en verplaatst kan zijn, naar het eenheidsblok.
- * (Het wordt geprojecteerd en behoud een relatieve z-diepte)
- * De projectie matrix maakt gebruik van de volgende getallen, waarvoor krijg & zet opdrachten aanwezig zijn:
- * - voorvlak, vanaf hoe ver vanaf de zichtplek gezien kan worden.
- * - achtervlak, tot hoe ver vanaf de zichtplek gezien kan worden.
- * - zichthoek, de horizontale hoek van het zicht.
+ * De zicht matrix bestaat uit de aaneenschakeling van de projectie, draai en plek matrixen.
+ * Het de wereld, zo dat het zicht gedraaid en verplaatst kan zijn, naar het eenheidsblok.
+ *
+ * De plek matrix is verantwoordelijk voor het verplaatsen van voorwerpen in de wereld,
+ * zodat het zicht zijn x,y,z plek aan kan nemen.
+ *
+ * De draai matrix is verantwoordelijk voor het draaien van de wereld,
+ * zodat het zicht door middel van de x,y plek van de muis gedraaid kan worden.
+ * Er zijn veel manieren om dit te doen, een standaard benadering is aanwezig.
+ *
+ * De projectie matrix is verantwoordelijk voor het vertalen van de wereld naar een plat vlak,
+ * hierbij kan de z as relatief behouden worden, tussen -1 & 1,
+ * opdat tijdens het tekenen rekening kan worden met diepte verhoudingen.
  */
-Mat4f zichtMatrix;
+Mat4f zichtM, projectieM, draaiM, plekM;
 
 /**
  * Vlag die aangeeft dat de zichtmatrix bijgewerkt is.
  * Wordt gebruikt door oa. voorwerpen om hun opgeslagen tekenmatrix enkel bij te werken indien nodig.
  */
-booleaan zichtMatrixBijgewerkt;
+booleaan zichtM_bijgewerkt;
 
-// Krijg & zet opdrachten.
+/**		KRIJG & ZET OPDRACHTEN		**/
+
+/*	SCHERM EIGENSCHAPPEN	*/
 
 int krijg_schermbreedte();
 int krijg_schermhoogte();
+double krijg_schermverhouding();
+
+/*	PROJECTIE EIGENSCHAPPEN	*/
+
 float krijg_voorvlak();
 float krijg_achtervlak();
 float krijg_zichthoek();
-float zet_voorvlak();
-float zet_achtervlak();
-float zet_zichthoek();
+void zet_voorvlak(float nieuw);
+void zet_achtervlak(float nieuw);
+void zet_zichthoek(float nieuw);
+
+/*	PLEK	*/
+
+double krijg_plekx();
+double krijg_pleky();
+double krijg_plekz();
+void zet_plekx(double nieuw);
+void zet_pleky(double nieuw);
+void zet_plekz(double nieuw);
+
+/*	MUISPLEK	*/
+
+double krijg_muisx();
+double krijg_muisy();
+void zet_muis(double x, double y);
+
+/*	TPS	*/
 
 // Krijg aantal teken oproepen per seconde.
 double krijg_TPS();
 
-// Gebruikte opdrachten.
+/**		TERUGROEPEN		**/
 
-// Een opdracht die voorwerpen tekent.
-typedef void (*teken_opdracht)();
-// Een opdracht die muisverplaatsing verwerkt.
-typedef void (*muisplek_terugroep_opdracht)(double x, double y);
-// Een opdracht die toetsinvoer verwerkt.
+/*	TOETSEN	*/
+
 typedef void (*toets_terugroep_opdracht)(int toets, int toets2, int handeling, int toevoeging);
+void zet_toets_terugroeper(toets_terugroep_opdracht opdracht);
+void standaard_toets_terugroeper(int toets, int toets2, int handeling, int toevoeging);
 
-// Een opdracht die de projectie matrix levert.
-typedef Mat4f (*projectie_opdracht)(float voorvlak, float achtervlak, float zichthoek, double schermverhouding);
+/**		MATRIXEN		**/
+/*	MAKEN	*/
+
+// Een opdracht die de projectie matrix levert. De doorgegeven waarden zijn niet bindend.
+typedef Mat4f (*projectie_maak_opdracht)(float voorvlak, float achtervlak, float zichthoek, double schermverhouding);
 // Een opdracht die de draai matrix levert.
-typedef Mat4f (*draai_opdracht)(double x, double y);
+typedef Mat4f (*draai_maak_opdracht)(double muisx, double muisy);
+// Eeen opdracht die de plek matrix levert.
+typedef Mat4f (*plek_maak_opdracht)(double plekx, double pleky, double plekz);
 
-// Zet welke teken_opdracht gebruikt wordt
-void zet_teken_opdracht(teken_opdracht opdracht);
-// Zet welke muisplek_terugroep_opdracht gebruikt moet worden.
-void zet_muisplek_terugroepper(muisplek_terugroep_opdracht muisplekterugroepper);
-// Zet welke toets_terugroep_opdracht gebruikt moet worden.
-void zet_toets_terugroepper(toets_terugroep_opdracht toetsterugroepper);
+void zet_projectie_maker(projectie_maak_opdracht opdracht);
+void zet_draai_maker(draai_maak_opdracht opdracht);
+void zet_plek_maker(plek_maak_opdracht opdracht);
 
-// Krijg de gebruikte teken_opdracht.
-teken_opdracht krijg_teken_opdracht();
-// Krijgt de gebruikte muisplek_terugroep_opdracht.
-muisplek_terugroep_opdracht krijg_muisplek_terugroepper();
-// Krijgt de gebruikte toets_terugroep_opdracht.
-toets_terugroep_opdracht krijg_toets_terugroepper();
+/*	STANDAARD	*/
 
-// Teken opdrachten.
+Mat4f standaard_projectie_maker(float voorvlak, float achtervlak, float zichthoek, double schermverhouding);
+Mat4f standaard_draai_maker(double muisx, double muisy);
+Mat4f standaard_plek_maker(double plekx, double pleky, double plekz);
+
+/*	BIJWERKEN	*/
+
+// Werk alle matrixen bij, indien nodig.
+void werk_M_bij();
+
+/**		TEKENEN		**/
+/*	DENKER	*/
+typedef void (*denk_opdracht)(double tijdsverschil);
+/**
+ * Is verantwoordelijk voor het doen van denkstappen voor het programma.
+ * Hier onder vallen verplaatsingen en voorwerp schepping/verwijdering.
+ * Wordt opgeroepen voor (bijgewerkte) voorwerpen worden getekend.
+ */
+void zet_denker(denk_opdracht opdracht);
+void standaard_denker(double tijdsverschil);
+
+/*	TEKENAAR	*/
+
+typedef void (*teken_opdracht)();
+/**
+ * Is verantwoordelijk voor het tekenen van voorwerpen.
+ * Het aanpassen van plekken / draaiïngen van dezen heeft mogelijk geen gevolg.
+ * Wordt opgeroepen na oproeping van de denker.
+ */
+void zet_tekenaar(teken_opdracht opdracht);
+void standaard_tekenaar();
+
+/*	BESTURING	*/
 
 /**
  * Zet het scherm & glfw en opengl op.
@@ -86,17 +140,19 @@ void opzetten();
 
 /**
  * Lust over de tekenopdracht & verwerkt invoer.
+ * Stopt enkel zodra een vlag aangeeft dat het scherm moet sluiten.
+ * Hierbij wordt alle opzet afgebroken.
  */
 void lus();
 
 /**
- * Tekent één maal het scherm, dmv. de tekenopdracht.
- */
-void teken();
-
-/**
  * Tekent het HoekjeC logo.
  */
-void logo();
+void logo(float tijd);
+
+/**
+ * Zet een vlag die aangeeft dat het scherm moet sluiten.
+ */
+void sluit_scherm();
 
 #endif
