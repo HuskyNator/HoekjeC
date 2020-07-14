@@ -89,6 +89,25 @@ void zet_plek(double x, double y, double z) {
 	bijwerkbaar_plekM = waar;
 }
 
+void wijzig_plekx(double verandering) {
+	plekx += verandering;
+	bijwerkbaar_plekM = waar;
+}
+void wijzig_pleky(double verandering) {
+	pleky += verandering;
+	bijwerkbaar_plekM = waar;
+}
+void wijzig_plekz(double verandering) {
+	plekz += verandering;
+	bijwerkbaar_plekM = waar;
+}
+void wijzig_plek(double vx, double vy, double vz) {
+	plekx += vx;
+	pleky += vy;
+	plekz += vz;
+	bijwerkbaar_plekM = waar;
+}
+
 /*	MUISPLEK	*/
 
 static double muisx;

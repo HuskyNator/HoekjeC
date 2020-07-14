@@ -39,7 +39,6 @@ Mat4f zichtM, projectieM, draaiM, plekM;
 booleaan zichtM_bijgewerkt;
 
 /**		KRIJG & ZET OPDRACHTEN		**/
-
 /*	SCHERM EIGENSCHAPPEN	*/
 
 int krijg_schermbreedte();
@@ -63,6 +62,11 @@ double krijg_plekz();
 void zet_plekx(double nieuw);
 void zet_pleky(double nieuw);
 void zet_plekz(double nieuw);
+void zet_plek(double x, double y, double z);
+void wijzig_plekx(double verandering);
+void wijzig_pleky(double verandering);
+void wijzig_plekz(double verandering);
+void wijzig_plek(double vx, double vy, double vz);
 
 /*	MUISPLEK	*/
 
@@ -76,7 +80,6 @@ void zet_muis(double x, double y);
 double krijg_TPS();
 
 /**		TERUGROEPEN		**/
-
 /*	TOETSEN	*/
 
 typedef void (*toets_terugroep_opdracht)(int toets, int toets2, int handeling, int toevoeging);
@@ -110,6 +113,7 @@ void werk_M_bij();
 
 /**		TEKENEN		**/
 /*	DENKER	*/
+
 typedef void (*denk_opdracht)(double tijdsverschil);
 /**
  * Is verantwoordelijk voor het doen van denkstappen voor het programma.

@@ -1,4 +1,5 @@
 #include "bestandslezer.h"
+#include "booleaan.h"
 #include "koppeling.h"
 #include "lineair.h"
 #include "verver.h"
@@ -12,9 +13,70 @@
 Voorwerp* blokVoorwerp;
 Verver* verver;
 
+#define LOOPSNELHEID 1.4
+#define RENSNELHEID 3.7
+
+char looptx = 0;
+char looptz = 0;
+booleaan rent = onwaar;
+
+static void toets_terugroeper(int toets, int toets2, int handeling, int toevoeging) {
+	if (handeling == GLFW_PRESS) {
+		switch (toets) {
+			case GLFW_KEY_A:
+				looptx--;
+				break;
+			case GLFW_KEY_D:
+				looptx++;
+				break;
+			case GLFW_KEY_W:
+				looptz++;
+				break;
+			case GLFW_KEY_S:
+				looptz--;
+				break;
+			case GLFW_KEY_LEFT_SHIFT:
+				rent = waar;
+				break;
+			case GLFW_KEY_ESCAPE:
+				sluit_scherm();
+				break;
+		}
+	} else if (handeling == GLFW_RELEASE) {
+		switch (toets) {
+			case GLFW_KEY_A:
+				looptx++;
+				break;
+			case GLFW_KEY_D:
+				looptx--;
+				break;
+			case GLFW_KEY_W:
+				looptz--;
+				break;
+			case GLFW_KEY_S:
+				looptz++;
+				break;
+			case GLFW_KEY_LEFT_SHIFT:
+				rent = onwaar;
+				break;
+		}
+	}
+}
+
+static void denker(double tijdsverschil) {
+	if (looptx != 0 || looptz != 0) {
+		Mat4f richtingsMatrix = draaiMatrixy(krijg_muisx() * 0.01);
+		Vec3f xRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){1, 0, 0, 1}), waar);
+		Vec3f zRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){0, 0, 1, 1}), waar);
+		double snelheid = tijdsverschil * (rent ? RENSNELHEID : LOOPSNELHEID);
+		wijzig_plekx(snelheid * (looptx * xRichting.x + looptz * zRichting.x));
+		wijzig_plekz(snelheid * (looptx * xRichting.z + looptz * zRichting.z));
+	}
+}
+
 static void tekenaar() { tekenVoorwerp(blokVoorwerp, verver); }
 
-int main() {
+main() {
 	puts("Hellow");
 
 	HWND achtergrondScherm = GetConsoleWindow();
@@ -60,6 +122,8 @@ int main() {
 	Vec3f blokDraai = {0, 0, 0};
 	blokVoorwerp = maakVoorwerp(blok, blokPlaats, blokGrootte, blokDraai);
 
+	zet_toets_terugroeper(toets_terugroeper);
+	zet_denker(denker);
 	zet_tekenaar(tekenaar);
 	lus();
 }

@@ -38,7 +38,7 @@ void maakLogo(/*unsigned int grootte*/) {
 void tekenLogo() {
 	glClearColor(0.15, 0.15, 0.15, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); Standard.
 	gebruikVerver(logo_verver);
 	zetVerverFloat4v(logo_verver, "voorwerp_kleur", BLAUW);
