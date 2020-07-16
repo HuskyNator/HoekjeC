@@ -6,11 +6,19 @@
 #include <stddef.h>
 
 typedef struct vorm Vorm;
-
 struct vorm {
 	unsigned int hoek_aantal;
 	unsigned int vlak_aantal;
 	unsigned int VAO;
+};
+
+//TODO maak "struct hoek" aan voor {hoek, verf, normaal}.
+
+typedef struct hoektal Hoektal;
+static struct hoektal {
+	Vec3ui hoek;
+	Vec3ui verf;
+	Vec3ui normaal;
 };
 
 /**
