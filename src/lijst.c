@@ -81,11 +81,13 @@ booleaan lijstVerwijderGelijk(Lijst* lijst, void* gelijk, booleaan bevrijd) {
 }
 
 void verwijderLijst(Lijst* lijst, booleaan bevrijd) {
-	if (bevrijd) {
-		for (int i = 0; i < lijst->tel; i++) {
-			free(lijst->inhoud[i]);
-		}
-	}
+	if (bevrijd) bevrijdInhoud(lijst);
 	free(lijst->inhoud);
 	free(lijst);
+}
+
+void verwijderInhoud(Lijst* lijst) {
+	for (int i = 0; i < lijst->tel; i++) {
+		free(lijst->inhoud[i]);
+	}
 }
