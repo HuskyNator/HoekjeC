@@ -12,6 +12,12 @@ struct vorm {
 	unsigned int VAO;
 };
 
+typedef struct hoek Hoek;
+static struct hoek{
+	Vec3f hoek;
+	Vec3f verf;
+	Vec3f normaal;
+};
 //TODO maak "struct hoek" aan voor {hoek, verf, normaal}.
 
 typedef struct hoektal Hoektal;
