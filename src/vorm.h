@@ -13,7 +13,7 @@ struct vorm {
 };
 
 typedef struct hoek Hoek;
-static struct hoek{
+struct hoek{
 	Vec3f hoek;
 	Vec3f verf;
 	Vec3f normaal;
@@ -21,7 +21,7 @@ static struct hoek{
 //TODO maak "struct hoek" aan voor {hoek, verf, normaal}.
 
 typedef struct hoektal Hoektal;
-static struct hoektal {
+struct hoektal {
 	Vec3ui hoek;
 	Vec3ui verf;
 	Vec3ui normaal;
