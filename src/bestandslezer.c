@@ -2,6 +2,7 @@
 
 #include "lijst.h"
 #include "lineair.h"
+#include "materiaal.h"
 #include "vorm.h"
 
 #include <math.h>
@@ -10,9 +11,11 @@
 #include <string.h>
 
 FILE* bestand;
+Lijst* regel;  // char*[]
 booleaan EOF_gevonden, regeleind_gevonden;
 
-Lijst* regel;  // char*[]
+Materiaal *materialen, *huidigMateriaal;
+unsigned int materialenGrootte, materialenTel;
 
 Lijst* gegeven_hoeken_p;  // Vec3f[]
 Lijst* gegeven_hoeken_v;  // Vec2f[]
@@ -262,6 +265,19 @@ Vorm* leesObj(const char* bestandsnaam) {
 		} else if (strcmp(woord, "f") == 0) {
 			free(woord);
 			leesVlak();
+
+
+		} else if (strcmp(woord, "usemtl") == 0) {
+			char* mtlNaam = leesWoord();
+			for (int i = 0; i < materialenTel; i++) {
+				// TODO
+			}
+		} else if (strcmp(woord, "mtllib") == 0) {
+			char* mtlBestandsnaam = leesWoord();
+			leesMtl(mtlBestandsnaam);  // TODO
+			free(mtlBestandsnaam);
+		
+		
 		} else {
 			free(woord);
 			fprintf(stderr, "Onbekend begin van obj regel: %s\n", woord);
@@ -298,4 +314,10 @@ Vorm* leesObj(const char* bestandsnaam) {
 	verwijderLijst(hoekentallen, onwaar);
 	verwijderLijst(vlakken, onwaar);
 	return vorm;
+}
+
+void leesMtl(const char* bestandsnaam) {
+	FILE* bestand = fopen(bestandsnaam, "rb");
+	materialen = malloc(4*sizeof(Materiaal));
+	// TODO
 }
