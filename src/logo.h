@@ -19,20 +19,23 @@ static Vorm* blauw_driehoek;
 
 void maakLogo(/*unsigned int grootte*/) {
 	logo_verver = maakVerver("./shaders/normaal.vert", "./shaders/normaal.frag");
-	const Vec3f rode_hoeken[] = {{-0.9 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, 1 * 0.015 * 2, -0.1},
+	Vec3f rode_hoeken[] = {{-0.9 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, 1 * 0.015 * 2, -0.1},
 								 {-0.7 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, -2.5 * 0.015 * 2, -0.1},
 								 {1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, 1 * 0.015 * 2, -0.1}};
+	Lijst rl = {sizeof(rode_hoeken), 3, sizeof(Vec3f), rode_hoeken};
 
-	const Vec3f blauwe_hoeken[] = {
+	Vec3f blauwe_hoeken[] = {
 		{(-1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (1 + 0.05) * 0.15 * 2, 0},
 		{(-0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (-1 + 0.05) * 0.15 * 2, 0},
 		{(1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (0.5 + 0.05) * 0.15 * 2, 0}};
+	Lijst bl = {sizeof(blauwe_hoeken), 3, sizeof(Vec3f), blauwe_hoeken};
 
-	const Vec3ui hoektallen[] = {{0, 1, 2}};
+	Vlak vlakken[] = {{0, 1, 2}};
+	Lijst vl = {sizeof(vlakken), 1, sizeof(Vlak), vlakken};
 
-	rood_driehoek = maakVorm(rode_hoeken, sizeof(rode_hoeken), hoektallen, sizeof(hoektallen));
+	rood_driehoek = maakVorm(&rl, &vl);
 
-	blauw_driehoek = maakVorm(blauwe_hoeken, sizeof(blauwe_hoeken), hoektallen, sizeof(hoektallen));
+	blauw_driehoek = maakVorm(&bl, &vl);
 }
 
 void tekenLogo() {

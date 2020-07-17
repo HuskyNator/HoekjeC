@@ -1,6 +1,7 @@
 #ifndef VORM_H
 #define VORM_H
 
+#include "lijst.h"
 #include "lineair.h"
 
 #include <stddef.h>
@@ -12,43 +13,36 @@ struct vorm {
 	unsigned int VAO;
 };
 
-typedef struct hoek Hoek;
-struct hoek{
-	Vec3f hoek;
-	Vec3f verf;
-	Vec3f normaal;
+typedef struct hoektallen Hoektallen;
+struct hoektallen {
+	unsigned int plek;
+	unsigned int verf;
+	unsigned int normaal;
 };
-//TODO maak "struct hoek" aan voor {hoek, verf, normaal}.
 
-typedef struct hoektal Hoektal;
-struct hoektal {
-	Vec3ui hoek;
-	Vec3ui verf;
-	Vec3ui normaal;
+typedef struct vlak Vlak;
+struct vlak {
+	unsigned int hoek1;
+	unsigned int hoek2;
+	unsigned int hoek3;
 };
 
 /**
  * @brief  Maakt een vorm.
- * @param  hoeken[]: Hoeken van de vorm.
- * @param  hoekaantal: Grootte van de hoeken in bytes.
- * @param  hoektallen[]: Hoektal volgorde van de vorm.
- * @param  hoektallengrootte: Grootte van hoektallen in bytes.
+ * @param  hoeken: Hoek lijst van de vorm, bevat plekken van elke hoek.
+ * @param  vlakken: Vlak lijst van de vorm, bevat verwijzingen naar hoeken.
  */
-Vorm* maakVorm(const Vec3f* hoeken, const size_t hoekengrootte, const Vec3ui* hoektallen,
-			   const size_t hoektallengrootte);
+Vorm* maakVorm(const Lijst* hoeken, const Lijst* vlakken);
 
 /**
  * @brief  Voegt inhoud toe op de zoveelste standplaats van de voorwerp.
  * @param  vorm: de vorm om de inhoud aan toe te voegen.
- * @param  inhoud[]: de inhoud om toe te voegen.
- * @param  inhoudsgrootte: grootte van de inhoud in bytes.
- * @param  onderdeelgrootte: de grootte van inhoudsonderdelen in floats.
+ * @param  inhoud: de inhoud om toe te voegen.
  * @param  standplaats: de standplaats van de inhoud in de lijst van inhouden.
  * De standplaats mag niet overeen komen met al bezette standplaats (zoals 0).
  * Moet evenveel onderdelen hebben als het hoek_aantal van de vorm.
  */
-void vormVoegInhoudToe(Vorm* vorm, const float inhoud[], size_t inhoudsgrootte, unsigned int onderdeelgrootte,
-					   unsigned int standplaats);
+void vormVoegInhoudToe(Vorm* vorm, const Lijst* inhoud, unsigned int standplaats);
 
 void tekenVorm(const Vorm* vorm);
 

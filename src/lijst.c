@@ -18,6 +18,7 @@ Lijst* maakLijst(unsigned int grootte, size_t onderdeel_grootte) {
 	lijst->tel = 0;
 	lijst->onderdeel_grootte = onderdeel_grootte;
 	lijst->inhoud = malloc(grootte * onderdeel_grootte);
+	return lijst;
 }
 
 void lijstGroei(Lijst* lijst, unsigned int grootte) {
@@ -50,22 +51,24 @@ booleaan lijstPlaats(Lijst* lijst, unsigned int plek, void* onderdeel) {
 	return waar;
 }
 
-void* lijstKrijg(Lijst* lijst, unsigned int plek) {
-	if (plek < 0 || plek >= lijst->tel) {
-		fputs("Plek is buiten lijst.", stderr);
-		return NULL;
-	}
-	return lijst->inhoud + plek * lijst->onderdeel_grootte;
-}
-
-// int lijstVind(Lijst* lijst, void* gelijk) {
-// 	for (int i = 0; i < lijst->tel; i++) {
-// 		if (lijst->inhoud[i] == gelijk) {
-// 			return i;  // TODO maximum is dus int max en niet uint max
-// 		}
+// void* lijstKrijg(Lijst* lijst, unsigned int plek) {
+// 	if (plek < 0 || plek >= lijst->tel) {
+// 		fputs("Plek is buiten lijst.", stderr);
+// 		return NULL;
 // 	}
-// 	return -1;
+// 	return lijst->inhoud + plek * lijst->onderdeel_grootte;
 // }
+
+booleaan lijstVind(Lijst* lijst, const void* onderdeel, unsigned int* plek) {
+	for (unsigned int i = 0; i < lijst->tel; i++) {
+		void* ander = lijst->inhoud + i * lijst->onderdeel_grootte;
+		if (memcmp(onderdeel, ander, lijst->onderdeel_grootte) == 0) {
+			*plek = i;
+			return waar;
+		}
+	}
+	return onwaar;
+}
 
 booleaan lijstVerwijder(Lijst* lijst, unsigned int plek) {
 	if (plek < 0 || plek >= lijst->tel) {
@@ -73,7 +76,8 @@ booleaan lijstVerwijder(Lijst* lijst, unsigned int plek) {
 		return onwaar;
 	}
 	lijst->tel--;
-	memcpy(&lijst->inhoud[plek], &lijst->inhoud[plek + 1], lijst->tel - plek);
+	memcpy(lijst->inhoud + (plek + 1) * lijst->onderdeel_grootte, &lijst->inhoud + plek * lijst->onderdeel_grootte,
+		   lijst->tel - plek);
 	return waar;
 }
 
@@ -83,12 +87,23 @@ booleaan lijstVerwijder(Lijst* lijst, unsigned int plek) {
 // 	lijstVerwijder(lijst, plek, bevrijd);
 // }
 
-void verwijderLijst(Lijst* lijst) {
+void verwijderLijst(Lijst* lijst, booleaan bevrijd) {
+	if (bevrijd) {
+		for (int i = 0; i < lijst->tel; i++) {
+			free(lijstKrijg(lijst, i, void*));
+		}
+	}
 	free(lijst->inhoud);
 	free(lijst);
 }
 
-void lijstLeeg(Lijst* lijst) { lijst->tel = 0; }
+void lijstLeeg(Lijst* lijst, booleaan bevrijd) {
+	if (bevrijd)
+		for (int i = 0; i < lijst->tel; i++) {
+			free(lijstKrijg(lijst, i, void*));
+		}
+	lijst->tel = 0;
+}
 
 void lijstVoorElk(Lijst* lijst, voor_elk_opdracht opdracht) {
 	for (int i = 0; i < lijst->tel; i++) {
