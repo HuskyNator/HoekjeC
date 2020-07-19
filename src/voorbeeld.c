@@ -67,8 +67,8 @@ static void toets_terugroeper(int toets, int toets2, int handeling, int toevoegi
 static void denker(double tijdsverschil) {
 	if (looptx != 0 || looptz != 0) {
 		Mat4f richtingsMatrix = draaiMatrixy(krijg_muisx() * 0.01);
-		Vec3f xRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){1, 0, 0, 1}), waar);
-		Vec3f zRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){0, 0, 1, 1}), waar);
+		Vec3f xRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){1, 0, 0, 1}), onwaar);
+		Vec3f zRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){0, 0, 1, 1}), onwaar);
 		double snelheid = tijdsverschil * (rent ? RENSNELHEID : LOOPSNELHEID);
 		wijzig_plekx(snelheid * (looptx * xRichting.x + looptz * zRichting.x));
 		wijzig_plekz(snelheid * (looptx * xRichting.z + looptz * zRichting.z));
@@ -76,7 +76,7 @@ static void denker(double tijdsverschil) {
 }
 
 static void tekenaar() {
-	tekenVoorwerp(vloerVoorwerp, verver);
+	// tekenVoorwerp(vloerVoorwerp, verver);
 	tekenVoorwerp(blokVoorwerp, verver);
 }
 
@@ -111,7 +111,7 @@ int main() {
 	Vec3f vloerDraai = {0, 0, 0};
 	vloerVoorwerp = maakVoorwerp(vloerVorm, vloerPlaats, vloerGrootte, vloerDraai);
 
-	Vorm* blok = leesObj("vormen/blok.obj");
+	Vorm* blok = leesObj("vormen/bol.obj");
 
 	Lijst* blokKleuren = maakLijst(blok->hoek_aantal, sizeof(Vec4f));
 	for (int h = 0; h < blok->hoek_aantal; h++) {

@@ -4,6 +4,7 @@
 #include "lineair.h"
 #include "vorm.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -80,7 +81,7 @@ static void leesRegel() {
 
 static unsigned int vervang(char* woord, char aanwezig, char vervanging) {
 	unsigned int tel;
-	char teken;
+	char teken = ' ';
 	for (int i = 0; teken != '\0'; i++) {
 		teken = woord[i];
 		if (teken == aanwezig) {
@@ -91,10 +92,10 @@ static unsigned int vervang(char* woord, char aanwezig, char vervanging) {
 	return tel;
 }
 
-static void leesHoek(Lijst* hoeklijst) {
+static void leesHoekP() {
 	leesRegel();
 	if (regel->tel < 3 || regel->tel > 4) {
-		fprintf(stderr, "Verwachtte 3/4 woorden in .obj hoek(p/n) regel maar kreeg: %d\n", regel->tel);
+		fprintf(stderr, "Verwachtte 3/4 woorden in .obj hoek(p) regel maar kreeg: %d\n", regel->tel);
 		exit(-1);
 	}
 	float x = strtof(lijstKrijg(regel, 0, char*), NULL);
@@ -103,8 +104,21 @@ static void leesHoek(Lijst* hoeklijst) {
 	float w = 1;
 	if (regel->tel == 4) w = strtof(lijstKrijg(regel, 3, char*), NULL);
 	Vec4f v = (Vec4f){x, y, z, w};
-	Vec3f v2 = Vec4n3f(v, waar);
-	lijstVoeg(hoeklijst, &v2);
+	Vec3f v2 = Vec4n3f(v, onwaar);
+	lijstVoeg(gegeven_hoeken_p, &v2);
+}
+
+static void leesHoekN() {
+	leesRegel();
+	if (regel->tel != 3) {
+		fprintf(stderr, "Verwachtte 3 woorden in .obj hoek(n) regel maar kreeg: %d\n", regel->tel);
+		exit(-1);
+	}
+	float x = strtof(lijstKrijg(regel, 0, char*), NULL);
+	float y = strtof(lijstKrijg(regel, 1, char*), NULL);
+	float z = strtof(lijstKrijg(regel, 2, char*), NULL);
+	Vec3f v = Vec3fn((Vec3f){x, y, z});
+	lijstVoeg(gegeven_hoeken_n, &v);
 }
 
 static void leesHoekV() {
@@ -122,7 +136,8 @@ static void leesHoekV() {
 static Hoektallen leesHoektallen(char* hoektal) {
 	Hoektallen h = {0, 0, 0};
 	char* getal_eind;
-	vervang(hoektal, '\\', ' ');
+	booleaan dubbel = strstr(hoektal, "//") != NULL;
+	vervang(hoektal, '/', ' ');
 	const float p = strtoul(hoektal, &getal_eind, 10);
 	if (p == 0) return h;
 	else if (p < 0)
@@ -130,12 +145,14 @@ static Hoektallen leesHoektallen(char* hoektal) {
 	else
 		h.plek = p - 1;
 
-	const float v = strtoul(getal_eind, &getal_eind, 10);
-	if (v == 0) return h;
-	else if (v < 0)
-		h.verf = gegeven_hoeken_v->tel + v;
-	else
-		h.verf = v - 1;
+	if (!dubbel) {
+		const float v = strtoul(getal_eind, &getal_eind, 10);
+		if (v == 0) return h;
+		else if (v < 0)
+			h.verf = gegeven_hoeken_v->tel + v;
+		else
+			h.verf = v - 1;
+	}
 
 	const float n = strtoul(getal_eind, NULL, 10);
 	if (n == 0) return h;
@@ -235,13 +252,13 @@ Vorm* leesObj(const char* bestandsnaam) {
 			verwerpRegel();
 		} else if (strcmp(woord, "v") == 0) {
 			free(woord);
-			leesHoek(gegeven_hoeken_p);
+			leesHoekP();
 		} else if (strcmp(woord, "vt") == 0) {
 			free(woord);
 			leesHoekV();
 		} else if (strcmp(woord, "vn") == 0) {
 			free(woord);
-			leesHoek(gegeven_hoeken_n);
+			leesHoekN();
 		} else if (strcmp(woord, "f") == 0) {
 			free(woord);
 			leesVlak();
@@ -253,8 +270,8 @@ Vorm* leesObj(const char* bestandsnaam) {
 	}
 
 	fputs("[", stdout);
-	for (unsigned int i = 0; i < hoeken_p->tel; i++) {
-		Vec3f v = lijstKrijg(hoeken_p, i, Vec3f);
+	for (unsigned int i = 0; i < hoeken_n->tel; i++) {
+		Vec3f v = lijstKrijg(hoeken_n, i, Vec3f);
 		printf("<%f, %f, %f>, ", v.x, v.y, v.z);
 	}
 	fputs("]\n[", stdout);
