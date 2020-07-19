@@ -23,14 +23,22 @@ Vec3f uitproductf(Vec3f a, Vec3f b) {
 	return (Vec3f){a.y * b.z - b.y * a.z, a.z * b.x - b.z * a.x, a.x * b.y - b.x * a.y};
 }
 
+// Lengte
+
+float Vec3f_lengte_kw(Vec3f v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
+
 // Overgangen
 
+Vec3f Vec3fn(Vec3f v) {
+	float lengte = sqrtf(Vec3f_lengte_kw(v));
+	return Vec3ff(v, 1 / lengte);
+}
 Vec4f Vec3n4f(Vec3f v, float w) { return (Vec4f){v.x, v.y, v.z, w}; }
-Vec3f Vec4n3f(Vec4f v, booleaan normalizeren) {
-	if (normalizeren) {
-		return (Vec3f){v.x / v.w, v.y / v.w, v.z / v.w};
-	} else {
+Vec3f Vec4n3f(Vec4f v, booleaan verwerp_w) {
+	if (verwerp_w) {
 		return (Vec3f){v.x, v.y, v.z};
+	} else {
+		return (Vec3f){v.x / v.w, v.y / v.w, v.z / v.w};
 	}
 }
 Mat4f kantelMat4f(Mat4f m) {

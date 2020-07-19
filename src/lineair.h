@@ -142,10 +142,15 @@ float inproduct4f(Vec4f a, Vec4f b);
 Vec3i uitproducti(Vec3i a, Vec3i b);
 Vec3f uitproductf(Vec3f a, Vec3f b);
 
+// Lente
+
+float Vec3f_lengte_kw(Vec3f v);
+
 // Overgangen
 
+Vec3f Vec3fn(Vec3f v);
 Vec4f Vec3n4f(Vec3f v, float w);
-Vec3f Vec4n3f(Vec4f v, booleaan normalizeren);
+Vec3f Vec4n3f(Vec4f v, booleaan verwerp_w);
 Mat4f kantelMat4f(Mat4f m);
 
 // Vermenigvuldigingen
