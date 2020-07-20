@@ -5,6 +5,6 @@
 
 char* leesBestand(const char* bestandsnaam);
 Vorm* leesObj(const char* bestandsnaam);
-void /* ? */ leesMtl(const char* bestandsnaam);
+Lijst* leesMtl(const char* bestandsnaam);
 
 #endif

@@ -14,9 +14,6 @@ FILE* bestand;
 Lijst* regel;  // char*[]
 booleaan EOF_gevonden, regeleind_gevonden;
 
-Materiaal *materialen, *huidigMateriaal;
-unsigned int materialenGrootte, materialenTel;
-
 Lijst* gegeven_hoeken_p;  // Vec3f[]
 Lijst* gegeven_hoeken_v;  // Vec2f[]
 Lijst* gegeven_hoeken_n;  // Vec3f[]
@@ -251,38 +248,29 @@ Vorm* leesObj(const char* bestandsnaam) {
 
 		// Aantekeningen
 		if (strcmp(woord, "#") == 0) {
-			free(woord);
 			verwerpRegel();
 		} else if (strcmp(woord, "v") == 0) {
-			free(woord);
 			leesHoekP();
 		} else if (strcmp(woord, "vt") == 0) {
-			free(woord);
 			leesHoekV();
 		} else if (strcmp(woord, "vn") == 0) {
-			free(woord);
 			leesHoekN();
 		} else if (strcmp(woord, "f") == 0) {
-			free(woord);
 			leesVlak();
-
-
 		} else if (strcmp(woord, "usemtl") == 0) {
 			char* mtlNaam = leesWoord();
-			for (int i = 0; i < materialenTel; i++) {
+			for (int i = 0; i < materialen->tel; i++) {
 				// TODO
 			}
 		} else if (strcmp(woord, "mtllib") == 0) {
 			char* mtlBestandsnaam = leesWoord();
 			leesMtl(mtlBestandsnaam);  // TODO
 			free(mtlBestandsnaam);
-		
-		
 		} else {
-			free(woord);
 			fprintf(stderr, "Onbekend begin van obj regel: %s\n", woord);
 			if (!regeleind_gevonden) verwerpRegel();
 		}
+		free(woord);
 	}
 
 	fputs("[", stdout);
@@ -316,8 +304,27 @@ Vorm* leesObj(const char* bestandsnaam) {
 	return vorm;
 }
 
-void leesMtl(const char* bestandsnaam) {
+Lijst* materialen;	// Materiaal[]
+booleaan mtl_EOF_gevonden;
+
+Lijst* leesMtl(const char* bestandsnaam) {
+	mtl_EOF_gevonden = onwaar;
+	materialen = maakLijst(4, sizeof(Materiaal));
+
 	FILE* bestand = fopen(bestandsnaam, "rb");
-	materialen = malloc(4*sizeof(Materiaal));
-	// TODO
+	Materiaal huidig_materiaal;
+
+	while (!mtl_EOF_gevonden) {
+		char* woord = leesWoord();
+		if (strcmp(woord, "newmtl") == 0) {
+			huidig_materiaal = (Materiaal){leesWoord()};
+		} else if (strcmp(woord, "Ka") == 0) {
+		} else if (strcmp(woord, "Kd") == 0) {
+		} else if (strcmp(woord, "Ks") == 0) {
+		} else if (strcmp(woord, "Ns") == 0) {
+		} else if (strcmp(woord, "d") == 0) {  // TODO of Tr?
+		} else if (strcmp(woord, "Ni") == 0) {
+		} else if (strcmp(woord, "illum") == 0) {
+		}
+	}
 }
