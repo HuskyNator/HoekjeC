@@ -10,21 +10,46 @@
 #include <stdlib.h>
 #include <string.h>
 
-FILE* bestand;
-Lijst* regel;  // char*[]
-booleaan EOF_gevonden, regeleind_gevonden;
+char* leesBestand(const char* bestandsnaam) {
+	FILE* bestand = fopen(bestandsnaam, "rb");
+	if (bestand == NULL) {
+		fprintf(stderr, "Bestand '%s' bestaat niet.", bestandsnaam);
+		return NULL;
+	}
 
-Lijst* gegeven_hoeken_p;  // Vec3f[]
-Lijst* gegeven_hoeken_v;  // Vec2f[]
-Lijst* gegeven_hoeken_n;  // Vec3f[]
+	fseek(bestand, 0, SEEK_END);
+	long grootte = ftell(bestand);
+	fseek(bestand, 0, SEEK_SET);
 
-Lijst* hoeken_p;	  // Vec3f[]
-Lijst* hoeken_v;	  // Vec2f[]
-Lijst* hoeken_n;	  // Vec3f[]
-Lijst* hoekentallen;  // Hoektallen[]
-Lijst* vlakken;		  // Vlak[]
+	char* inhoud = malloc(grootte + 1);
+	fread(inhoud, 1, grootte, bestand);
+	*(inhoud + grootte) = '\0';
+	fclose(bestand);
+	return inhoud;
+}
 
-static char verwerpRuimte() {
+typedef struct bestand Bestand;
+struct bestand {
+	FILE* bestand;
+	Lijst* regel;  // char*[]
+	booleaan EOF_gevonden;
+	booleaan regeleind_gevonden;
+};
+
+static Bestand obj_bestand;
+static Bestand mtl_bestand;
+
+static Lijst* gegeven_hoeken_p;	 // Vec3f[]
+static Lijst* gegeven_hoeken_v;	 // Vec2f[]
+static Lijst* gegeven_hoeken_n;	 // Vec3f[]
+
+static Lijst* hoeken_p;		 // Vec3f[]
+static Lijst* hoeken_v;		 // Vec2f[]
+static Lijst* hoeken_n;		 // Vec3f[]
+static Lijst* hoekentallen;	 // Hoektallen[]
+static Lijst* vlakken;		 // Vlak[]
+
+static char verwerpRuimte(Bestand* bestand) {
 	char teken = getc(bestand);
 	while (teken == ' ' || teken == '\t' || teken == '\r' /*|| teken == '\n'*/) {
 		teken = getc(bestand);
@@ -32,22 +57,22 @@ static char verwerpRuimte() {
 	return teken;
 }
 
-static void verwerpRegel() {
+static void verwerpRegel(Bestand* bestand) {
 	char teken;
 	while (teken != '\n' && teken != EOF) {
 		teken = getc(bestand);
 	}
 }
 
-static char* leesWoord() {
+static char* leesWoord(Bestand* bestand) {
 	unsigned char woordTel = 0;
 	unsigned char woordGrootte = 10;
-	regeleind_gevonden = onwaar;
+	bestand->regeleind_gevonden = onwaar;
 	char* woord = malloc(woordGrootte + 1);
-	char teken = verwerpRuimte();
+	char teken = verwerpRuimte(bestand);
 	while (teken != ' ' && teken != '\n' && teken != '\t' && teken != '\r' && teken != EOF) {
 		if (teken == '#') {
-			verwerpRegel();
+			verwerpRegel(bestand);
 			break;
 		}
 		if (woordTel == woordGrootte) {
@@ -56,11 +81,11 @@ static char* leesWoord() {
 		}
 		woord[woordTel] = teken;
 		woordTel++;
-		teken = getc(bestand);
+		teken = getc(bestand->bestand);
 	}
-	if (teken == EOF) EOF_gevonden = waar;
+	if (teken == EOF) bestand->EOF_gevonden = waar;
 	else if (teken == '\n')
-		regeleind_gevonden = waar;
+		bestand->regeleind_gevonden = waar;
 	if (woordTel == 0) {
 		free(woord);
 		return NULL;
@@ -69,13 +94,16 @@ static char* leesWoord() {
 	return woord;
 }
 
-static void leesRegel() {
-	lijstLeeg(regel, waar);
-	char* woord = leesWoord();
+/**
+ * Leest een regel van een bestand
+ */
+static Lijst* leesRegel(Bestand* bestand) {
+	Lijst* regel = maakLijst(10, sizeof(char*));
+	char* woord = leesWoord(bestand);
 	while (woord != NULL) {
-		lijstVoeg(regel, &woord);
-		if (EOF_gevonden || regeleind_gevonden) break;
-		woord = leesWoord();
+		lijstVoeg(bestand->regel, &woord);
+		if (bestand->EOF_gevonden || bestand->regeleind_gevonden) break;
+		woord = leesWoord(bestand);
 	}
 }
 
@@ -93,42 +121,42 @@ static unsigned int vervang(char* woord, char aanwezig, char vervanging) {
 }
 
 static void leesHoekP() {
-	leesRegel();
-	if (regel->tel < 3 || regel->tel > 4) {
-		fprintf(stderr, "Verwachtte 3/4 woorden in .obj hoek(p) regel maar kreeg: %d\n", regel->tel);
+	leesRegel(&obj_bestand);
+	if (obj_bestand.regel->tel < 3 || obj_bestand.regel->tel > 4) {
+		fprintf(stderr, "Verwachtte 3/4 woorden in .obj hoek(p) regel maar kreeg: %d\n", obj_bestand.regel->tel);
 		exit(-1);
 	}
-	float x = strtof(lijstKrijg(regel, 0, char*), NULL);
-	float y = strtof(lijstKrijg(regel, 1, char*), NULL);
-	float z = strtof(lijstKrijg(regel, 2, char*), NULL);
+	float x = strtof(lijstKrijg(obj_bestand.regel, 0, char*), NULL);
+	float y = strtof(lijstKrijg(obj_bestand.regel, 1, char*), NULL);
+	float z = strtof(lijstKrijg(obj_bestand.regel, 2, char*), NULL);
 	float w = 1;
-	if (regel->tel == 4) w = strtof(lijstKrijg(regel, 3, char*), NULL);
+	if (obj_bestand.regel->tel == 4) w = strtof(lijstKrijg(obj_bestand.regel, 3, char*), NULL);
 	Vec4f v = (Vec4f){x, y, z, w};
 	Vec3f v2 = Vec4n3f(v, onwaar);
 	lijstVoeg(gegeven_hoeken_p, &v2);
 }
 
 static void leesHoekN() {
-	leesRegel();
-	if (regel->tel != 3) {
-		fprintf(stderr, "Verwachtte 3 woorden in .obj hoek(n) regel maar kreeg: %d\n", regel->tel);
+	leesRegel(&obj_bestand);
+	if (obj_bestand.regel->tel != 3) {
+		fprintf(stderr, "Verwachtte 3 woorden in .obj hoek(n) regel maar kreeg: %d\n", obj_bestand.regel->tel);
 		exit(-1);
 	}
-	float x = strtof(lijstKrijg(regel, 0, char*), NULL);
-	float y = strtof(lijstKrijg(regel, 1, char*), NULL);
-	float z = strtof(lijstKrijg(regel, 2, char*), NULL);
+	float x = strtof(lijstKrijg(obj_bestand.regel, 0, char*), NULL);
+	float y = strtof(lijstKrijg(obj_bestand.regel, 1, char*), NULL);
+	float z = strtof(lijstKrijg(obj_bestand.regel, 2, char*), NULL);
 	Vec3f v = Vec3fn((Vec3f){x, y, z});
 	lijstVoeg(gegeven_hoeken_n, &v);
 }
 
 static void leesHoekV() {
-	leesRegel();
-	if (regel->tel != 2) {
-		fprintf(stderr, "Verwachtte 2 woorden in .obj hoek(v) regel maar kreeg: %d\n", regel->tel);
+	leesRegel(&obj_bestand);
+	if (obj_bestand.regel->tel != 2) {
+		fprintf(stderr, "Verwachtte 2 woorden in .obj hoek(v) regel maar kreeg: %d\n", obj_bestand.regel->tel);
 		exit(-1);
 	}
-	float x = strtof(lijstKrijg(regel, 0, char*), NULL);
-	float y = strtof(lijstKrijg(regel, 1, char*), NULL);
+	float x = strtof(lijstKrijg(obj_bestand.regel, 0, char*), NULL);
+	float y = strtof(lijstKrijg(obj_bestand.regel, 1, char*), NULL);
 	Vec2f v = (Vec2f){x, y};
 	lijstVoeg(gegeven_hoeken_v, &v);
 }
@@ -177,20 +205,20 @@ static unsigned int voegHoekToe(Hoektallen* hoektal) {
 }
 
 static void leesVlak() {
-	leesRegel();
-	if (regel->tel < 3) {
-		fprintf(stderr, "Fout aantal hoeken in vlak: %d", regel->tel);
+	leesRegel(&obj_bestand);
+	if (obj_bestand.regel->tel < 3) {
+		fprintf(stderr, "Fout aantal hoeken in vlak: %d", obj_bestand.regel->tel);
 		exit(-1);
 	}
 
-	Hoektallen oorsprong = leesHoektallen(lijstKrijg(regel, 0, char*));
+	Hoektallen oorsprong = leesHoektallen(lijstKrijg(obj_bestand.regel, 0, char*));
 	unsigned int oorsprongtal = voegHoekToe(&oorsprong);
 
-	Hoektallen tweede = leesHoektallen(lijstKrijg(regel, 1, char*));
+	Hoektallen tweede = leesHoektallen(lijstKrijg(obj_bestand.regel, 1, char*));
 	unsigned int tweedetal = voegHoekToe(&tweede);
 
-	for (int i = 2; i < regel->tel; i++) {
-		Hoektallen derde = leesHoektallen(lijstKrijg(regel, i, char*));
+	for (int i = 2; i < obj_bestand.regel->tel; i++) {
+		Hoektallen derde = leesHoektallen(lijstKrijg(obj_bestand.regel, i, char*));
 		unsigned int derdetal = voegHoekToe(&derde);
 
 		Vlak vlak = (Vlak){oorsprongtal, tweedetal, derdetal};
@@ -200,36 +228,18 @@ static void leesVlak() {
 	}
 }
 
-char* leesBestand(const char* bestandsnaam) {
+// TODO gebruik doorlees stukken voor te grote bestanden
+Vorm* leesObj(const char* bestandsnaam) {
 	FILE* bestand = fopen(bestandsnaam, "rb");
 	if (bestand == NULL) {
 		fprintf(stderr, "Bestand '%s' bestaat niet.", bestandsnaam);
 		return NULL;
 	}
 
-	fseek(bestand, 0, SEEK_END);
-	long grootte = ftell(bestand);
-	fseek(bestand, 0, SEEK_SET);
-
-	char* inhoud = malloc(grootte + 1);
-	fread(inhoud, 1, grootte, bestand);
-	*(inhoud + grootte) = '\0';
-	fclose(bestand);
-	return inhoud;
-}
-
-// TODO gebruik doorlees stukken voor te grote bestanden
-Vorm* leesObj(const char* bestandsnaam) {
-	bestand = fopen(bestandsnaam, "rb");
-	if (bestand == NULL) {
-		fprintf(stderr, "Bestand '%s' bestaat niet.", bestandsnaam);
-		return NULL;
-	}
-
-	EOF_gevonden = onwaar;
-	regeleind_gevonden = onwaar;
-
-	regel = maakLijst(10, sizeof(char*));
+	obj_bestand = (Bestand){.bestand = bestand,
+							.regel = maakLijst(10, sizeof(char*)),
+							.EOF_gevonden = onwaar,
+							.regeleind_gevonden = onwaar};
 
 	gegeven_hoeken_p = maakLijst(10, sizeof(Vec3f));
 	gegeven_hoeken_v = maakLijst(10, sizeof(Vec2f));
@@ -241,34 +251,34 @@ Vorm* leesObj(const char* bestandsnaam) {
 	hoekentallen = maakLijst(10, sizeof(Hoektallen));
 	vlakken = maakLijst(10, sizeof(Vlak));
 
-	while (!EOF_gevonden) {
+	while (!obj_bestand.EOF_gevonden) {
 		// Leidende Ruimte
-		char* woord = leesWoord();
+		char* woord = leesWoord(bestand);
 		if (woord == NULL) continue;
 
 		// Aantekeningen
 		if (strcmp(woord, "#") == 0) {
-			verwerpRegel();
+			verwerpRegel(bestand);
 		} else if (strcmp(woord, "v") == 0) {
-			leesHoekP();
+			leesHoekP(bestand);
 		} else if (strcmp(woord, "vt") == 0) {
-			leesHoekV();
+			leesHoekV(bestand);
 		} else if (strcmp(woord, "vn") == 0) {
-			leesHoekN();
+			leesHoekN(bestand);
 		} else if (strcmp(woord, "f") == 0) {
-			leesVlak();
+			leesVlak(bestand);
 		} else if (strcmp(woord, "usemtl") == 0) {
-			char* mtlNaam = leesWoord();
+			char* mtlNaam = leesWoord(bestand);
 			for (int i = 0; i < materialen->tel; i++) {
 				// TODO
 			}
 		} else if (strcmp(woord, "mtllib") == 0) {
-			char* mtlBestandsnaam = leesWoord();
+			char* mtlBestandsnaam = leesWoord(bestand);
 			leesMtl(mtlBestandsnaam);  // TODO
 			free(mtlBestandsnaam);
 		} else {
 			fprintf(stderr, "Onbekend begin van obj regel: %s\n", woord);
-			if (!regeleind_gevonden) verwerpRegel();
+			if (!obj_bestand.regeleind_gevonden) verwerpRegel(bestand);
 		}
 		free(woord);
 	}
@@ -290,7 +300,7 @@ Vorm* leesObj(const char* bestandsnaam) {
 	vormVoegInhoudToe(vorm, hoeken_n, 2);
 
 	fclose(bestand);
-	verwijderLijst(regel, waar);
+	verwijderLijst(obj_bestand.regel, waar);
 
 	verwijderLijst(gegeven_hoeken_p, onwaar);
 	verwijderLijst(gegeven_hoeken_v, onwaar);
@@ -305,26 +315,62 @@ Vorm* leesObj(const char* bestandsnaam) {
 }
 
 Lijst* materialen;	// Materiaal[]
-booleaan mtl_EOF_gevonden;
+Materiaal huidig_materiaal;
+
+static void leesKa() {
+	leesRegel(&mtl_bestand);
+	if (mtl_bestand.regel->tel == 0) {
+		fputs("Ka vereist argumenten maar bevatte er 0.", stderr);
+		return;
+	}
+
+	char* eerste = lijstKrijg(mtl_bestand.regel, 0, char*);
+	if (strstr(eerste, "spectral") == 0) {	 /*TODO*/
+	} else if (strstr(eerste, "xyz") == 0) { /*TODO*/
+	} else {
+		float r = strtof(eerste, NULL);
+		if (mtl_bestand.regel->tel == 1) {
+			huidig_materiaal.afweer_kleur = (Vec3f){r, r, r};
+		} else {
+			char* tweede = lijstKrijg(mtl_bestand.regel, 1, char*);
+			char* derde = lijstKrijg(mtl_bestand.regel, 2, char*);
+			float g = strtof(tweede, NULL);
+			float b = strtof(derde, NULL);
+			huidig_materiaal.afweer_kleur = (Vec3f){r, g, b};
+		}
+	}
+}
 
 Lijst* leesMtl(const char* bestandsnaam) {
-	mtl_EOF_gevonden = onwaar;
+	FILE* bestand = fopen(bestandsnaam, "rb");
+	if (bestand == NULL) {
+		fprintf(stderr, "Bestand '%s' bestaat niet.", bestandsnaam);
+		return NULL;
+	}
+
+	mtl_bestand = (Bestand){.bestand = bestand,
+							.regel = maakLijst(10, sizeof(char*)),
+							.EOF_gevonden = onwaar,
+							.regeleind_gevonden = onwaar};
+
 	materialen = maakLijst(4, sizeof(Materiaal));
 
-	FILE* bestand = fopen(bestandsnaam, "rb");
-	Materiaal huidig_materiaal;
-
-	while (!mtl_EOF_gevonden) {
-		char* woord = leesWoord();
+	while (!mtl_bestand.EOF_gevonden) {
+		char* woord = leesWoord(bestand);
 		if (strcmp(woord, "newmtl") == 0) {
-			huidig_materiaal = (Materiaal){leesWoord()};
+			huidig_materiaal = (Materiaal){leesWoord(bestand)};
 		} else if (strcmp(woord, "Ka") == 0) {
+			leesKa();
 		} else if (strcmp(woord, "Kd") == 0) {
 		} else if (strcmp(woord, "Ks") == 0) {
 		} else if (strcmp(woord, "Ns") == 0) {
 		} else if (strcmp(woord, "d") == 0) {  // TODO of Tr?
 		} else if (strcmp(woord, "Ni") == 0) {
 		} else if (strcmp(woord, "illum") == 0) {
+		} else if (strcmp(woord, "map_Ka") == 0) {
+		} else if (strcmp(woord, "map_Kd") == 0) {
+		} else if (strcmp(woord, "map_Ks") == 0) {
+		} else if (strcmp(woord, "map_Ns") == 0) {
+		} else if (strcmp(woord, "map_d") == 0) {
 		}
 	}
-}
