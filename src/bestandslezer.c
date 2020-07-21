@@ -317,26 +317,28 @@ Vorm* leesObj(const char* bestandsnaam) {
 Lijst* materialen;	// Materiaal[]
 Materiaal huidig_materiaal;
 
-static void leesKa() {
+static void leesK(Vec3f* doel) {
 	leesRegel(&mtl_bestand);
 	if (mtl_bestand.regel->tel == 0) {
-		fputs("Ka vereist argumenten maar bevatte er 0.", stderr);
+		fputs("K(a/d/s) vereist 1+ argumenten maar bevatte er 0.", stderr);
 		return;
 	}
 
 	char* eerste = lijstKrijg(mtl_bestand.regel, 0, char*);
-	if (strstr(eerste, "spectral") == 0) {	 /*TODO*/
-	} else if (strstr(eerste, "xyz") == 0) { /*TODO*/
+	if (strstr(eerste, "spectral") == 0) {
+		fputs("'spectral' moet nog gemaakt worden.", stderr);  // TODO
+	} else if (strstr(eerste, "xyz") == 0) {
+		fputs("'xyz' moet nog gemaakt worden.", stderr);  // TODO
 	} else {
 		float r = strtof(eerste, NULL);
 		if (mtl_bestand.regel->tel == 1) {
-			huidig_materiaal.afweer_kleur = (Vec3f){r, r, r};
+			*doel = (Vec3f){r, r, r};
 		} else {
 			char* tweede = lijstKrijg(mtl_bestand.regel, 1, char*);
 			char* derde = lijstKrijg(mtl_bestand.regel, 2, char*);
 			float g = strtof(tweede, NULL);
 			float b = strtof(derde, NULL);
-			huidig_materiaal.afweer_kleur = (Vec3f){r, g, b};
+			*doel = (Vec3f){r, g, b};
 		}
 	}
 }
@@ -360,9 +362,11 @@ Lijst* leesMtl(const char* bestandsnaam) {
 		if (strcmp(woord, "newmtl") == 0) {
 			huidig_materiaal = (Materiaal){leesWoord(bestand)};
 		} else if (strcmp(woord, "Ka") == 0) {
-			leesKa();
+			leesK(&huidig_materiaal.vaste_kleur);
 		} else if (strcmp(woord, "Kd") == 0) {
+			leesK(&huidig_materiaal.afweer_kleur);
 		} else if (strcmp(woord, "Ks") == 0) {
+			leesK(&huidig_materiaal.weerkaats_kleur);
 		} else if (strcmp(woord, "Ns") == 0) {
 		} else if (strcmp(woord, "d") == 0) {  // TODO of Tr?
 		} else if (strcmp(woord, "Ni") == 0) {
