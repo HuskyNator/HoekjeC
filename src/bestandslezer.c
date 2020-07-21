@@ -256,10 +256,11 @@ Vorm* leesObj(const char* bestandsnaam) {
 		char* woord = leesWoord(bestand);
 		if (woord == NULL) continue;
 
-		// Aantekeningen
-		if (strcmp(woord, "#") == 0) {
-			verwerpRegel(bestand);
-		} else if (strcmp(woord, "v") == 0) {
+		// Aantekeningen, leesWoord geeft simpelweg NULL
+		// if (woord[0] == '#') {
+		// 	verwerpRegel(bestand);
+		// } else
+		if (strcmp(woord, "v") == 0) {
 			leesHoekP(bestand);
 		} else if (strcmp(woord, "vt") == 0) {
 			leesHoekV(bestand);
@@ -377,6 +378,12 @@ Lijst* leesMtl(const char* bestandsnaam) {
 
 	while (!mtl_bestand.EOF_gevonden) {
 		char* woord = leesWoord(bestand);
+
+		if (woord == NULL) continue;
+
+		// Aantekeningen, leesWoord geeft simpelweg NULL
+		// if (woord[0] == '#') verwerpRegel(&mtl_bestand);
+		// else
 		if (strcmp(woord, "newmtl") == 0) {
 			char* naam = leesWoord();
 			if (naam == NULL) {
