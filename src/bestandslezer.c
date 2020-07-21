@@ -13,7 +13,7 @@
 char* leesBestand(const char* bestandsnaam) {
 	FILE* bestand = fopen(bestandsnaam, "rb");
 	if (bestand == NULL) {
-		fprintf(stderr, "Bestand '%s' bestaat niet.", bestandsnaam);
+		fprintf(stderr, "Bestand '%s' bestaat niet.\n", bestandsnaam);
 		return NULL;
 	}
 
@@ -207,7 +207,7 @@ static unsigned int voegHoekToe(Hoektallen* hoektal) {
 static void leesVlak() {
 	leesRegel(&obj_bestand);
 	if (obj_bestand.regel->tel < 3) {
-		fprintf(stderr, "Fout aantal hoeken in vlak: %d", obj_bestand.regel->tel);
+		fprintf(stderr, "Fout aantal hoeken in vlak: %d\n", obj_bestand.regel->tel);
 		exit(-1);
 	}
 
@@ -232,7 +232,7 @@ static void leesVlak() {
 Vorm* leesObj(const char* bestandsnaam) {
 	FILE* bestand = fopen(bestandsnaam, "rb");
 	if (bestand == NULL) {
-		fprintf(stderr, "Bestand '%s' bestaat niet.", bestandsnaam);
+		fprintf(stderr, "Bestand '%s' bestaat niet.\n", bestandsnaam);
 		return NULL;
 	}
 
@@ -343,10 +343,28 @@ static void leesK(Vec3f* doel) {
 	}
 }
 
+void leesFloat(Bestand* bestand, float* getal) {
+	char* woord = leesWoord(bestand);
+	if (woord == NULL) {
+		fputs("Verwachtte getal maar kreeg niets.", stderr);
+		return;
+	}
+	*getal = strtof(woord, NULL);
+}
+
+void leesUChar(Bestand* bestand, float* getal) {
+	char* woord = leesWoord(bestand);
+	if (woord == NULL) {
+		fputs("Verwachtte getal maar kreeg niets.", stderr);
+		return;
+	}
+	*getal = (unsigned char)strtoul(woord, NULL, 10);
+}
+
 Lijst* leesMtl(const char* bestandsnaam) {
 	FILE* bestand = fopen(bestandsnaam, "rb");
 	if (bestand == NULL) {
-		fprintf(stderr, "Bestand '%s' bestaat niet.", bestandsnaam);
+		fprintf(stderr, "Bestand '%s' bestaat niet.\n", bestandsnaam);
 		return NULL;
 	}
 
@@ -360,7 +378,11 @@ Lijst* leesMtl(const char* bestandsnaam) {
 	while (!mtl_bestand.EOF_gevonden) {
 		char* woord = leesWoord(bestand);
 		if (strcmp(woord, "newmtl") == 0) {
-			huidig_materiaal = (Materiaal){leesWoord(bestand)};
+			char* naam = leesWoord();
+			if (naam == NULL) {
+				fputs("Mis naam van materiaal.", stderr);
+			}
+			huidig_materiaal = (Materiaal){.naam = naam};
 		} else if (strcmp(woord, "Ka") == 0) {
 			leesK(&huidig_materiaal.vaste_kleur);
 		} else if (strcmp(woord, "Kd") == 0) {
@@ -368,13 +390,24 @@ Lijst* leesMtl(const char* bestandsnaam) {
 		} else if (strcmp(woord, "Ks") == 0) {
 			leesK(&huidig_materiaal.weerkaats_kleur);
 		} else if (strcmp(woord, "Ns") == 0) {
-		} else if (strcmp(woord, "d") == 0) {  // TODO of Tr?
+			leesFloat(&mtl_bestand, &huidig_materiaal.weerkaatsing);
+		}
+		// TODO Tf?
+		else if (strcmp(woord, "d") == 0) {	 // TODO of Tr?
+			leesFloat(&mtl_bestand, &huidig_materiaal.doorzichtigheid);
 		} else if (strcmp(woord, "Ni") == 0) {
+			leesFloat(&mtl_bestand, &huidig_materiaal.brekingsgetal);
 		} else if (strcmp(woord, "illum") == 0) {
-		} else if (strcmp(woord, "map_Ka") == 0) {
-		} else if (strcmp(woord, "map_Kd") == 0) {
-		} else if (strcmp(woord, "map_Ks") == 0) {
-		} else if (strcmp(woord, "map_Ns") == 0) {
-		} else if (strcmp(woord, "map_d") == 0) {
+			leesUChar(&mtl_bestand, &huidig_materiaal.verlichtingswijze);
+		}
+		// } else if (strcmp(woord, "map_Ka") == 0) {	// TODO
+		// } else if (strcmp(woord, "map_Kd") == 0) {	// TODO
+		// } else if (strcmp(woord, "map_Ks") == 0) {	// TODO
+		// } else if (strcmp(woord, "map_Ns") == 0) {	// TODO
+		// } else if (strcmp(woord, "map_d") == 0) {	// TODO
+		else {
+			fprintf(stderr, "Onbekend begin van mtl regel: %s\n", woord);
+			if (!obj_bestand.regeleind_gevonden) verwerpRegel(bestand);
 		}
 	}
+}
