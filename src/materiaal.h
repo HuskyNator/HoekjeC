@@ -5,13 +5,13 @@ typedef struct materiaal Materiaal;
 
 struct materiaal {
 	char* naam;
-	Vec3f vaste_kleur;				  // Licht onafhankelijk
-	Vec3f afweer_kleur;				  // Licht afhankelijk.
-	Vec3f weerkaats_kleur;			  // Lichtrichting afhankelijk.
-	float weerkaatsing;				  // Mate van weerkaatsing.
-	float doorzichtigheid;			  // Mate van doorzichtigheid.
-	float brekingsgetal;			  // Mate van interne breking.
-	unsigned char verlichtingswijze;  // TODO mogelijk overbodig.
+	Vec3f vaste_kleur;				  // Licht onafhankelijk		(Ka)
+	Vec3f afweer_kleur;				  // Licht afhankelijk.			(Kd)
+	Vec3f weerkaats_kleur;			  // Lichtrichting afhankelijk.	(Ks)
+	float weerkaatsing;				  // Mate van weerkaatsing.		(Ns)
+	float doorzichtigheid;			  // Mate van doorzichtigheid.	(d)
+	float brekingsgetal;			  // Mate van interne breking.	(Ni)
+	unsigned char verlichtingswijze;  // TODO mogelijk overbodig.	(illum)
 };
 
 #endif

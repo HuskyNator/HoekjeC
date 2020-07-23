@@ -18,7 +18,7 @@ Lijst* maakLijst(unsigned int grootte, size_t onderdeel_grootte);
 void lijstGroei(Lijst* lijst, unsigned int grootte);
 void lijstKrimp(Lijst* lijst);
 
-void lijstVoeg(Lijst* lijst, void* onderdeel);
+unsigned int lijstVoeg(Lijst* lijst, void* onderdeel);
 booleaan lijstPlaats(Lijst* lijst, unsigned int plek, void* onderdeel);
 
 #define lijstKrijg(lijst, plek, soort) ((soort*)lijst->inhoud)[plek]

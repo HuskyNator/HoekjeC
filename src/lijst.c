@@ -32,10 +32,11 @@ void lijstKrimp(Lijst* lijst) {
 	lijst->grootte = lijst->tel;
 }
 
-void lijstVoeg(Lijst* lijst, void* inhoud) {
+unsigned int lijstVoeg(Lijst* lijst, void* inhoud) {
 	groei(lijst);
 	memcpy(lijst->inhoud + lijst->tel * lijst->onderdeel_grootte, inhoud, lijst->onderdeel_grootte);
 	lijst->tel++;
+	return lijst->tel - 1;
 }
 
 booleaan lijstPlaats(Lijst* lijst, unsigned int plek, void* onderdeel) {

@@ -316,7 +316,7 @@ Vorm* leesObj(const char* bestandsnaam) {
 }
 
 Lijst* materialen;	// Materiaal[]
-Materiaal huidig_materiaal;
+Materiaal* huidig_materiaal;
 
 static void leesK(Vec3f* doel) {
 	leesRegel(&mtl_bestand);
@@ -385,27 +385,30 @@ Lijst* leesMtl(const char* bestandsnaam) {
 		// if (woord[0] == '#') verwerpRegel(&mtl_bestand);
 		// else
 		if (strcmp(woord, "newmtl") == 0) {
-			char* naam = leesWoord();
+			char* naam = leesWoord(&mtl_bestand);
 			if (naam == NULL) {
 				fputs("Mis naam van materiaal.", stderr);
 			}
-			huidig_materiaal = (Materiaal){.naam = naam};
+			Materiaal nieuw_materiaal = (Materiaal){.naam = naam};
+			unsigned int plek = lijstVoeg(materialen, &nieuw_materiaal);
+			huidig_materiaal = &lijstKrijg(materialen, plek, Materiaal);
+
 		} else if (strcmp(woord, "Ka") == 0) {
-			leesK(&huidig_materiaal.vaste_kleur);
+			leesK(&huidig_materiaal->vaste_kleur);
 		} else if (strcmp(woord, "Kd") == 0) {
-			leesK(&huidig_materiaal.afweer_kleur);
+			leesK(&huidig_materiaal->afweer_kleur);
 		} else if (strcmp(woord, "Ks") == 0) {
-			leesK(&huidig_materiaal.weerkaats_kleur);
+			leesK(&huidig_materiaal->weerkaats_kleur);
 		} else if (strcmp(woord, "Ns") == 0) {
-			leesFloat(&mtl_bestand, &huidig_materiaal.weerkaatsing);
+			leesFloat(&mtl_bestand, &huidig_materiaal->weerkaatsing);
 		}
 		// TODO Tf?
 		else if (strcmp(woord, "d") == 0) {	 // TODO of Tr?
-			leesFloat(&mtl_bestand, &huidig_materiaal.doorzichtigheid);
+			leesFloat(&mtl_bestand, &huidig_materiaal->doorzichtigheid);
 		} else if (strcmp(woord, "Ni") == 0) {
-			leesFloat(&mtl_bestand, &huidig_materiaal.brekingsgetal);
+			leesFloat(&mtl_bestand, &huidig_materiaal->brekingsgetal);
 		} else if (strcmp(woord, "illum") == 0) {
-			leesUChar(&mtl_bestand, &huidig_materiaal.verlichtingswijze);
+			leesUChar(&mtl_bestand, &huidig_materiaal->verlichtingswijze);
 		}
 		// } else if (strcmp(woord, "map_Ka") == 0) {	// TODO
 		// } else if (strcmp(woord, "map_Kd") == 0) {	// TODO
