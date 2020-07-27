@@ -3,6 +3,7 @@
 
 #include "bestandslezer.h"
 #include "lineair.h"
+#include "materiaal.h"
 
 #include <GL/glew.h>
 #include <stdio.h>
@@ -80,6 +81,11 @@ void zetVerverFloat(const Verver* verver, const char* naam, float waarde) {
 	glUniform1f(verwijzing, waarde);
 }
 
+void zetVerverFloat3v(const Verver* verver, const char* naam, float waarden[]) {
+	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+	glUniform3fv(verwijzing, 1, waarden);
+}
+
 void zetVerverFloat4v(const Verver* verver, const char* naam, float waarden[]) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform4fv(verwijzing, 1, waarden);
@@ -88,4 +94,14 @@ void zetVerverFloat4v(const Verver* verver, const char* naam, float waarden[]) {
 void zetVerverMat4f(const Verver* verver, const char* naam, const Mat4f* mat) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniformMatrix4fv(verwijzing, 1, GL_FALSE, (float*)mat);
+}
+
+void zetVerverMateriaal(const Verver* verver, const Materiaal* materiaal) {
+	zetVerverFloat3v(verver, "materiaal.vaste_kleur", &materiaal->vaste_kleur.x);
+	zetVerverFloat3v(verver, "materiaal.afweer_kleur", &materiaal->afweer_kleur.x);
+	zetVerverFloat3v(verver, "materiaal.weerkaats_kleur", &materiaal->weerkaats_kleur.x);
+	zetVerverFloat(verver, "materiaal.weerkaatsing", materiaal->weerkaatsing);
+	zetVerverFloat(verver, "materiaal.doorzichtigheid", materiaal->doorzichtigheid);
+	zetVerverFloat(verver, "materiaal.brekingsgetal", materiaal->brekingsgetal);
+	// TODO verlichtingswijze & naam ?
 }

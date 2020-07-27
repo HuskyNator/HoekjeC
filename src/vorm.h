@@ -8,9 +8,13 @@
 
 typedef struct vorm Vorm;
 struct vorm {
-	unsigned int hoek_aantal;
-	unsigned int vlak_aantal;
+	Lijst* hoeken;		// Vec3f[]
+	Lijst* vlakken;		// Vlak[]
+	Lijst* groepen;		// unsigned int[]
+	Lijst* materialen;	// Materiaal[]
+
 	unsigned int VAO;
+	unsigned int* groep_EBOs;
 };
 
 typedef struct hoektallen Hoektallen;
@@ -27,12 +31,19 @@ struct vlak {
 	unsigned int hoek3;
 };
 
+typedef struct vlakGroep VlakGroep;
+struct vlakGroep{
+	unsigned int grootte;
+	unsigned int materiaal_tal;
+};
+
 /**
- * @brief  Maakt een vorm.
- * @param  hoeken: Hoek lijst van de vorm, bevat plekken van elke hoek.
- * @param  vlakken: Vlak lijst van de vorm, bevat verwijzingen naar hoeken.
+ * @param  hoeken: Vec3f[] van alle hoeken in de vorm.
+ * @param  vlakken: Vlak[] van alle vlakken in de vorm.
+ * @param  groepen: VlakGroep[] grootte van materiaalgroepen in de vlakken lijst.
+ * @param  materialen: Materiaal[] van gebruikte materialen.
  */
-Vorm* maakVorm(const Lijst* hoeken, const Lijst* vlakken);
+Vorm* maakVorm(Lijst* hoeken, Lijst* vlakken, Lijst* groepen, Lijst* materialen);
 
 /**
  * @brief  Voegt inhoud toe op de zoveelste standplaats van de voorwerp.
@@ -44,7 +55,7 @@ Vorm* maakVorm(const Lijst* hoeken, const Lijst* vlakken);
  */
 void vormVoegInhoudToe(Vorm* vorm, const Lijst* inhoud, unsigned int standplaats);
 
-void tekenVorm(const Vorm* vorm);
+void tekenVorm(const Vorm* vorm, Verver* verver);
 
 void verwijderVorm(Vorm* vorm);
 

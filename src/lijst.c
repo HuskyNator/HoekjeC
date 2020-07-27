@@ -64,7 +64,9 @@ booleaan lijstVind(Lijst* lijst, const void* onderdeel, unsigned int* plek) {
 	for (unsigned int i = 0; i < lijst->tel; i++) {
 		void* ander = lijst->inhoud + i * lijst->onderdeel_grootte;
 		if (memcmp(onderdeel, ander, lijst->onderdeel_grootte) == 0) {
-			*plek = i;
+			if (plek != NULL) {
+				*plek = i;
+			}
 			return waar;
 		}
 	}

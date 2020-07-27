@@ -21,7 +21,7 @@ void lijstKrimp(Lijst* lijst);
 unsigned int lijstVoeg(Lijst* lijst, void* onderdeel);
 booleaan lijstPlaats(Lijst* lijst, unsigned int plek, void* onderdeel);
 
-#define lijstKrijg(lijst, plek, soort) ((soort*)lijst->inhoud)[plek]
+#define lijstKrijg(lijst, plek, soort) (((soort*)lijst->inhoud)[plek])
 booleaan lijstVind(Lijst* lijst, const void* onderdeel, unsigned int* plek);
 
 booleaan lijstVerwijder(Lijst* lijst, unsigned int plek);

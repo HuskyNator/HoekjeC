@@ -36,23 +36,29 @@ struct bestand {
 	booleaan regeleind_gevonden;
 };
 
+// OBJ
+
 static Bestand obj_bestand;
-static Bestand mtl_bestand;
 
 static Lijst* gegeven_hoeken_p;	 // Vec3f[]
 static Lijst* gegeven_hoeken_v;	 // Vec2f[]
 static Lijst* gegeven_hoeken_n;	 // Vec3f[]
+static Lijst* hoeken_p;			 // Vec3f[]
+static Lijst* hoeken_v;			 // Vec2f[]
+static Lijst* hoeken_n;			 // Vec3f[]
+static Lijst* hoekentallen;		 // Hoektallen[]
+static Lijst* vlakken;			 // Vlak[]
 
-static Lijst* hoeken_p;		 // Vec3f[]
-static Lijst* hoeken_v;		 // Vec2f[]
-static Lijst* hoeken_n;		 // Vec3f[]
-static Lijst* hoekentallen;	 // Hoektallen[]
-static Lijst* vlakken;		 // Vlak[]
+static Materiaal* huidig_materiaal;
+
+// MTL
+
+static Bestand mtl_bestand;
 
 static char verwerpRuimte(Bestand* bestand) {
-	char teken = getc(bestand);
+	char teken = getc(bestand->bestand);
 	while (teken == ' ' || teken == '\t' || teken == '\r' /*|| teken == '\n'*/) {
-		teken = getc(bestand);
+		teken = getc(bestand->bestand);
 	}
 	return teken;
 }
@@ -60,7 +66,7 @@ static char verwerpRuimte(Bestand* bestand) {
 static void verwerpRegel(Bestand* bestand) {
 	char teken;
 	while (teken != '\n' && teken != EOF) {
-		teken = getc(bestand);
+		teken = getc(bestand->bestand);
 	}
 }
 
@@ -97,8 +103,8 @@ static char* leesWoord(Bestand* bestand) {
 /**
  * Leest een regel van een bestand
  */
-static Lijst* leesRegel(Bestand* bestand) {
-	Lijst* regel = maakLijst(10, sizeof(char*));
+static void leesRegel(Bestand* bestand) {
+	lijstLeeg(bestand->regel, waar);
 	char* woord = leesWoord(bestand);
 	while (woord != NULL) {
 		lijstVoeg(bestand->regel, &woord);
@@ -228,13 +234,28 @@ static void leesVlak() {
 	}
 }
 
+static void leesMaterialen(Lijst* gegeven_materialen) {
+	leesRegel(&obj_bestand);
+	if (obj_bestand.regel->tel == 0) {
+		fputs("Vewachtte materiaal bestandsnamen.", stderr);
+		return;
+	}
+	for (unsigned int i = 0; i < obj_bestand.regel->tel; i++) {
+		leesMtl(lijstKrijg(obj_bestand.regel, i, char*), gegeven_materialen);
+	}
+}
+
 // TODO gebruik doorlees stukken voor te grote bestanden
-Vorm* leesObj(const char* bestandsnaam) {
+
+// DeelVoorwerp[]
+Lijst* leesObj(const char* bestandsnaam) {
 	FILE* bestand = fopen(bestandsnaam, "rb");
 	if (bestand == NULL) {
 		fprintf(stderr, "Bestand '%s' bestaat niet.\n", bestandsnaam);
 		return NULL;
 	}
+
+	Lijst* vormen = maakLijst(4, sizeof(Vorm*));
 
 	obj_bestand = (Bestand){.bestand = bestand,
 							.regel = maakLijst(10, sizeof(char*)),
@@ -244,16 +265,19 @@ Vorm* leesObj(const char* bestandsnaam) {
 	gegeven_hoeken_p = maakLijst(10, sizeof(Vec3f));
 	gegeven_hoeken_v = maakLijst(10, sizeof(Vec2f));
 	gegeven_hoeken_n = maakLijst(10, sizeof(Vec3f));
-
 	hoeken_p = maakLijst(10, sizeof(Vec3f));
 	hoeken_v = maakLijst(10, sizeof(Vec2f));
 	hoeken_n = maakLijst(10, sizeof(Vec3f));
 	hoekentallen = maakLijst(10, sizeof(Hoektallen));
 	vlakken = maakLijst(10, sizeof(Vlak));
 
+	Lijst* gegeven_materialen = maakLijst(4, sizeof(Materiaal*));  // Materiaal*[]
+	Lijst* materialen = maakLijst(4, sizeof(Materiaal*));		   // Materiaal*[]
+	Lijst* deel_plekken = maakLijst(4, sizeof(unsigned int));	   // unsigned int[]
+
 	while (!obj_bestand.EOF_gevonden) {
 		// Leidende Ruimte
-		char* woord = leesWoord(bestand);
+		char* woord = leesWoord(&obj_bestand);
 		if (woord == NULL) continue;
 
 		// Aantekeningen, leesWoord geeft simpelweg NULL
@@ -261,42 +285,50 @@ Vorm* leesObj(const char* bestandsnaam) {
 		// 	verwerpRegel(bestand);
 		// } else
 		if (strcmp(woord, "v") == 0) {
-			leesHoekP(bestand);
+			leesHoekP();
 		} else if (strcmp(woord, "vt") == 0) {
-			leesHoekV(bestand);
+			leesHoekV();
 		} else if (strcmp(woord, "vn") == 0) {
-			leesHoekN(bestand);
+			leesHoekN();
 		} else if (strcmp(woord, "f") == 0) {
-			leesVlak(bestand);
+			leesVlak();
+		} else if (strcmp(woord, "g") == 0) {  // TODO
+		} else if (strcmp(woord, "o") == 0) {  // TODO
 		} else if (strcmp(woord, "usemtl") == 0) {
-			char* mtlNaam = leesWoord(bestand);
-			for (int i = 0; i < materialen->tel; i++) {
-				// TODO
+			leesRegel(&obj_bestand);
+			if (obj_bestand.regel->tel != 1) {
+				fprintf(stderr, "Verwachtte enkele naam voor 'usemtl' maar kreeg er: %u\n", obj_bestand.regel->tel);
+				continue;
 			}
+			char* mtlNaam = lijstKrijg(obj_bestand.regel, 0, char*);
+			Materiaal* huidig = NULL;
+			for (unsigned int i = 0; i < gegeven_materialen->tel; i++) {
+				Materiaal* m = lijstKrijg(gegeven_materialen, i, Materiaal*);
+				if (strcmp(m->naam, mtlNaam) == 0) {
+					huidig = m;
+					break;
+				}
+			}
+			if (huidig == NULL) {
+				fprintf(stderr, "Verzochtte materiaal '%s' is niet gevonden.\n", mtlNaam);
+				continue;
+			}
+			lijstVoeg(materialen, &huidig);
+			lijstVoeg(deel_plekken, &vlakken->tel);
 		} else if (strcmp(woord, "mtllib") == 0) {
-			char* mtlBestandsnaam = leesWoord(bestand);
-			leesMtl(mtlBestandsnaam);  // TODO
-			free(mtlBestandsnaam);
+			leesMaterialen(gegeven_materialen);
 		} else {
 			fprintf(stderr, "Onbekend begin van obj regel: %s\n", woord);
-			if (!obj_bestand.regeleind_gevonden) verwerpRegel(bestand);
+			if (!obj_bestand.regeleind_gevonden) verwerpRegel(&obj_bestand);
 		}
 		free(woord);
 	}
 
-	fputs("[", stdout);
-	for (unsigned int i = 0; i < hoeken_n->tel; i++) {
-		Vec3f v = lijstKrijg(hoeken_n, i, Vec3f);
-		printf("<%f, %f, %f>, ", v.x, v.y, v.z);
-	}
-	fputs("]\n[", stdout);
-	for (unsigned int i = 0; i < vlakken->tel; i++) {
-		Vlak v = lijstKrijg(vlakken, i, Vlak);
-		printf("<%u, %u, %u>, ", v.hoek1, v.hoek2, v.hoek3);
-	}
-	fputs("]\n", stdout);
+	lijstVoeg(deel_plekken, &vlakken->tel);
 
-	Vorm* vorm = maakVorm(hoeken_p, vlakken);
+	Lijst* deel_vormen = maakLijst(deel_plekken->tel, sizeof(VlakGroep));  // DeelVorm[]
+	
+
 	vormVoegInhoudToe(vorm, hoeken_v, 1);
 	vormVoegInhoudToe(vorm, hoeken_n, 2);
 
@@ -306,17 +338,23 @@ Vorm* leesObj(const char* bestandsnaam) {
 	verwijderLijst(gegeven_hoeken_p, onwaar);
 	verwijderLijst(gegeven_hoeken_v, onwaar);
 	verwijderLijst(gegeven_hoeken_n, onwaar);
-
 	verwijderLijst(hoeken_p, onwaar);
 	verwijderLijst(hoeken_v, onwaar);
 	verwijderLijst(hoeken_n, onwaar);
 	verwijderLijst(hoekentallen, onwaar);
 	verwijderLijst(vlakken, onwaar);
+
+	for (unsigned int i = 0; i < gegeven_materialen->tel; i++) {
+		Materiaal* m = lijstKrijg(gegeven_materialen, i, Materiaal*);
+		if (lijstVind(materialen, m, NULL) == onwaar) {
+			free(m->naam);
+			free(m);
+		}
+	}
+	verwijderLijst(gegeven_materialen, onwaar);
+
 	return vorm;
 }
-
-Lijst* materialen;	// Materiaal[]
-Materiaal* huidig_materiaal;
 
 static void leesK(Vec3f* doel) {
 	leesRegel(&mtl_bestand);
@@ -353,7 +391,7 @@ void leesFloat(Bestand* bestand, float* getal) {
 	*getal = strtof(woord, NULL);
 }
 
-void leesUChar(Bestand* bestand, float* getal) {
+void leesUChar(Bestand* bestand, unsigned char* getal) {
 	char* woord = leesWoord(bestand);
 	if (woord == NULL) {
 		fputs("Verwachtte getal maar kreeg niets.", stderr);
@@ -362,7 +400,8 @@ void leesUChar(Bestand* bestand, float* getal) {
 	*getal = (unsigned char)strtoul(woord, NULL, 10);
 }
 
-Lijst* leesMtl(const char* bestandsnaam) {
+// Materiaal*[]
+void leesMtl(const char* bestandsnaam, Lijst* materialen) {
 	FILE* bestand = fopen(bestandsnaam, "rb");
 	if (bestand == NULL) {
 		fprintf(stderr, "Bestand '%s' bestaat niet.\n", bestandsnaam);
@@ -374,10 +413,10 @@ Lijst* leesMtl(const char* bestandsnaam) {
 							.EOF_gevonden = onwaar,
 							.regeleind_gevonden = onwaar};
 
-	materialen = maakLijst(4, sizeof(Materiaal));
+	Materiaal* huidig_materiaal;
 
 	while (!mtl_bestand.EOF_gevonden) {
-		char* woord = leesWoord(bestand);
+		char* woord = leesWoord(&mtl_bestand);
 
 		if (woord == NULL) continue;
 
@@ -389,10 +428,10 @@ Lijst* leesMtl(const char* bestandsnaam) {
 			if (naam == NULL) {
 				fputs("Mis naam van materiaal.", stderr);
 			}
-			Materiaal nieuw_materiaal = (Materiaal){.naam = naam};
+			Materiaal* nieuw_materiaal = malloc(sizeof(Materiaal));
+			nieuw_materiaal->naam = naam;
 			unsigned int plek = lijstVoeg(materialen, &nieuw_materiaal);
-			huidig_materiaal = &lijstKrijg(materialen, plek, Materiaal);
-
+			huidig_materiaal = lijstKrijg(materialen, plek, Materiaal*);
 		} else if (strcmp(woord, "Ka") == 0) {
 			leesK(&huidig_materiaal->vaste_kleur);
 		} else if (strcmp(woord, "Kd") == 0) {
@@ -417,7 +456,7 @@ Lijst* leesMtl(const char* bestandsnaam) {
 		// } else if (strcmp(woord, "map_d") == 0) {	// TODO
 		else {
 			fprintf(stderr, "Onbekend begin van mtl regel: %s\n", woord);
-			if (!obj_bestand.regeleind_gevonden) verwerpRegel(bestand);
+			if (!obj_bestand.regeleind_gevonden) verwerpRegel(&mtl_bestand);
 		}
 	}
 }
