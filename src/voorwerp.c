@@ -40,11 +40,11 @@ Voorwerp* maakVoorwerp(Vorm* vorm, Vec3f plaats, Vec3f grootte, Vec3f draai) {
 	return voorwerp;
 }
 
-void tekenVoorwerp(Voorwerp* voorwerp, const Verver* verver) {
+void tekenVoorwerp(Voorwerp* voorwerp, Verver* verver) {
 	gebruikVerver(verver);
 	if (zichtM_bijgewerkt) {
 		werkTekenMatrixBij(voorwerp);
 	}
 	zetVerverMat4f(verver, "teken_matrix", &voorwerp->tekenMatrix);
-	tekenVorm(voorwerp->vorm);
+	tekenVorm(voorwerp->vorm, verver);
 }

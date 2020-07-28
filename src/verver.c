@@ -96,7 +96,7 @@ void zetVerverMat4f(const Verver* verver, const char* naam, const Mat4f* mat) {
 	glUniformMatrix4fv(verwijzing, 1, GL_FALSE, (float*)mat);
 }
 
-void zetVerverMateriaal(const Verver* verver, const Materiaal* materiaal) {
+void zetVerverMateriaal(Verver* verver, Materiaal* materiaal) {
 	zetVerverFloat3v(verver, "materiaal.vaste_kleur", &materiaal->vaste_kleur.x);
 	zetVerverFloat3v(verver, "materiaal.afweer_kleur", &materiaal->afweer_kleur.x);
 	zetVerverFloat3v(verver, "materiaal.weerkaats_kleur", &materiaal->weerkaats_kleur.x);
