@@ -1,6 +1,10 @@
 #ifndef MATERIAAL_H
 #define MATERIAAL_H
 
+#include "lineair.h"
+
+#include <stdlib.h>
+
 typedef struct materiaal Materiaal;
 
 struct materiaal {
@@ -13,5 +17,7 @@ struct materiaal {
 	float brekingsgetal;			  // Mate van interne breking.	(Ni)
 	unsigned char verlichtingswijze;  // TODO mogelijk overbodig.	(illum)
 };
+
+void verwijderMateriaal(Materiaal* materiaal);
 
 #endif
