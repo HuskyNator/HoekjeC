@@ -70,6 +70,7 @@ static double plekz = 0;
 double krijg_plekx() { return plekx; }
 double krijg_pleky() { return pleky; }
 double krijg_plekz() { return plekz; }
+Vec3d krijg_plek() { return (Vec3d){plekx, pleky, plekz}; }
 void zet_plekx(double nieuw) {
 	plekx = nieuw;
 	bijwerkbaar_plekM = waar;

@@ -36,7 +36,7 @@ Mat4f zichtM, projectieM, draaiM, plekM;
  * Vlag die aangeeft dat de zichtmatrix bijgewerkt is.
  * Wordt gebruikt door oa. voorwerpen om hun opgeslagen tekenmatrix enkel bij te werken indien nodig.
  */
-booleaan zichtM_bijgewerkt;
+booleaan zichtM_bijgewerkt; // TODO verwijder, is reeds nutteloos.
 
 /**		KRIJG & ZET OPDRACHTEN		**/
 /*	SCHERM EIGENSCHAPPEN	*/
@@ -59,6 +59,7 @@ void zet_zichthoek(float nieuw);
 double krijg_plekx();
 double krijg_pleky();
 double krijg_plekz();
+Vec3d krijg_plek();
 void zet_plekx(double nieuw);
 void zet_pleky(double nieuw);
 void zet_plekz(double nieuw);

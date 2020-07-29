@@ -100,7 +100,6 @@ void tekenVorm(const Vorm* vorm, Verver* verver) {
 	for (unsigned int i = 0; i < vorm->groepen->tel; i++) {
 		VlakGroep* vg = &lijstKrijg(vorm->groepen, i, VlakGroep);
 		Materiaal* materiaal = &lijstKrijg(vorm->materialen, vg->materiaal_tal, Materiaal);
-		begin_tal += vg->grootte;
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vorm->groep_EBOs[i]);
 		zetVerverMateriaal(verver, materiaal);

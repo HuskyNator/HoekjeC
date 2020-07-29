@@ -76,7 +76,6 @@ static void denker(double tijdsverschil) {
 }
 
 static void tekenaar() {
-	// tekenVoorwerp(vloerVoorwerp, verver);
 	tekenVoorwerp(blokVoorwerp, verver);
 }
 
@@ -92,7 +91,7 @@ int main() {
 	verver = maakVerver("shaders/kleur_voorwerp.vert", "shaders/kleur_voorwerp.frag");
 	gebruikVerver(verver);
 
-	Vorm* blok = leesObj("bol.obj");
+	Vorm* blok = leesObj("wagen.obj");
 
 	Lijst* blokKleuren = maakLijst(blok->hoek_aantal, sizeof(Vec4f));
 	for (int h = 0; h < blok->hoek_aantal; h++) {

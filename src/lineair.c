@@ -33,6 +33,7 @@ Vec3f Vec3fn(Vec3f v) {
 	float lengte = sqrtf(Vec3f_lengte_kw(v));
 	return Vec3ff(v, 1 / lengte);
 }
+
 Vec4f Vec3n4f(Vec3f v, float w) { return (Vec4f){v.x, v.y, v.z, w}; }
 Vec3f Vec4n3f(Vec4f v, booleaan verwerp_w) {
 	if (verwerp_w) {
@@ -41,6 +42,9 @@ Vec3f Vec4n3f(Vec4f v, booleaan verwerp_w) {
 		return (Vec3f){v.x / v.w, v.y / v.w, v.z / v.w};
 	}
 }
+
+Vec3f Vec3dn3f(Vec3d v) { return (Vec3f){(float)v.x, (float)v.y, (float)v.z}; }
+
 Mat4f kantelMat4f(Mat4f m) {
 	return (Mat4f){{m.k1.x, m.k2.x, m.k3.x, m.k4.x},
 				   {m.k1.y, m.k2.y, m.k3.y, m.k4.y},
@@ -138,15 +142,16 @@ Mat4f voorwerpMatrixPlekGrootte(Vec3f P, Vec3f G) {
 
 // Printen
 
-void printVec4f(Vec4f v) { printf("[%f, %f, %f, %f]\n", v.x, v.y, v.z, v.w); }
-void printVec3f(Vec3f v) { printf("[%f, %f, %f]\n", v.x, v.y, v.z); }
-void printMat4f(Mat4f m) {
-	Mat4f gekanteld = kantelMat4f(m);
+void printVec2f(Vec2f* v) { printf("[%f, %f]\n", v->x, v->y); }
+void printVec3f(Vec3f* v) { printf("[%f, %f, %f]\n", v->x, v->y, v->z); }
+void printVec4f(Vec4f* v) { printf("[%f, %f, %f, %f]\n", v->x, v->y, v->z, v->w); }
+void printMat4f(Mat4f* m) {
+	Mat4f gekanteld = kantelMat4f(*m);
 	putchar('{');
 	putchar('\n');
-	printVec4f(gekanteld.k1);
-	printVec4f(gekanteld.k2);
-	printVec4f(gekanteld.k3);
-	printVec4f(gekanteld.k4);
+	printVec4f(&gekanteld.k1);
+	printVec4f(&gekanteld.k2);
+	printVec4f(&gekanteld.k3);
+	printVec4f(&gekanteld.k4);
 	putchar('}');
 }

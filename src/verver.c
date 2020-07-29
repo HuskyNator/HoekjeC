@@ -17,7 +17,6 @@ Verver* maakVerver(const char* hoekVerfLocatie, const char* fragmentVerfLocatie)
 	int makenGelukt;
 
 	unsigned int hoekVerver = glCreateShader(GL_VERTEX_SHADER);
-
 	char* hoekVerverString = leesBestand(hoekVerfLocatie);
 	glShaderSource(hoekVerver, 1, (const char**)&hoekVerverString, NULL);
 	glCompileShader(hoekVerver);
@@ -39,7 +38,7 @@ Verver* maakVerver(const char* hoekVerfLocatie, const char* fragmentVerfLocatie)
 
 	glGetShaderiv(fragmentVerver, GL_COMPILE_STATUS, &makenGelukt);
 	if (!makenGelukt) {
-		glGetShaderInfoLog(hoekVerver, FOUTMELDING_GROOTTE, NULL, foutmelding);
+		glGetShaderInfoLog(fragmentVerver, FOUTMELDING_GROOTTE, NULL, foutmelding);
 		fputs(foutmelding, stderr);
 		puts("Fragmentverf kon niet gemaakt worden.");
 		exit(-1);
@@ -80,15 +79,26 @@ void zetVerverFloat(const Verver* verver, const char* naam, float waarde) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform1f(verwijzing, waarde);
 }
-
 void zetVerverFloat3v(const Verver* verver, const char* naam, float waarden[]) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform3fv(verwijzing, 1, waarden);
 }
-
 void zetVerverFloat4v(const Verver* verver, const char* naam, float waarden[]) {
 	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
 	glUniform4fv(verwijzing, 1, waarden);
+}
+
+void zetVerverDouble(const Verver* verver, const char* naam, double waarde) {
+	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+	glUniform1d(verwijzing, waarde);
+}
+void zetVerverDouble3v(const Verver* verver, const char* naam, double waarden[]) {
+	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+	glUniform3dv(verwijzing, 1, waarden);
+}
+void zetVerverDouble4v(const Verver* verver, const char* naam, double waarden[]) {
+	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+	glUniform4dv(verwijzing, 1, waarden);
 }
 
 void zetVerverMat4f(const Verver* verver, const char* naam, const Mat4f* mat) {

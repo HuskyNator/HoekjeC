@@ -382,9 +382,9 @@ static void leesK(Vec3f* doel) {
 	}
 
 	char* eerste = lijstKrijg(mtl_bestand.regel, 0, char*);
-	if (strstr(eerste, "spectral") == 0) {
+	if (strcmp(eerste, "spectral") == 0) {
 		fputs("'spectral' moet nog gemaakt worden.\n", stderr);	 // TODO
-	} else if (strstr(eerste, "xyz") == 0) {
+	} else if (strcmp(eerste, "xyz") == 0) {
 		fputs("'xyz' moet nog gemaakt worden.\n", stderr);	// TODO
 	} else {
 		float r = strtof(eerste, NULL);
@@ -450,6 +450,7 @@ void leesMtl(const char* bestandsnaam, Lijst* materialen) {
 		// else
 		if (strcmp(woord, "newmtl") == 0) {
 			Materiaal* nieuw_materiaal = malloc(sizeof(Materiaal));
+			*nieuw_materiaal = (Materiaal){};
 
 			char* naam = leesWoord(&mtl_bestand);
 			if (naam == NULL) {
@@ -486,7 +487,7 @@ void leesMtl(const char* bestandsnaam, Lijst* materialen) {
 		// } else if (strcmp(woord, "map_d") == 0) {	// TODO
 		else {
 			fprintf(stderr, "Onbekend begin van mtl regel: %s\n", woord);
-			if (!obj_bestand.regeleind_gevonden) verwerpRegel(&mtl_bestand);
+			if (!mtl_bestand.regeleind_gevonden) verwerpRegel(&mtl_bestand);
 		}
 	}
 }
