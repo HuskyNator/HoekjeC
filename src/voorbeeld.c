@@ -76,7 +76,6 @@ static void denker(double tijdsverschil) {
 }
 
 static void tekenaar() {
-	// tekenVoorwerp(vloerVoorwerp, verver);
 	tekenVoorwerp(blokVoorwerp, verver);
 }
 
@@ -92,26 +91,7 @@ int main() {
 	verver = maakVerver("shaders/kleur_voorwerp.vert", "shaders/kleur_voorwerp.frag");
 	gebruikVerver(verver);
 
-	Vec3f vloerHoeken[] = {{-1, -1.6, -1}, {0, -1.6, 1}, {1, -1.6, -1}};
-	Vec3ui vloerHoektallen[] = {{0, 1, 2}};
-	Lijst vloerHoekenL = {sizeof(vloerHoeken), 3, sizeof(Vec3f), vloerHoeken};
-	Lijst vloerHoektallenL = {sizeof(vloerHoektallen), 1, sizeof(Vec3ui), vloerHoektallen};
-
-	Vec4f vloerKleur = {0, 0, 0.6, 1};
-	Lijst* vloerKleuren = maakLijst(10, sizeof(Vec4f));
-	lijstVoeg(vloerKleuren, &vloerKleur);
-	lijstVoeg(vloerKleuren, &vloerKleur);
-	lijstVoeg(vloerKleuren, &vloerKleur);
-
-	Vorm* vloerVorm = maakVorm(&vloerHoekenL, &vloerHoektallenL);
-	vormVoegInhoudToe(vloerVorm, vloerKleuren, 3);
-
-	Vec3f vloerPlaats = {0, 0, 0};
-	Vec3f vloerGrootte = {1, 1, 1};
-	Vec3f vloerDraai = {0, 0, 0};
-	vloerVoorwerp = maakVoorwerp(vloerVorm, vloerPlaats, vloerGrootte, vloerDraai);
-
-	Vorm* blok = leesObj("vormen/bol.obj");
+	Vorm* blok = leesObj("wagen.obj");
 
 	Lijst* blokKleuren = maakLijst(blok->hoek_aantal, sizeof(Vec4f));
 	for (int h = 0; h < blok->hoek_aantal; h++) {

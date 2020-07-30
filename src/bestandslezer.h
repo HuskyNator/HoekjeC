@@ -1,10 +1,13 @@
 #ifndef OBJECTLEZER_H
 #define OBJECTLEZER_H
 
-#include "vorm.h"
+#include "materiaal.h"
+#include "voorwerp.h"
 
 char* leesBestand(const char* bestandsnaam);
 Vorm* leesObj(const char* bestandsnaam);
-Lijst* leesMtl(const char* bestandsnaam);
+void leesMtl(const char* bestandsnaam, Lijst* materialen);
+
+Materiaal* standaard_materiaal();
 
 #endif

@@ -151,6 +151,9 @@ float Vec3f_lengte_kw(Vec3f v);
 Vec3f Vec3fn(Vec3f v);
 Vec4f Vec3n4f(Vec3f v, float w);
 Vec3f Vec4n3f(Vec4f v, booleaan verwerp_w);
+
+Vec3f Vec3dn3f(Vec3d v);
+
 Mat4f kantelMat4f(Mat4f m);
 
 // Vermenigvuldigingen
@@ -174,8 +177,9 @@ Mat4f perspectiefMatrix(float voorvlak, float achtervlak, double zichthoek, floa
 Mat4f voorwerpMatrixPlekGrootte(Vec3f plek, Vec3f grootte);
 
 // Printen
-void printVec4f(Vec4f v);
-void printVec3f(Vec3f v);
-void printMat4f(Mat4f m);
+void printVec2f(Vec2f* v);
+void printVec3f(Vec3f* v);
+void printVec4f(Vec4f* v);
+void printMat4f(Mat4f* m);
 
 #endif

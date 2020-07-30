@@ -9,6 +9,6 @@ typedef struct voorwerp Voorwerp;
 
 Voorwerp* maakVoorwerp(Vorm* vorm, Vec3f plaats, Vec3f grootte, Vec3f draai);
 
-void tekenVoorwerp(Voorwerp* voorwerp, const Verver* verver);
+void tekenVoorwerp(Voorwerp* voorwerp, Verver* verver);
 
 #endif
