@@ -30,5 +30,5 @@ void main() {
 
 	vec3 afweer = materiaal.afweer_kleur * max(0, dot(n, licht_r));
 	vec3 weerkaats = materiaal.weerkaats_kleur * max(0, pow(dot(zicht_r, reflect(-licht_r, n)), materiaal.weerkaatsing));
-	fragment_kleur = vec4(1.0 / 2.0 * (materiaal.vaste_kleur + afweer + weerkaats), 1);
+	fragment_kleur = vec4(1.0 / 2.0 * (afweer + weerkaats), 1);
 }

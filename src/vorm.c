@@ -96,15 +96,13 @@ void vormVoegInhoudToe(Vorm* vorm, const Lijst* inhoud, unsigned int standplaats
 
 void tekenVorm(const Vorm* vorm, Verver* verver) {
 	glBindVertexArray(vorm->VAO);
-	unsigned int begin_tal = 0;
 	for (unsigned int i = 0; i < vorm->groepen->tel; i++) {
 		VlakGroep* vg = &lijstKrijg(vorm->groepen, i, VlakGroep);
 		Materiaal* materiaal = &lijstKrijg(vorm->materialen, vg->materiaal_tal, Materiaal);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vorm->groep_EBOs[i]);
 		zetVerverMateriaal(verver, materiaal);
-		glDrawElements(GL_TRIANGLES, 3 * vg->grootte, GL_UNSIGNED_INT, (void*)(begin_tal * sizeof(Vlak)));
-		begin_tal += vg->grootte;
+		glDrawElements(GL_TRIANGLES, 3 * vg->grootte, GL_UNSIGNED_INT, (void*)0);
 	}
 }
 

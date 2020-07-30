@@ -230,7 +230,7 @@ static void leesVlak() {
 	Hoektallen tweede = leesHoektallen(lijstKrijg(obj_bestand.regel, 1, char*));
 	unsigned int tweedetal = voegHoekToe(&tweede);
 
-	for (int i = 2; i < obj_bestand.regel->tel; i++) {
+	for (unsigned int i = 2; i < obj_bestand.regel->tel; i++) {
 		Hoektallen derde = leesHoektallen(lijstKrijg(obj_bestand.regel, i, char*));
 		unsigned int derdetal = voegHoekToe(&derde);
 
@@ -282,7 +282,7 @@ static void gebruikAnderMateriaal() {
 	// De grootte van de vorige VlakGroep is nu wel bekend.
 	if (groepen->tel > 1) {
 		VlakGroep* vorige = &lijstKrijg(groepen, groepen->tel - 2, VlakGroep);
-		vorige->grootte = vlakken->grootte - vorige->grootte;
+		vorige->grootte = vlakken->tel - vorige->grootte;
 	}
 }
 
