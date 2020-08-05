@@ -1,7 +1,7 @@
 #ifndef VORM_H
 #define VORM_H
 
-#include "lijst.h"
+#include "lijsten/lijst.h"
 #include "lineair.h"
 #include "materiaal.h"
 #include "verver.h"
