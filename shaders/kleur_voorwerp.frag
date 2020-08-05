@@ -25,10 +25,12 @@ uniform Materiaal materiaal;
 void main() {
 	vec3 n = normalize(normaal);
 	vec3 zicht_r = normalize(zicht_plek - plek);
-	vec3 licht_plek = vec3(2, 2, 2);
+	// vec3 licht_plek = vec3(2, 2, 2);
+	vec3 licht_plek = zicht_plek;
 	vec3 licht_r = normalize(licht_plek - plek);
 
 	vec3 afweer = materiaal.afweer_kleur * max(0, dot(n, licht_r));
-	vec3 weerkaats = materiaal.weerkaats_kleur * max(0, pow(dot(zicht_r, reflect(-licht_r, n)), materiaal.weerkaatsing));
-	fragment_kleur = vec4(1.0 / 2.0 * (afweer + weerkaats), 1);
+	vec3 weerkaats =
+		materiaal.weerkaats_kleur * max(0, pow(dot(zicht_r, reflect(-licht_r, n)), materiaal.weerkaatsing));
+	fragment_kleur = vec4(clamp((afweer + weerkaats), vec3(0, 0, 0), vec3(1, 1, 1)), 1);
 }
