@@ -18,6 +18,7 @@ Verver* verver;
 #define RENSNELHEID 3.7
 
 char looptx = 0;
+char loopty = 0;
 char looptz = 0;
 booleaan rent = onwaar;
 
@@ -35,6 +36,12 @@ static void toets_terugroeper(int toets, int toets2, int handeling, int toevoegi
 				break;
 			case GLFW_KEY_S:
 				looptz--;
+				break;
+			case GLFW_KEY_SPACE:
+				loopty++;
+				break;
+			case GLFW_KEY_LEFT_CONTROL:
+				loopty--;
 				break;
 			case GLFW_KEY_LEFT_SHIFT:
 				rent = waar;
@@ -57,6 +64,12 @@ static void toets_terugroeper(int toets, int toets2, int handeling, int toevoegi
 			case GLFW_KEY_S:
 				looptz++;
 				break;
+			case GLFW_KEY_SPACE:
+				loopty--;
+				break;
+			case GLFW_KEY_LEFT_CONTROL:
+				loopty++;
+				break;
 			case GLFW_KEY_LEFT_SHIFT:
 				rent = onwaar;
 				break;
@@ -65,33 +78,32 @@ static void toets_terugroeper(int toets, int toets2, int handeling, int toevoegi
 }
 
 static void denker(double tijdsverschil) {
-	if (looptx != 0 || looptz != 0) {
+	if (looptx != 0 || looptz != 0 || loopty != 0) {
 		Mat4f richtingsMatrix = draaiMatrixy(krijg_muisx() * 0.01);
 		Vec3f xRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){1, 0, 0, 1}), onwaar);
 		Vec3f zRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){0, 0, 1, 1}), onwaar);
 		double snelheid = tijdsverschil * (rent ? RENSNELHEID : LOOPSNELHEID);
 		wijzig_plekx(snelheid * (looptx * xRichting.x + looptz * zRichting.x));
 		wijzig_plekz(snelheid * (looptx * xRichting.z + looptz * zRichting.z));
+		wijzig_pleky(snelheid * loopty);
 	}
 }
 
-static void tekenaar() {
-	tekenVoorwerp(blokVoorwerp, verver);
-}
+static void tekenaar() { tekenVoorwerp(blokVoorwerp, verver); }
 
 int main() {
 	puts("Hellow");
 
-	HWND achtergrondScherm = GetConsoleWindow();
-	ShowWindow(achtergrondScherm, SW_HIDE);
+	// HWND achtergrondScherm = GetConsoleWindow();
+	// ShowWindow(achtergrondScherm, SW_HIDE);
+
+	// logo(2000);
 
 	opzetten();
-	logo(2000);
-
 	verver = maakVerver("shaders/kleur_voorwerp.vert", "shaders/kleur_voorwerp.frag");
 	gebruikVerver(verver);
 
-	Vorm* blok = leesObj("wagen.obj");
+	Vorm* blok = leesObj("bugatti.obj");
 
 	Lijst* blokKleuren = maakLijst(blok->hoek_aantal, sizeof(Vec4f));
 	for (int h = 0; h < blok->hoek_aantal; h++) {

@@ -7,10 +7,13 @@
 			"command": "C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/gcc.exe",
 			"args": [
 				"${workspaceFolder}\\src\\*.c",
+				"${workspaceFolder}\\src\\lijsten\\*.c",
 				"${workspaceFolder}\\afbeeldingen\\Logo\\Logo.coff",
 				"${workspaceFolder}\\lib\\*.a",
-				"-g",
-				"-Wall",
+				// "-g",
+				// "-Wall",
+				"-m64", // 64 bit
+				"-O3",
 				"-o${workspaceFolder}\\hoekjec.exe",
 				"-I${workspaceFolder}\\include",
 				"-L${workspaceFolder}\\lib",
