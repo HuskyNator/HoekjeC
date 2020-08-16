@@ -103,7 +103,7 @@ int main() {
 	verver = maakVerver("shaders/kleur_voorwerp.vert", "shaders/kleur_voorwerp.frag");
 	gebruikVerver(verver);
 
-	Vorm* blok = leesObj("bugatti.obj");
+	Vorm* blok = leesObj("sponza.obj");
 
 	Lijst* blokKleuren = maakLijst(blok->hoek_aantal, sizeof(Vec4f));
 	for (int h = 0; h < blok->hoek_aantal; h++) {
@@ -116,7 +116,7 @@ int main() {
 	vormVoegInhoudToe(blok, blokKleuren, 3);
 
 	Vec3f blokPlaats = {0, 0, 0};
-	Vec3f blokGrootte = {1, 1, 1};
+	Vec3f blokGrootte = {0.01, 0.01, 0.01};
 	Vec3f blokDraai = {0, 0, 0};
 	blokVoorwerp = maakVoorwerp(blok, blokPlaats, blokGrootte, blokDraai);
 

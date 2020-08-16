@@ -3,6 +3,7 @@
 *.exe
 *.pdf
 *.rar
+*.zip
 
 # Geen workspace.
 *.code-workspace
