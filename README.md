@@ -21,3 +21,5 @@ _HoekjeC is een grafische motor in aanbouw voor vermaak :)_
 ---
 **Alle rechten voorbehouden.**<br>
 _Voel je echter vrij in gesprek te gaan, vooral vermeld wegens gebrek aan licentiekeuze._
+
+**\-** &nbsp; 𝓟𝓪𝓾𝓵
