@@ -1,14 +1,18 @@
-#include "HC/lezers/bestandslezer.h"
 #include "HC/booleaan.h"
 #include "HC/koppeling.h"
-#include "HC/wiskunde/lineair.h"
+#include "HC/lezers/bestandslezer.h"
 #include "HC/verf/verver.h"
 #include "HC/voorwerpen/voorwerp.h"
 #include "HC/voorwerpen/vorm.h"
+#include "HC/wiskunde/lineair.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
+
+#ifndef VOORBEELD_VERSIE
+#define VOORBEELD_VERSIE "onbekend"
+#endif
 
 Voorwerp* blokVoorwerp;
 Voorwerp* vloerVoorwerp;
@@ -92,18 +96,27 @@ static void denker(double tijdsverschil) {
 static void tekenaar() { tekenVoorwerp(blokVoorwerp, verver); }
 
 int main() {
-	puts("Hellow");
-
 	// HWND achtergrondScherm = GetConsoleWindow();
 	// ShowWindow(achtergrondScherm, SW_HIDE);
 
-	// logo(2000);
+	const char* versie_vorm = "HoekjeC %s - Voorbeeld %s :3";
+	const char* kern_versie = krijg_kern_versie();
+	const char* voorbeeld_versie = VOORBEELD_VERSIE;
+	char* versie = malloc(strlen(versie_vorm) - 4 + strlen(kern_versie) + strlen(voorbeeld_versie) + 1);
+	sprintf(versie, versie_vorm, kern_versie, voorbeeld_versie);
+	fputs("\n> ", stdout);
+	fputs(versie, stdout);
+	fputs("\n\n", stdout);
 
 	opzetten();
+
+	zet_schermnaam(versie);
+	free(versie);
+
 	verver = maakVerver("shaders/kleur_voorwerp.vert", "shaders/kleur_voorwerp.frag");
 	gebruikVerver(verver);
 
-	Vorm* blok = leesObj("bugatti.obj");
+	Vorm* blok = leesObj("wagen.obj");
 
 	Lijst* blokKleuren = maakLijst(blok->hoek_aantal, sizeof(Vec4f));
 	for (int h = 0; h < blok->hoek_aantal; h++) {
