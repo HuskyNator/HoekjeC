@@ -3,9 +3,10 @@
 *.exe
 *.pdf
 *.rar
+*.zip
 
 # Geen workspace.
 *.code-workspace
 
-# Geen .gradle
-.gradle
+# Geen build.
+build

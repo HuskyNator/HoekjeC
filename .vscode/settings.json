@@ -4,5 +4,6 @@
 		"*.frag": "glsl",
 		"*.vert": "glsl",
 		"type_traits": "c"
-	}
+	},
+	"cmake.configureOnOpen": false
 }

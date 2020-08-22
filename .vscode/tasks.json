@@ -1,39 +1,40 @@
 {
 	"version": "2.0.0",
 	"tasks": [
-		{
-			"type": "shell",
-			"label": "build hoekjec",
-			"command": "C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/gcc.exe",
-			"args": [
-				"${workspaceFolder}\\src\\*.c",
-				"${workspaceFolder}\\src\\lijsten\\*.c",
-				"${workspaceFolder}\\afbeeldingen\\Logo\\Logo.coff",
-				"${workspaceFolder}\\lib\\*.a",
-				// "-g",
-				// "-Wall",
-				"-m64", // 64 bit
-				"-O3",
-				"-o${workspaceFolder}\\hoekjec.exe",
-				"-I${workspaceFolder}\\include",
-				"-L${workspaceFolder}\\lib",
-				"-lglew32",
-				"-lglfw3dll",
-				"-lgdi32",
-				"-lopengl32",
-				"-DGLEW_STATIC"
-				// "-mwindows"
-			],
-			"options": {
-				"cwd": "C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin"
-			},
-			"problemMatcher": [
-				"$gcc"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			}
-		}
+		//	DEPRICATED:
+		// {
+		// 	"type": "shell",
+		// 	"label": "build hoekjec",
+		// 	"command": "gcc",
+		// 	"args": [
+		// 		"${workspaceFolder}\\src\\*.c",
+		// 		"${workspaceFolder}\\src\\lijsten\\*.c",
+		// 		"${workspaceFolder}\\afbeeldingen\\Logo\\Logo.coff",
+		// 		"${workspaceFolder}\\lib\\*.a",
+		// 		// "-g",
+		// 		// "-Wall",
+		// 		"-m64", // 64 bit
+		// 		"-O3",
+		// 		"-o${workspaceFolder}\\hoekjec.exe",
+		// 		"-I${workspaceFolder}\\include",
+		// 		"-L${workspaceFolder}\\lib",
+		// 		"-lglew32",
+		// 		"-lglfw3dll",
+		// 		"-lgdi32",
+		// 		"-lopengl32",
+		// 		"-DGLEW_STATIC"
+		// 		// "-mwindows"
+		// 	],
+		// 	"options": {
+		// 		"cwd": "C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin"
+		// 	},
+		// 	"problemMatcher": [
+		// 		"$gcc"
+		// 	],
+		// 	"group": {
+		// 		"kind": "build",
+		// 		"isDefault": true
+		// 	}
+		// }
 	]
 }
