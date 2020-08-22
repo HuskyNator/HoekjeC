@@ -11,39 +11,24 @@
 #define ACHTERVLAK 50.0
 #define ZICHTHOEK 100.0
 
-#define VENSTER_NAAM ":3"
-
 /**		ZICHT		**/
 
 /**
  * De zicht matrix bestaat uit de aaneenschakeling van de projectie, draai en plek matrixen.
- * Het de wereld, zo dat het zicht gedraaid en verplaatst kan zijn, naar het eenheidsblok.
- *
- * De plek matrix is verantwoordelijk voor het verplaatsen van voorwerpen in de wereld,
- * zodat het zicht zijn x,y,z plek aan kan nemen.
- *
- * De draai matrix is verantwoordelijk voor het draaien van de wereld,
- * zodat het zicht door middel van de x,y plek van de muis gedraaid kan worden.
- * Er zijn veel manieren om dit te doen, een standaard benadering is aanwezig.
- *
- * De projectie matrix is verantwoordelijk voor het vertalen van de wereld naar een plat vlak,
- * hierbij kan de z as relatief behouden worden, tussen -1 & 1,
- * opdat tijdens het tekenen rekening kan worden met diepte verhoudingen.
  */
 Mat4f zichtM, projectieM, draaiM, plekM;
 
-/**
- * Vlag die aangeeft dat de zichtmatrix bijgewerkt is.
- * Wordt gebruikt door oa. voorwerpen om hun opgeslagen tekenmatrix enkel bij te werken indien nodig.
- */
-booleaan zichtM_bijgewerkt; // TODO verwijder, is reeds nutteloos.
-
 /**		KRIJG & ZET OPDRACHTEN		**/
+/*		HOEKJEC		*/
+
+char* krijg_kern_versie();
+
 /*	SCHERM EIGENSCHAPPEN	*/
 
 int krijg_schermbreedte();
 int krijg_schermhoogte();
 double krijg_schermverhouding();
+void zet_schermnaam(const char* naam);
 
 /*	PROJECTIE EIGENSCHAPPEN	*/
 

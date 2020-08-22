@@ -1,10 +1,10 @@
 #include "koppeling.h"
 
 #include "lezers/bestandslezer.h"
-#include "wiskunde/lineair.h"
 #include "logo.h"
 #include "verf/verver.h"
 #include "voorwerpen/voorwerp.h"
+#include "wiskunde/lineair.h"
 
 #define _USE_MATH_DEFINES
 #include <GL/glew.h>
@@ -14,6 +14,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
+
+#ifndef KERN_VERSIE
+#define KERN_VERSIE "onbekend"
+#endif
+char* krijg_kern_versie() { return KERN_VERSIE; }
 
 /**		GLFW		**/
 
@@ -27,7 +32,6 @@ static booleaan bijwerkbaar_plekM = waar;
 static boolean bijwerkbaark_zichtM = waar;
 
 /**		KRIJG & ZET OPDRACHTEN		**/
-
 /*	SCHERM EIGENSCHAPPEN	*/
 
 static int schermbreedte = SCHERM_BREEDTE;
@@ -37,6 +41,7 @@ static double schermverhouding = (double)SCHERM_BREEDTE / (double)SCHERM_HOOGTE;
 int krijg_schermbreedte() { return schermbreedte; }
 int krijg_schermhoogte() { return schermhoogte; }
 double krijg_schermverhouding() { return schermverhouding; }
+void zet_schermnaam(const char* naam) { glfwSetWindowTitle(scherm, naam); }
 
 /*	PROJECTIE EIGENSCHAPPEN	*/
 
@@ -222,7 +227,6 @@ static void werk_plekM_bij() {
 
 static void werk_zichtM_bij() {
 	zichtM = Mat4fMat4f(projectieM, Mat4fMat4f(draaiM, plekM));
-	zichtM_bijgewerkt = waar;
 	bijwerkbaark_zichtM = onwaar;
 }
 
@@ -262,7 +266,7 @@ void opzetten() {
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
 
 	// > Maak Scherm
-	scherm = glfwCreateWindow(SCHERM_BREEDTE, SCHERM_HOOGTE, VENSTER_NAAM, NULL, NULL);
+	scherm = glfwCreateWindow(SCHERM_BREEDTE, SCHERM_HOOGTE, KERN_VERSIE, NULL, NULL);
 	if (scherm == NULL) {
 		puts(":C geen scherm");
 		exit(-2);
