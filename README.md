@@ -1,4 +1,4 @@
-![](afbeeldingen/Logo/Logo_Hoofd.png)
+![](Logo/Logo_Hoofd.png)
 
 _HoekjeC is een grafische motor in aanbouw voor vermaak :)_
 
