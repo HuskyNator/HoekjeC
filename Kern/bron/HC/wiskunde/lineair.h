@@ -171,7 +171,7 @@ Mat4f draaiMatrixz(float draai);
 
 // Matrixen
 
-Mat4f identiteitsMatrix();
+#define identiteitsMatrix (Mat4f){{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}}
 Mat4f verplaatsMatrix(float x, float y, float z);
 Mat4f perspectiefMatrix(float voorvlak, float achtervlak, double zichthoek, float schermverhouding);
 Mat4f voorwerpMatrixPlekGrootte(Vec3f plek, Vec3f grootte);

@@ -1,6 +1,7 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef KOPPELING_H
+#define KOPPELING_H
 #include "wiskunde/lineair.h"
+#include "verf/verver.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -64,6 +65,11 @@ void zet_muis(double x, double y);
 
 // Krijg aantal teken oproepen per seconde.
 double krijg_TPS();
+
+/*	VERF	*/
+
+// Krijg huidig gebruikte verver.
+Verver krijg_huidige_verver();
 
 /**		TERUGROEPEN		**/
 /*	TOETSEN	*/

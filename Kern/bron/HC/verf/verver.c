@@ -1,9 +1,10 @@
 
 #include "verver.h"
 
+#include "koppeling.h"
 #include "lezers/bestandslezer.h"
-#include "wiskunde/lineair.h"
 #include "materiaal.h"
+#include "wiskunde/lineair.h"
 
 #include <GL/glew.h>
 #include <stdio.h>
@@ -11,8 +12,7 @@
 
 #define FOUTMELDING_GROOTTE 512
 
-Verver* maakVerver(const char* hoekVerfLocatie, const char* fragmentVerfLocatie) {
-	Verver* verver = malloc(sizeof(Verver));
+Verver maakVerver(const char* hoekVerfLocatie, const char* fragmentVerfLocatie) {
 	char foutmelding[FOUTMELDING_GROOTTE];
 	int makenGelukt;
 
@@ -44,14 +44,14 @@ Verver* maakVerver(const char* hoekVerfLocatie, const char* fragmentVerfLocatie)
 		exit(-1);
 	}
 
-	unsigned int verfProgramma = glCreateProgram();
-	glAttachShader(verfProgramma, hoekVerver);
-	glAttachShader(verfProgramma, fragmentVerver);
-	glLinkProgram(verfProgramma);
+	Verver verver = glCreateProgram();
+	glAttachShader(verver, hoekVerver);
+	glAttachShader(verver, fragmentVerver);
+	glLinkProgram(verver);
 
-	glGetProgramiv(verfProgramma, GL_LINK_STATUS, &makenGelukt);
+	glGetProgramiv(verver, GL_LINK_STATUS, &makenGelukt);
 	if (!makenGelukt) {
-		glGetProgramInfoLog(verfProgramma, FOUTMELDING_GROOTTE, NULL, foutmelding);
+		glGetProgramInfoLog(verver, FOUTMELDING_GROOTTE, NULL, foutmelding);
 		fputs(foutmelding, stderr);
 		puts("Verver kon niet gemaakt worden.");
 		exit(-1);
@@ -59,54 +59,56 @@ Verver* maakVerver(const char* hoekVerfLocatie, const char* fragmentVerfLocatie)
 
 	glDeleteShader(hoekVerver);
 	glDeleteShader(fragmentVerver);
-	verver->verfProgramma = verfProgramma;
 	return verver;
 }
 
-void verwijderVerver(Verver* verver) {
-	glDeleteProgram(verver->verfProgramma);
-	free(verver);
+void verwijderVerver(Verver verver) { glDeleteProgram(verver); }
+
+void gebruikVerver(Verver verver) {
+	if (krijg_huidige_verver() != verver) glUseProgram(verver);
+
+	Vec3d plek = krijg_plek();
+	zetVerverDouble3v(verver, "zicht_plek", &plek.x);
+	zetVerverMat4f(verver, "zicht_matrix", &zichtM);
 }
 
-void gebruikVerver(const Verver* verver) { glUseProgram(verver->verfProgramma); }
-
-void zetVerverInt(const Verver* verver, const char* naam, int waarde) {
-	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+void zetVerverInt(Verver verver, const char* naam, int waarde) {
+	int verwijzing = glGetUniformLocation(verver, naam);
 	glUniform1i(verwijzing, waarde);
 }
 
-void zetVerverFloat(const Verver* verver, const char* naam, float waarde) {
-	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+void zetVerverFloat(Verver verver, const char* naam, float waarde) {
+	int verwijzing = glGetUniformLocation(verver, naam);
 	glUniform1f(verwijzing, waarde);
 }
-void zetVerverFloat3v(const Verver* verver, const char* naam, float waarden[]) {
-	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+void zetVerverFloat3v(Verver verver, const char* naam, float waarden[]) {
+	int verwijzing = glGetUniformLocation(verver, naam);
 	glUniform3fv(verwijzing, 1, waarden);
 }
-void zetVerverFloat4v(const Verver* verver, const char* naam, float waarden[]) {
-	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+void zetVerverFloat4v(Verver verver, const char* naam, float waarden[]) {
+	int verwijzing = glGetUniformLocation(verver, naam);
 	glUniform4fv(verwijzing, 1, waarden);
 }
 
-void zetVerverDouble(const Verver* verver, const char* naam, double waarde) {
-	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+void zetVerverDouble(Verver verver, const char* naam, double waarde) {
+	int verwijzing = glGetUniformLocation(verver, naam);
 	glUniform1d(verwijzing, waarde);
 }
-void zetVerverDouble3v(const Verver* verver, const char* naam, double waarden[]) {
-	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+void zetVerverDouble3v(Verver verver, const char* naam, double waarden[]) {
+	int verwijzing = glGetUniformLocation(verver, naam);
 	glUniform3dv(verwijzing, 1, waarden);
 }
-void zetVerverDouble4v(const Verver* verver, const char* naam, double waarden[]) {
-	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+void zetVerverDouble4v(Verver verver, const char* naam, double waarden[]) {
+	int verwijzing = glGetUniformLocation(verver, naam);
 	glUniform4dv(verwijzing, 1, waarden);
 }
 
-void zetVerverMat4f(const Verver* verver, const char* naam, const Mat4f* mat) {
-	int verwijzing = glGetUniformLocation(verver->verfProgramma, naam);
+void zetVerverMat4f(Verver verver, const char* naam, const Mat4f* mat) {
+	int verwijzing = glGetUniformLocation(verver, naam);
 	glUniformMatrix4fv(verwijzing, 1, GL_FALSE, (float*)mat);
 }
 
-void zetVerverMateriaal(Verver* verver, Materiaal* materiaal) {
+void zetVerverMateriaal(Verver verver, Materiaal* materiaal) {
 	zetVerverFloat3v(verver, "materiaal.vaste_kleur", &materiaal->vaste_kleur.x);
 	zetVerverFloat3v(verver, "materiaal.afweer_kleur", &materiaal->afweer_kleur.x);
 	zetVerverFloat3v(verver, "materiaal.weerkaats_kleur", &materiaal->weerkaats_kleur.x);

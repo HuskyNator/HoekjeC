@@ -1,44 +1,53 @@
-
 #include "voorwerp.h"
 
-#include "GL/glew.h"
 #include "koppeling.h"
-#include "wiskunde/lineair.h"
-#include "verf/verver.h"
 
-#include <stdlib.h>
-
-struct voorwerp {
-	Vorm* vorm;
-	Vec3f plaats;
-	Vec3f grootte;
-	Vec3f draai;
-	Mat4f voorwerpMatrix;
-};
-
-static void werkVoorwerpMatrixBij(Voorwerp* voorwerp) {
-	Mat4f matx = draaiMatrixx(voorwerp->draai.x);
-	Mat4f maty = draaiMatrixy(voorwerp->draai.y);
-	Mat4f matz = draaiMatrixz(voorwerp->draai.z);
-	Mat4f matPG = voorwerpMatrixPlekGrootte(voorwerp->plaats, voorwerp->grootte);
-	voorwerp->voorwerpMatrix = Mat4fMat4f(matPG, Mat4fMat4f(matx, Mat4fMat4f(maty, matz)));
+void voorwerpZetM(Voorwerp* vorm) {
+	Mat4f draai_x = draaiMatrixx(vorm->draaiing.x);
+	Mat4f draai_y = draaiMatrixy(vorm->draaiing.y);
+	Mat4f draai_z = draaiMatrixy(vorm->draaiing.z);
+	Mat4f plek_grootte = voorwerpMatrixPlekGrootte(vorm->plek, vorm->grootte);
+	vorm->voorwerpM = Mat4fMat4f(plek_grootte, Mat4fMat4f(draai_x, Mat4fMat4f(draai_y, draai_z)));
 }
 
-Voorwerp* maakVoorwerp(Vorm* vorm, Vec3f plaats, Vec3f grootte, Vec3f draai) {
-	Voorwerp* voorwerp = malloc(sizeof(Voorwerp));
-	voorwerp->vorm = vorm;
-	voorwerp->plaats = plaats;
+void voorwerpTeken(Voorwerp* voorwerp, Verver verver) {
+	if (voorwerp->bijgewerkt) {
+		voorwerpZetM(voorwerp);
+		voorwerp->bijgewerkt = onwaar;
+	}
+	zetVerverMat4f(verver, "voorwerp_matrix", &voorwerp->voorwerpM);
+	voorwerp->opdrachten->teken_opdracht(voorwerp, verver);
+}
+
+void voorwerpZetPlek(Voorwerp* voorwerp, Vec3f plek) {
+	voorwerp->plek = plek;
+	voorwerp->bijgewerkt = waar;
+}
+
+void voorwerpZetGrootte(Voorwerp* voorwerp, Vec3f grootte) {
 	voorwerp->grootte = grootte;
-	voorwerp->draai = draai;
-	werkVoorwerpMatrixBij(voorwerp);
-	return voorwerp;
+	voorwerp->bijgewerkt = waar;
 }
 
-void tekenVoorwerp(Voorwerp* voorwerp, Verver* verver) {
-	gebruikVerver(verver);
-	Vec3f plek = Vec3dn3f(krijg_plek());
-	zetVerverFloat3v(verver, "zicht_plek", &plek.x);
-	zetVerverMat4f(verver, "zicht_matrix", &zichtM);
-	zetVerverMat4f(verver, "voorwerp_matrix", &voorwerp->voorwerpMatrix);
-	tekenVorm(voorwerp->vorm, verver);
+void voorwerpZetDraai(Voorwerp* voorwerp, Vec3f draai) {
+	voorwerp->draaiing = draai;
+	voorwerp->bijgewerkt = waar;
 }
+
+// void voorwerpVoegF(Voorwerp* voorwerp, const Lijst* inhoud, unsigned int standplek) {
+// 	unsigned int VBO;
+// 	glCreateBuffers(1, &VBO);
+// 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+// 	glBufferData(GL_ARRAY_BUFFER, inhoud->tel * inhoud->onderdeel_grootte, inhoud->inhoud, GL_STATIC_DRAW);
+
+// 	unsigned int getal_aantal = inhoud->onderdeel_grootte / sizeof(float);
+
+// 	glBindVertexArray(voorwerp->VAO);
+// 	glVertexAttribPointer(standplek, getal_aantal, GL_FLOAT, GL_FALSE, inhoud->onderdeel_grootte, (void*)0);
+// 	glEnableVertexAttribArray(standplek);
+
+// 	glBindVertexArray(0);
+// 	glDeleteBuffers(1, &VBO);
+// }
+
+#define verwijderVoorwerp(voorwerp) voorwerp->opdrachten->verwijder_opdracht(voorwerp)

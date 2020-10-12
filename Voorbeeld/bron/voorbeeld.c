@@ -2,21 +2,23 @@
 #include "HC/koppeling.h"
 #include "HC/lezers/bestandslezer.h"
 #include "HC/verf/verver.h"
-#include "HC/voorwerpen/voorwerp.h"
-#include "HC/voorwerpen/vorm.h"
+#include "HC/voorwerpen/vormen.h"
 #include "HC/wiskunde/lineair.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #ifndef VOORBEELD_VERSIE
 #define VOORBEELD_VERSIE "onbekend"
 #endif
 
-Voorwerp* blokVoorwerp;
-Voorwerp* vloerVoorwerp;
-Verver* verver;
+Vlak* vlak;
+Blok* blok;
+Verver verver;
 
 #define LOOPSNELHEID 1.4
 #define RENSNELHEID 3.7
@@ -93,7 +95,11 @@ static void denker(double tijdsverschil) {
 	}
 }
 
-static void tekenaar() { tekenVoorwerp(blokVoorwerp, verver); }
+static void tekenaar() {
+	gebruikVerver(verver);
+	voorwerpTeken(vlak, verver);
+	voorwerpTeken(blok, verver);
+}
 
 int main() {
 	// HWND achtergrondScherm = GetConsoleWindow();
@@ -113,25 +119,15 @@ int main() {
 	zet_schermnaam(versie);
 	free(versie);
 
-	verver = maakVerver("shaders/kleur_voorwerp.vert", "shaders/kleur_voorwerp.frag");
-	gebruikVerver(verver);
+	verver = maakVerver("shaders/vormen/vorm.vert", "shaders/vormen/vorm.frag");
 
-	Vorm* blok = leesObj("wagen.obj");
+	blok = maakBlok();
+	vlak = maakVlak();
+	voorwerpZetDraai(vlak, (Vec3f){M_PI_2, 0, 0});
+	voorwerpZetGrootte(vlak, (Vec3f){10, 10, 10});
+	voorwerpZetPlek(vlak, (Vec3f){0, -0.5, 0});
 
-	Lijst* blokKleuren = maakLijst(blok->hoek_aantal, sizeof(Vec4f));
-	for (int h = 0; h < blok->hoek_aantal; h++) {
-		float r = (float)rand() / RAND_MAX;
-		float g = (float)rand() / RAND_MAX;
-		float b = (float)rand() / RAND_MAX;
-		Vec4f h = {r, g, b, 1};
-		lijstVoeg(blokKleuren, &h);
-	}
-	vormVoegInhoudToe(blok, blokKleuren, 3);
-
-	Vec3f blokPlaats = {0, 0, 0};
-	Vec3f blokGrootte = {1, 1, 1};
-	Vec3f blokDraai = {0, 0, 0};
-	blokVoorwerp = maakVoorwerp(blok, blokPlaats, blokGrootte, blokDraai);
+	voorwerpZetGrootte(blok, (Vec3f){3, 5, 2});
 
 	zet_toets_terugroeper(toets_terugroeper);
 	zet_denker(denker);
