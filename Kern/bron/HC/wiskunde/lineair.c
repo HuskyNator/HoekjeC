@@ -119,7 +119,6 @@ Mat4f draaiMatrixz(float draai) {
 
 // Matrixen
 
-Mat4f identiteitsMatrix() { return (Mat4f){{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}}; }
 Mat4f verplaatsMatrix(float x, float y, float z) {
 	return (Mat4f){{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {x, y, z, 1}};
 }
@@ -129,7 +128,7 @@ Mat4f perspectiefMatrix(float voorvlak, float achtervlak, double zichthoek, floa
 	return (Mat4f){{invtan, 0, 0, 0},
 				   {0, schermverhouding * invtan, 0, 0},
 				   {0, 0, (voorvlak + achtervlak) * invdelta, 1},
-				   {0, 0, -2 * voorvlak * achtervlak * invdelta}};
+				   {0, 0, -2 * voorvlak * achtervlak * invdelta, 0}};
 	// Mat Projec:
 	// |1/tan(a/2)	0			0			0			|
 	// |0			R/tan(a/2)	0			0			|

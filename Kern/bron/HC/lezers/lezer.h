@@ -1,24 +1,15 @@
 #ifndef LEZER_H
 #define LEZER_H
 
+#include <stdio.h>
 #include "lijsten/lijst.h"
 
-#include <stdio.h>
+char* leesRegel(FILE* bestand);
 
-typedef struct lezer Lezer;
-struct lezer {
-	FILE* bestand;
-	Lijst* tekens;	// Vrij aan te passen.
-	char* leesruimte;
-	unsigned int leesruimte_grootte;
-};
+char* leesWoord(FILE* bestand);
 
-Lezer* maakLezer(FILE* bestand);
+booleaan woordBegintMet(char* woord, char* begin);
 
-char* lezerLeesRegel(Lezer* lezer);
-
-char* lezerLeesWoord(Lezer* lezer);
-
-void lezerZetScheidstekens(Lezer* lezer, Lijst* tekens);
+Lijst* woordSplits(char* woord, char teken);
 
 #endif

@@ -4,7 +4,7 @@
 #define SCHERM_BREEDTE (1920.0 / 2.0)
 #define SCHERM_HOOGTE (1080.0 / 2.0)
 #include "verf/verver.h"
-#include "voorwerpen/vorm.h"
+#include "voorwerpen/vormen.h"
 
 #include <GL/glew.h>
 #include <stdlib.h>
@@ -14,8 +14,8 @@ static float BLAUW[] = {0, 0, 1, 1};
 static float WIT[] = {1, 1, 1, 1};
 
 static Verver* logo_verver;
-static Vorm* rood_driehoek;
-static Vorm* blauw_driehoek;
+static Driehoek* rood_driehoek;
+static Driehoek* blauw_driehoek;
 
 void maakLogo(/*unsigned int grootte*/) {
 	// logo_verver = maakVerver("./shaders/normaal.vert", "./shaders/normaal.frag");

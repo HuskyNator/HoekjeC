@@ -3,7 +3,6 @@
 #include "lezers/bestandslezer.h"
 #include "logo.h"
 #include "verf/verver.h"
-#include "voorwerpen/voorwerp.h"
 #include "wiskunde/lineair.h"
 
 #define _USE_MATH_DEFINES
@@ -135,8 +134,15 @@ static double vorigeTijd;
 static double tijdsverschil;
 double krijg_TPS() { return 1 / tijdsverschil; }
 
+/*	VERF	*/
+
+// Huidige verver in gebruik.
+static Verver huidige_verver;
+Verver krijg_huidige_verver() { return huidige_verver; }
+
 /**		TERUGROEPEN		**/
 /*	TOETSEN	*/
+
 static toets_terugroep_opdracht toets_terugroeper;
 static void toets_terugroep(GLFWwindow* scherm, int toets, int toets2, int handeling, int toevoeging) {
 	toets_terugroeper(toets, toets2, handeling, toevoeging);
@@ -157,6 +163,11 @@ static void muisplek_terugroep(GLFWwindow* scherm, double x, double y) {
 
 /*	SCHERM	*/
 
+static void glfw_fout_terugroep(int fout_soort, const char* melding) {
+	fputs(melding, stderr);
+	putc('\n', stderr);
+}
+
 static void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte) {
 	glViewport(0, 0, breedte, hoogte);
 	schermbreedte = breedte;
@@ -167,7 +178,8 @@ static void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte)
 /*	OPENGL	*/
 
 static void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned int id, GLenum ernstigheid,
-										   GLsizei grootte, const char* bericht, const void* gebruikersParameter) {
+										   GLsizei grootte, const char* bericht,
+										   const void* gebruikersParameter) {
 	if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
 	fputs("----\n", stderr);
 	fprintf(stderr, "Foutmelding #%u: %s\n", id, bericht);
@@ -205,7 +217,9 @@ Mat4f standaard_draai_maker(double muisx, double muisy) {
 	return Mat4fMat4f(draaixMatrix, draaiyMatrix);
 }
 
-Mat4f standaard_plek_maker(double plekx, double pleky, double plekz) { return verplaatsMatrix(-plekx, -pleky, -plekz); }
+Mat4f standaard_plek_maker(double plekx, double pleky, double plekz) {
+	return verplaatsMatrix(-plekx, -pleky, -plekz);
+}
 
 /*	BIJWERKEN	*/
 
@@ -254,6 +268,7 @@ void standaard_tekenaar() {}
 
 void opzetten() {
 	// # GLFW
+	glfwSetErrorCallback(&glfw_fout_terugroep);
 	if (!glfwInit()) {
 		puts(":C geen glfw");
 		exit(-1);
@@ -318,7 +333,7 @@ static void afbreken() {
 	glfwTerminate();
 }
 
-static void teken() {
+static void stap() {
 	glClearColor(0.15, 0.15, 0.15, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -335,7 +350,7 @@ static void teken() {
 
 void lus() {
 	while (!glfwWindowShouldClose(scherm)) {
-		teken();
+		stap();
 		glfwPollEvents();
 	}
 	afbreken();
