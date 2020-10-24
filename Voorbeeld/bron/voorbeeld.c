@@ -1,4 +1,5 @@
 #include "HC/booleaan.h"
+#include "HC/kleuren.h"
 #include "HC/koppeling.h"
 #include "HC/lezers/bestandslezer.h"
 #include "HC/verf/verver.h"
@@ -121,13 +122,15 @@ int main() {
 
 	verver = maakVerver("shaders/vormen/vorm.vert", "shaders/vormen/vorm.frag");
 
-	blok = maakBlok();
 	vlak = maakVlak();
 	voorwerpZetDraai(vlak, (Vec3f){M_PI_2, 0, 0});
-	voorwerpZetGrootte(vlak, (Vec3f){10, 10, 10});
+	voorwerpZetGrootte(vlak, (Vec3f){1000, 1000, 1000});
 	voorwerpZetPlek(vlak, (Vec3f){0, -0.5, 0});
+	vormZetKleur(vlak, &Groen);
 
-	voorwerpZetGrootte(blok, (Vec3f){3, 5, 2});
+	blok = maakBlok();
+	voorwerpZetGrootte(blok, (Vec3f){1, 1, 2});
+	vormZetKleur(blok, &Blauw);
 
 	zet_toets_terugroeper(toets_terugroeper);
 	zet_denker(denker);

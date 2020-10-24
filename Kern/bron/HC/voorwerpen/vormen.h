@@ -1,8 +1,11 @@
-#pragma once
+#ifndef VORMEN_H
+#define VORMEN_H
 
 #include "voorwerp.h"
 
 typedef Voorwerp Vorm;
+
+void vormZetKleur(Voorwerp* voorwerp, const Vec4f* kleur);
 
 /**		Driehoek		**/
 typedef Vorm Driehoek;
@@ -18,3 +21,5 @@ typedef Vorm Blok;
 
 Blok* maakBlok();
 // TODO
+
+#endif

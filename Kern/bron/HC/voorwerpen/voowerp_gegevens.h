@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VOORWERP_GEGEVENS_H
+#define VOORWERP_GEGEVENS_H
 
 #include "HC/wiskunde/lineair.h"
 #include "HC/verf/materiaal.h"
@@ -20,3 +21,5 @@ struct vorm_gegevens {
 		Materiaal* materiaal;
 	};
 };
+
+#endif

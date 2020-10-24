@@ -15,6 +15,8 @@ static const Voorwerp voorbeeld_vorm = {
 
 static const VormGegevens voorbeeld_vormgegevens = {.soort = VORMSOORT_KLEUR, .kleur = &Wit};
 
+void vormZetKleur(Voorwerp* voorwerp, const Vec4f* kleur) { voorwerp->vormgegevens->kleur = kleur; }
+
 static Vorm* maakVorm(const struct voorwerp_opdrachten* opdrachten) {
 	Voorwerp* vorm = malloc(sizeof(Voorwerp));
 	memcpy(vorm, &voorbeeld_vorm, sizeof(Voorwerp));
