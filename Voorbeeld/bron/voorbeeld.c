@@ -17,6 +17,7 @@
 #define VOORBEELD_VERSIE "onbekend"
 #endif
 
+Driehoek* driehoek;
 Vlak* vlak;
 Blok* blok;
 Verver verver;
@@ -98,6 +99,7 @@ static void denker(double tijdsverschil) {
 
 static void tekenaar() {
 	gebruikVerver(verver);
+	voorwerpTeken(driehoek, verver);
 	voorwerpTeken(vlak, verver);
 	voorwerpTeken(blok, verver);
 }
@@ -122,10 +124,13 @@ int main() {
 
 	verver = maakVerver("shaders/vormen/vorm.vert", "shaders/vormen/vorm.frag");
 
+	driehoek = maakDriehoek();
+	voorwerpZetPlek(driehoek, (Vec3f){-0.5, -0.5, -1.01});
+
 	vlak = maakVlak();
 	voorwerpZetDraai(vlak, (Vec3f){M_PI_2, 0, 0});
 	voorwerpZetGrootte(vlak, (Vec3f){1000, 1000, 1000});
-	voorwerpZetPlek(vlak, (Vec3f){0, -0.5, 0});
+	voorwerpZetPlek(vlak, (Vec3f){0, -0.51, 0});
 	vormZetKleur(vlak, &Groen);
 
 	blok = maakBlok();

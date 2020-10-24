@@ -9,17 +9,14 @@ void vormZetKleur(Voorwerp* voorwerp, const Vec4f* kleur);
 
 /**		Driehoek		**/
 typedef Vorm Driehoek;
-// TODO
+Driehoek* maakDriehoek();
 
 /**		Vlak		**/
 typedef Vorm Vlak;
-
 Vlak* maakVlak();
 
 /**		Blok		**/
 typedef Vorm Blok;
-
 Blok* maakBlok();
-// TODO
 
 #endif

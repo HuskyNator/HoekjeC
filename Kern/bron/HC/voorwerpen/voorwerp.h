@@ -13,6 +13,8 @@ struct voorwerp {
 		void* gegevens;
 		VormGegevens* vormgegevens;
 	};
+	unsigned int VAO;
+	unsigned int EBO_tal;
 	Vec3f plek;
 	Vec3f grootte;
 	Vec3f draaiing;
