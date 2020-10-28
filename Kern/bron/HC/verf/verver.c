@@ -72,6 +72,11 @@ void gebruikVerver(Verver verver) {
 	zetVerverMat4f(verver, "zicht_matrix", &zichtM);
 }
 
+void zetVerverUint(Verver verver, const char* naam, unsigned int waarde) {
+	int verwijzing = glGetUniformLocation(verver, naam);
+	glUniform1ui(verwijzing, waarde);
+}
+
 void zetVerverInt(Verver verver, const char* naam, int waarde) {
 	int verwijzing = glGetUniformLocation(verver, naam);
 	glUniform1i(verwijzing, waarde);

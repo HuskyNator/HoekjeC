@@ -113,6 +113,12 @@ void wijzig_plek(double vx, double vy, double vz) {
 	bijwerkbaar_plekM = waar;
 }
 
+/*	MUISGEVOELIGHEID	*/
+
+static float muisgevoeligheid = 0.01;
+void zet_muisgevoeligheid(float gevoeligheid) { muisgevoeligheid = gevoeligheid; }
+float krijg_muisgevoeligheid() { return muisgevoeligheid; }
+
 /*	MUISPLEK	*/
 
 static double muisx;
@@ -139,6 +145,12 @@ double krijg_TPS() { return 1 / tijdsverschil; }
 // Huidige verver in gebruik.
 static Verver huidige_verver;
 Verver krijg_huidige_verver() { return huidige_verver; }
+
+/*	ACHTERGROND	*/
+
+static Vec4f achtergrond_kleur;
+void zet_achtergrond_kleur(Vec4f kleur) { achtergrond_kleur = kleur; }
+Vec4f krijg_achtergrond_kleur() { return achtergrond_kleur; }
 
 /**		TERUGROEPEN		**/
 /*	TOETSEN	*/
@@ -177,9 +189,8 @@ static void schermgrootte_terugroep(GLFWwindow* scherm, int breedte, int hoogte)
 
 /*	OPENGL	*/
 
-static void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned int id, GLenum ernstigheid,
-										   GLsizei grootte, const char* bericht,
-										   const void* gebruikersParameter) {
+static void APIENTRY foutmelding_terugroep(GLenum bron, GLenum soort, unsigned int id, GLenum ernstigheid, GLsizei grootte,
+										   const char* bericht, const void* gebruikersParameter) {
 	if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
 	fputs("----\n", stderr);
 	fprintf(stderr, "Foutmelding #%u: %s\n", id, bericht);
@@ -212,14 +223,12 @@ Mat4f standaard_projectie_maker(float voorvlak, float achtervlak, float zichthoe
 }
 
 Mat4f standaard_draai_maker(double muisx, double muisy) {
-	Mat4f draaixMatrix = draaiMatrixx(-muisy * 0.01);
-	Mat4f draaiyMatrix = draaiMatrixy(-muisx * 0.01);
+	Mat4f draaixMatrix = draaiMatrixx(-muisy * muisgevoeligheid);
+	Mat4f draaiyMatrix = draaiMatrixy(-muisx * muisgevoeligheid);
 	return Mat4fMat4f(draaixMatrix, draaiyMatrix);
 }
 
-Mat4f standaard_plek_maker(double plekx, double pleky, double plekz) {
-	return verplaatsMatrix(-plekx, -pleky, -plekz);
-}
+Mat4f standaard_plek_maker(double plekx, double pleky, double plekz) { return verplaatsMatrix(-plekx, -pleky, -plekz); }
 
 /*	BIJWERKEN	*/
 
@@ -252,6 +261,7 @@ void werk_M_bij() {
 }
 
 /**		TEKENEN		**/
+
 /*	DENKER	*/
 
 static denk_opdracht denker;
@@ -310,6 +320,9 @@ void opzetten() {
 	vorigeTijd = glfwGetTime();
 	tijdsverschil = 1;
 
+	// > Achtergrond
+	achtergrond_kleur = Zwart;
+
 	// > Terugroepen
 	zet_toets_terugroeper(NULL);
 	glfwSetKeyCallback(scherm, toets_terugroep);
@@ -326,6 +339,7 @@ void opzetten() {
 	// > Tekenen
 	zet_denker(NULL);
 	zet_tekenaar(NULL);
+	glLineWidth(4);
 }
 
 static void afbreken() {
@@ -334,7 +348,7 @@ static void afbreken() {
 }
 
 static void stap() {
-	glClearColor(0.15, 0.15, 0.15, 1);
+	glClearColor(achtergrond_kleur.x, achtergrond_kleur.y, achtergrond_kleur.z, achtergrond_kleur.z);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	double nieuweTijd = glfwGetTime();
@@ -356,12 +370,13 @@ void lus() {
 	afbreken();
 }
 
-void logo(float tijd) {
-	maakLogo();
-	tekenLogo();
-	glfwSwapBuffers(scherm);
-	Sleep(tijd);
-	verwijderLogo();
-}
+// TODO: Vernieuwen.
+// void logo(float tijd) {
+// 	maakLogo((Vec3f){0, 0, 0}, (Vec3f){1000, 1000, 1}, (Vec3f){0, 0, 0});
+// 	tekenLogo();
+// 	glfwSwapBuffers(scherm);
+// 	Sleep(tijd);
+// 	verwijderLogo();
+// }
 
 void sluit_scherm() { glfwSetWindowShouldClose(scherm, waar); }

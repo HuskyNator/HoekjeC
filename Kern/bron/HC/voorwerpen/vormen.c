@@ -12,122 +12,140 @@
 
 void vormZetKleur(Voorwerp* voorwerp, const Vec4f* kleur) { voorwerp->vormgegevens->kleur = kleur; }
 
+/**
+ * @brief Tekent vormen.
+ *
+ * @param  vorm: De vorm om te tekenen.
+ * @param  verver: De verver waarmee getekend wordt.
+ * @retval None
+ * @todo Voeg ondersteuning toe voor afbeeldingen en materialen.
+ */
 static void tekenVorm(Vorm* vorm, Verver verver) {
-	zetVerverFloat4v(verver, "kleur", (float*)vorm->vormgegevens->kleur);
 	glBindVertexArray(vorm->VAO);
-	glDrawElements(GL_TRIANGLES, vorm->EBO_tal, GL_UNSIGNED_INT, 0);
+
+	const VormGegevens gegevens = *vorm->vormgegevens;
+
+	zetVerverUint(verver, "soort", gegevens.soort);
+	if (gegevens.soort == VORMSOORT_KLEUR) {
+		zetVerverFloat4v(verver, "kleur", (float*)vorm->vormgegevens->kleur);
+		glDrawElements(GL_TRIANGLES, vorm->EBO_aantal, GL_UNSIGNED_INT, 0);
+	}
+
+	if (gegevens.rand) {
+		zetVerverUint(verver, "soort", VORMSOORT_LIJN);
+		zetVerverFloat4v(verver, "kleur", (float*)vorm->vormgegevens->rand_kleur);
+		glDrawElements(GL_LINE_LOOP, vorm->EBO_aantal, GL_UNSIGNED_INT, 0);
+	}
 }
 
-static void verwijderVorm(Vorm* vorm) {
-	free(vorm->gegevens);
-	free(vorm);
-}
+static void verwijderVorm_opdracht(Vorm* vorm) { free(vorm->gegevens); }
 
-static const struct voorwerp_opdrachten vorm_opdrachten = {tekenVorm, verwijderVorm};
+static const struct voorwerp_opdrachten vorm_opdrachten = {tekenVorm, verwijderVorm_opdracht};
 
-static Vorm* maakVorm(unsigned int VAO, unsigned int EBO_tal) {
-	Voorwerp* vorm = malloc(sizeof(Voorwerp));
-	*vorm = (Voorwerp){.opdrachten = &vorm_opdrachten,
-					   .VAO = VAO,
-					   .EBO_tal = EBO_tal,
-					   .plek = {0, 0, 0},
-					   .grootte = {1, 1, 1},
-					   .draaiing = {0, 0, 0},
-					   .voorwerpM = identiteitsMatrix,
-					   .bijgewerkt = onwaar};
-
+static Vorm* maakVorm() {
+	Voorwerp* vorm = maakVoorwerp();
+	vorm->opdrachten = &vorm_opdrachten;
 	vorm->vormgegevens = malloc(sizeof(VormGegevens));
-	*vorm->vormgegevens = (VormGegevens){.soort = VORMSOORT_KLEUR, .kleur = &Wit};
+	*vorm->vormgegevens = (VormGegevens){.soort = VORMSOORT_KLEUR, .rand = onwaar, .rand_kleur = &Groen, .kleur = &LichtGrijs};
 	return vorm;
 }
 
-static void vorm_opzet(unsigned int* VAO, unsigned int* VBOs, unsigned int* EBO, const float* plekken, const float* normalen,
-					   const float* verfplekken, const unsigned int* tallen, unsigned int hoektal, unsigned int verftal,
-					   unsigned int vlaktal) {
-	glGenVertexArrays(1, VAO);
-	glGenBuffers(3, VBOs);
-	glGenBuffers(1, EBO);
+/**		Driekant		**/
 
-	glBindVertexArray(*VAO);
+static const Vec3f Driekant_plekken[] = {{0, 0, 0}, {1, 0, 0}, {0.5, 1, 0}};
+static const Vec3f Driekant_normalen[] = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}};
+static const Vec2f Driekant_verfplekken[] = {{0, 0}, {1, 0}, {0.5, 1}};
+static const unsigned int Driekant_tallen[] = {0, 1, 2};
+static unsigned int Driekant_VAO;
+static unsigned int Driekant_VBOs[3];
+static unsigned int Driekant_EBO;
+static booleaan Driekant_opgezet = onwaar;
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glBufferData(GL_ARRAY_BUFFER, hoektal * sizeof(float), plekken, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, onwaar, 3 * sizeof(float), 0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-	glBufferData(GL_ARRAY_BUFFER, hoektal * sizeof(float), normalen, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, onwaar, 3 * sizeof(float), 0);
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
-	glBufferData(GL_ARRAY_BUFFER, verftal * sizeof(float), verfplekken, GL_STATIC_DRAW);
-	glVertexAttribPointer(2, 3, GL_FLOAT, onwaar, 3 * sizeof(float), 0);
-	glEnableVertexAttribArray(2);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vlaktal * sizeof(unsigned int), tallen, GL_STATIC_DRAW);
-
-	glBindVertexArray(0);
+Driekant* maakKant() {
+	if (!Driekant_opgezet) {
+		maak_voorwerp_bruikbaar(&Driekant_VAO, Driekant_VBOs, &Driekant_EBO, Driekant_plekken, Driekant_normalen, Driekant_verfplekken,
+								Driekant_tallen, sizeof(Driekant_plekken) / (3 * sizeof(float)),
+								sizeof(Driekant_tallen) / sizeof(unsigned int));
+		Driekant_opgezet = waar;
+	}
+	Driekant* driekant = maakVorm();
+	driekant->VAO = Driekant_VAO;
+	driekant->VBOs[0] = Driekant_VBOs[0];
+	driekant->VBOs[1] = Driekant_VBOs[1];
+	driekant->VBOs[2] = Driekant_VBOs[2];
+	driekant->EBO_aantal = sizeof(Driekant_tallen) / sizeof(unsigned int);
+	return driekant;
 }
 
-/**		Driehoek		**/
-static const float Driehoek_plekken[] = {0, 0, 0, 1, 0, 0, 0.5, 1, 0};
-static const float Driehoek_normalen[] = {0, 0, -1, 0, 0, -1, 0, 0, -1};
-static const float Driehoek_verfplekken[] = {0, 0, 1, 0, 0.5, 1};
-static const unsigned int Driehoek_tallen[] = {0, 1, 2};
-static unsigned int Driehoek_VAO;
-static unsigned int Driehoek_VBOs[3];
-static unsigned int Driehoek_EBO;
-static booleaan Driehoek_opgezet = onwaar;
+/**		Vierkant		**/
 
-Vlak* maakDriehoek() {
-	if (!Driehoek_opgezet) {
-		vorm_opzet(&Driehoek_VAO, Driehoek_VBOs, &Driehoek_EBO, Driehoek_plekken, Driehoek_normalen, Driehoek_verfplekken, Driehoek_tallen,
-				   sizeof(Driehoek_plekken), sizeof(Driehoek_verfplekken), sizeof(Driehoek_tallen));
-		Driehoek_opgezet = waar;
+static const Vec3f Vierkant_plekken[] = {{-1, -1, 0}, {1, -1, 0}, {1, 1, 0}, {-1, 1, 0}};
+static const Vec3f Vierkant_normalen[] = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}};
+static const Vec2f Vierkant_verfplekken[] = {{0, 0}, {1, 0}, {1, 1}, {1, 0}};
+static const unsigned int Vierkant_tallen[] = {0, 1, 2, 0, 2, 3};
+static unsigned int Vierkant_VAO;
+static unsigned int Vierkant_VBOs[3];
+static unsigned int Vierkant_EBO;
+static booleaan Vierkant_opgezet = onwaar;
+
+Vierkant* maakVierkant() {
+	if (!Vierkant_opgezet) {
+		maak_voorwerp_bruikbaar(&Vierkant_VAO, Vierkant_VBOs, &Vierkant_EBO, Vierkant_plekken, Vierkant_normalen, Vierkant_verfplekken,
+								Vierkant_tallen, sizeof(Vierkant_plekken) / (3 * sizeof(float)),
+								sizeof(Vierkant_tallen) / sizeof(unsigned int));
+		Vierkant_opgezet = waar;
 	}
-	return maakVorm(Driehoek_VAO, sizeof(Driehoek_tallen));
-}
-
-/**		Vlak		**/
-
-static const float Vlak_plekken[] = {-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0};
-static const float Vlak_normalen[] = {0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1};
-static const float Vlak_verfplekken[] = {0, 0, 1, 0, 1, 1, 1, 0};
-static const unsigned int Vlak_tallen[] = {0, 1, 2, 0, 2, 3};
-static unsigned int Vlak_VAO;
-static unsigned int Vlak_VBOs[3];
-static unsigned int Vlak_EBO;
-static booleaan Vlak_opgezet = onwaar;
-
-Vlak* maakVlak() {
-	if (!Vlak_opgezet) {
-		vorm_opzet(&Vlak_VAO, Vlak_VBOs, &Vlak_EBO, Vlak_plekken, Vlak_normalen, Vlak_verfplekken, Vlak_tallen, sizeof(Vlak_plekken),
-				   sizeof(Vlak_verfplekken), sizeof(Vlak_tallen));
-		Vlak_opgezet = waar;
-	}
-	return maakVorm(Vlak_VAO, sizeof(Vlak_tallen));
+	Vierkant* vierkant = maakVorm();
+	vierkant->VAO = Vierkant_VAO;
+	vierkant->VBOs[0] = Vierkant_VBOs[0];
+	vierkant->VBOs[1] = Vierkant_VBOs[1];
+	vierkant->VBOs[2] = Vierkant_VBOs[2];
+	vierkant->EBO_aantal = sizeof(Vierkant_tallen) / sizeof(unsigned int);
+	return vierkant;
 }
 
 /**		Blok		**/
 
-static const float Blok_plekken[] = {-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
-									 -0.5, -0.5, 0.5,  0.5, -0.5, 0.5,	0.5, 0.5, 0.5,	-0.5, 0.5, 0.5};
-static const float Blok_normalen[] = {0, -1, 0, 1, 0, 0, 0, 0, -1, 0, 1, 0, -1, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 1};
-static const float Blok_verfplekken[] = {0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0};
-static const unsigned int Blok_tallen[] = {3, 0, 2, 0, 1, 2, 6, 2, 1, 5, 6, 1, 6, 5, 7, 5, 4, 7,
-										   3, 7, 4, 0, 3, 4, 2, 7, 3, 7, 2, 6, 4, 1, 0, 1, 4, 5};
+static const Vec3f Blok_plekken[] = {{-0.5, -0.5, -0.5}, {0.5, -0.5, -0.5}, {0.5, 0.5, -0.5}, {-0.5, 0.5, -0.5},
+									 {-0.5, -0.5, 0.5},	 {0.5, -0.5, 0.5},	{0.5, 0.5, 0.5},  {-0.5, 0.5, 0.5}};
+static const Vec3f Blok_normalen[] = {{0, 0, -1}, {0, -1, 0}, {0, 0, -1}, {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}, {1, 0, 0}, {0, 0, 1}};
+static const Vec2f Blok_verfplekken[] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}, {1, 1}, {0, 1}, {0, 0}, {1, 0}};
+static const Vec3ui Blok_tallen[] = {{3, 0, 2}, {0, 1, 2}, {2, 1, 6}, {1, 5, 6}, {6, 5, 7}, {5, 4, 7},
+									 {3, 7, 4}, {0, 3, 4}, {0, 4, 1}, {6, 7, 3},{2, 6, 3}, {4, 5, 1}};
 static unsigned int Blok_VAO;
 static unsigned int Blok_VBOs[3];
 static unsigned int Blok_EBO;
 static booleaan Blok_opgezet = onwaar;
 
-Vlak* maakBlok() {
+Blok* maakBlok() {
 	if (!Blok_opgezet) {
-		vorm_opzet(&Blok_VAO, Blok_VBOs, &Blok_EBO, Blok_plekken, Blok_normalen, Blok_verfplekken, Blok_tallen, sizeof(Blok_plekken),
-				   sizeof(Blok_verfplekken), sizeof(Blok_tallen));
+		maak_voorwerp_bruikbaar(&Blok_VAO, Blok_VBOs, &Blok_EBO, Blok_plekken, Blok_normalen, Blok_verfplekken, Blok_tallen,
+								sizeof(Blok_plekken) / (3 * sizeof(float)), sizeof(Blok_tallen) / sizeof(unsigned int));
 		Blok_opgezet = waar;
 	}
-	return maakVorm(Blok_VAO, sizeof(Blok_tallen));
+	Blok* blok = maakVorm();
+	blok->VAO = Blok_VAO;
+	blok->VBOs[0] = Blok_VBOs[0];
+	blok->VBOs[1] = Blok_VBOs[1];
+	blok->VBOs[2] = Blok_VBOs[2];
+	blok->EBO_aantal = sizeof(Blok_tallen) / sizeof(unsigned int);
+	return blok;
+}
+
+/**		Driehoek		**/
+
+static const unsigned int Driehoek_tekentallen[] = {0, 1, 2};
+Driehoek* maakDriehoek(const Vec3f* plekken, const Vec3f* normalen, const Vec2f* verfplekken) {
+	Driehoek* driehoek = maakVorm();
+	maak_voorwerp_bruikbaar(&driehoek->VAO, driehoek->VBOs, &driehoek->EBO, plekken, normalen, verfplekken, Driehoek_tekentallen, 3, 3);
+	return driehoek;
+}
+
+/**		Vierhoek		**/
+
+static const unsigned int Vierhoek_tekentallen[] = {0, 1, 3, 1, 2, 3};
+Vierhoek* maakVierhoek(const Vec3f* plekken, const Vec3f* normalen, const Vec2f* verfplekken) {
+	Vierhoek* vierhoek = maakVorm();
+	maak_voorwerp_bruikbaar(&vierhoek->VAO, vierhoek->VBOs, &vierhoek->EBO, plekken, normalen, verfplekken, Vierhoek_tekentallen, 4, 6);
+	return vierhoek;
 }

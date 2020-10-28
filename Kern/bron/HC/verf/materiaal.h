@@ -5,6 +5,12 @@
 
 #include <stdlib.h>
 
+/**
+ * @file
+ * @short Materiaal bedoeld voor verfgebruik.
+ * @deprecated
+ */
+
 typedef struct materiaal Materiaal;
 
 struct materiaal {

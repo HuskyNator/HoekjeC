@@ -8,5 +8,7 @@
 # Geen workspace.
 *.code-workspace
 
-# Geen build.
+# Folders.
 build
+documentatie
+uitgave

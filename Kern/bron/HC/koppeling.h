@@ -1,10 +1,18 @@
 #ifndef KOPPELING_H
 #define KOPPELING_H
-#include "wiskunde/lineair.h"
 #include "verf/verver.h"
+#include "wiskunde/lineair.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+/**
+ * @file
+ * @short Koppeling tussen gebruik en HoekjeC.
+ *
+ * Bevat de kern van de koppeling tussen gebruik & HoekjeC (en zo eveneens opengl),
+ * met verdere versimpelingen voor gemak, zoals muisbeweging, verplaatsing & een programmalus.
+ */
 
 #define SCHERM_BREEDTE (1920.0 / 2.0)
 #define SCHERM_HOOGTE (1080.0 / 2.0)
@@ -55,6 +63,11 @@ void wijzig_pleky(double verandering);
 void wijzig_plekz(double verandering);
 void wijzig_plek(double vx, double vy, double vz);
 
+/*	MUISGEVOELIGHEID	*/
+
+void zet_muisgevoeligheid(float gevoeligheid);
+float krijg_muisgevoeligheid();
+
 /*	MUISPLEK	*/
 
 double krijg_muisx();
@@ -70,6 +83,10 @@ double krijg_TPS();
 
 // Krijg huidig gebruikte verver.
 Verver krijg_huidige_verver();
+
+/*	ACHTERGROND	*/
+void zet_achtergrond_kleur(Vec4f kleur);
+Vec4f krijg_achtergrond_kleur();
 
 /**		TERUGROEPEN		**/
 /*	TOETSEN	*/

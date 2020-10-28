@@ -3,6 +3,11 @@
 
 #include "HC/booleaan.h"
 
+/**
+ * @file
+ * @short Verzameling van lineaire wiskunde.
+ */
+
 // Vectoren
 
 typedef struct vec2i Vec2i;

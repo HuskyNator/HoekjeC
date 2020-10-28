@@ -3,6 +3,15 @@
 
 #include "schakellijst.h"
 
+/**
+ * @file
+ * @short Een sleutellijst.
+ *
+ * Houdt lijsten bij, 'snippers', elk sloten bevattend, sleutel & waarde tweetallen.
+ * Tijdens het invoegen van een slot wordt door middel van zijn sleutel door de sleutelaar bepaald tot welke snipper het slot behoort.
+ * Op deze manier kan een waarde terug gevonden worden al heeft men haar sleutel.
+ */
+
 typedef unsigned int (*sleutel_opdracht)(const void* sleutel);
 
 typedef struct sleutellijst SleutelLijst;

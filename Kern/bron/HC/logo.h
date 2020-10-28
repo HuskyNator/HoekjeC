@@ -1,66 +1,33 @@
 #ifndef LOGO_H
 #define LOGO_H
 
-#define SCHERM_BREEDTE (1920.0 / 2.0)
-#define SCHERM_HOOGTE (1080.0 / 2.0)
-#include "verf/verver.h"
-#include "voorwerpen/vormen.h"
+#include "HC/kleuren.h"
+#include "HC/verf/standaard_ververs.h"
+#include "HC/voorwerpen/groep.h"
+#include "HC/voorwerpen/voorwerp.h"
+#include "HC/voorwerpen/vormen.h"
+#include "HC/wiskunde/lineair.h"
+#include "booleaan.h"
 
 #include <GL/glew.h>
 #include <stdlib.h>
+#include <string.h>
 
-static float ROOD[] = {1, 0, 0, 1};
-static float BLAUW[] = {0, 0, 1, 1};
-static float WIT[] = {1, 1, 1, 1};
+/**
+ * @file
+ * @short Logo van HoekjeC
+ *
+ * Kan gebruikt worden om het logo te tekenen.
+ *
+ * @todo Gebruik het nieuwe voorwerpontwerp en maak plaatselijke tekening mogelijk.
+ * @todo Verplaats groot deel naar .c bestand.
+ */
 
-static Verver* logo_verver;
-static Driehoek* rood_driehoek;
-static Driehoek* blauw_driehoek;
+void logo_teken_opdracht(Groep* groep, Verver verver);
 
-void maakLogo(/*unsigned int grootte*/) {
-	// logo_verver = maakVerver("./shaders/normaal.vert", "./shaders/normaal.frag");
-	// Vec3f rode_hoeken[] = {{-0.9 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, 1 * 0.015 * 2, -0.1},
-	// 							 {-0.7 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, -2.5 * 0.015 * 2, -0.1},
-	// 							 {1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE * 0.15 * 2, 1 * 0.015 * 2, -0.1}};
-	// Lijst rl = {sizeof(rode_hoeken), 3, sizeof(Vec3f), rode_hoeken};
+extern const struct voorwerp_opdrachten logo_opdrachten;
 
-	// Vec3f blauwe_hoeken[] = {
-	// 	{(-1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (1 + 0.05) * 0.15 * 2, 0},
-	// 	{(-0.5 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (-1 + 0.05) * 0.15 * 2, 0},
-	// 	{(1.0 / SCHERM_BREEDTE * SCHERM_HOOGTE + 0.1) * 0.15 * 2, (0.5 + 0.05) * 0.15 * 2, 0}};
-	// Lijst bl = {sizeof(blauwe_hoeken), 3, sizeof(Vec3f), blauwe_hoeken};
-
-	// Vlak vlakken[] = {{0, 1, 2}};
-	// Lijst vl = {sizeof(vlakken), 1, sizeof(Vlak), vlakken};
-
-	// rood_driehoek = maakVorm(&rl, &vl);
-
-	// blauw_driehoek = maakVorm(&bl, &vl);
-}
-
-void tekenLogo() {
-	// glClearColor(0.15, 0.15, 0.15, 1);
-	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); Standard.
-	// gebruikVerver(logo_verver);
-	// zetVerverFloat4v(logo_verver, "voorwerp_kleur", BLAUW);
-	// tekenVorm(blauw_driehoek);
-	// zetVerverFloat4v(logo_verver, "voorwerp_kleur", ROOD);
-	// tekenVorm(rood_driehoek);
-
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	// glLineWidth(4);
-	// zetVerverFloat4v(logo_verver, "voorwerp_kleur", WIT);
-	// tekenVorm(rood_driehoek);
-	// tekenVorm(blauw_driehoek);
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	// Reset.
-}
-
-void verwijderLogo() {
-	// verwijderVerver(logo_verver);
-	// verwijderVorm(rood_driehoek);
-	// verwijderVorm(blauw_driehoek);
-}
+// TODO: maak tot 'standaard' voorwerp, zodat je de hoeken kunt hergebruiken.
+Groep* maakLogo(Vec3f plek, Vec3f grootte, Vec3f draaiing);
 
 #endif

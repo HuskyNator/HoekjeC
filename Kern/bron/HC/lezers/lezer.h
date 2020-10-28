@@ -1,8 +1,14 @@
 #ifndef LEZER_H
 #define LEZER_H
 
-#include <stdio.h>
 #include "lijsten/lijst.h"
+
+#include <stdio.h>
+
+/**
+ * @file
+ * @short Leest delen van bestanden & geeft opdrachten om met woorden te werekn.
+ */
 
 char* leesRegel(FILE* bestand);
 

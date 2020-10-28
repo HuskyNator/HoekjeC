@@ -12,7 +12,7 @@
 			// "program": "${workspaceFolder}/Voorbeeld/VOORBEELD.exe",
 			"args": [],
 			"stopAtEntry": false,
-			"cwd": "${workspaceFolder}/Voorbeeld",
+			"cwd": "${workspaceFolder}/uitgave/Voorbeeld",
 			"environment": [
 				{
 					"name": "PATH",

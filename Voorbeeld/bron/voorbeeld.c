@@ -2,6 +2,8 @@
 #include "HC/kleuren.h"
 #include "HC/koppeling.h"
 #include "HC/lezers/bestandslezer.h"
+#include "HC/lijsten/lijst.h"
+#include "HC/logo.h"
 #include "HC/verf/verver.h"
 #include "HC/voorwerpen/vormen.h"
 #include "HC/wiskunde/lineair.h"
@@ -16,11 +18,6 @@
 #ifndef VOORBEELD_VERSIE
 #define VOORBEELD_VERSIE "onbekend"
 #endif
-
-Driehoek* driehoek;
-Vlak* vlak;
-Blok* blok;
-Verver verver;
 
 #define LOOPSNELHEID 1.4
 #define RENSNELHEID 3.7
@@ -87,7 +84,7 @@ static void toets_terugroeper(int toets, int toets2, int handeling, int toevoegi
 
 static void denker(double tijdsverschil) {
 	if (looptx != 0 || looptz != 0 || loopty != 0) {
-		Mat4f richtingsMatrix = draaiMatrixy(krijg_muisx() * 0.01);
+		Mat4f richtingsMatrix = draaiMatrixy(krijg_muisx() * krijg_muisgevoeligheid());
 		Vec3f xRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){1, 0, 0, 1}), onwaar);
 		Vec3f zRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){0, 0, 1, 1}), onwaar);
 		double snelheid = tijdsverschil * (rent ? RENSNELHEID : LOOPSNELHEID);
@@ -97,17 +94,22 @@ static void denker(double tijdsverschil) {
 	}
 }
 
+Verver verver;
+Lijst* tekenlijst;
+
 static void tekenaar() {
 	gebruikVerver(verver);
-	voorwerpTeken(driehoek, verver);
-	voorwerpTeken(vlak, verver);
-	voorwerpTeken(blok, verver);
+	const unsigned int tel = tekenlijst->tel;
+	for (unsigned int i = 0; i < tel; i++) {
+		voorwerpTeken(lijstKrijg(tekenlijst, i, Voorwerp*), verver);
+	}
 }
 
 int main() {
 	// HWND achtergrondScherm = GetConsoleWindow();
 	// ShowWindow(achtergrondScherm, SW_HIDE);
 
+	// Versie:
 	const char* versie_vorm = "HoekjeC %s - Voorbeeld %s :3";
 	const char* kern_versie = krijg_kern_versie();
 	const char* voorbeeld_versie = VOORBEELD_VERSIE;
@@ -117,28 +119,41 @@ int main() {
 	fputs(versie, stdout);
 	fputs("\n\n", stdout);
 
+	// Kern Opzetten:
 	opzetten();
 
 	zet_schermnaam(versie);
 	free(versie);
 
-	verver = maakVerver("shaders/vormen/vorm.vert", "shaders/vormen/vorm.frag");
-
-	driehoek = maakDriehoek();
-	voorwerpZetPlek(driehoek, (Vec3f){-0.5, -0.5, -1.01});
-
-	vlak = maakVlak();
-	voorwerpZetDraai(vlak, (Vec3f){M_PI_2, 0, 0});
-	voorwerpZetGrootte(vlak, (Vec3f){1000, 1000, 1000});
-	voorwerpZetPlek(vlak, (Vec3f){0, -0.51, 0});
-	vormZetKleur(vlak, &Groen);
-
-	blok = maakBlok();
-	voorwerpZetGrootte(blok, (Vec3f){1, 1, 2});
-	vormZetKleur(blok, &Blauw);
-
 	zet_toets_terugroeper(toets_terugroeper);
 	zet_denker(denker);
 	zet_tekenaar(tekenaar);
+
+	// Wereld:
+	verver = krijgKleurVerver();
+	tekenlijst = maakLijst(3, sizeof(Voorwerp*));
+
+	Driehoek* driehoek = maakKant();
+	lijstVoeg(tekenlijst, &driehoek);
+	voorwerpZetPlek(driehoek, (Vec3f){-0.5, -0.5, -1.01});
+
+	Vierkant* vierkant = maakVierkant();
+	lijstVoeg(tekenlijst, &vierkant);
+	voorwerpZetDraai(vierkant, (Vec3f){M_PI_2, 0, 0});
+	voorwerpZetGrootte(vierkant, (Vec3f){1000, 1000, 1000});
+	voorwerpZetPlek(vierkant, (Vec3f){0, -0.51, 0});
+	vormZetKleur(vierkant, &DonkerGrijs);
+
+	Blok* blok = maakBlok();
+	lijstVoeg(tekenlijst, &blok);
+	voorwerpZetGrootte(blok, (Vec3f){1, 1, 2});
+	vormZetKleur(blok, &Blauw);
+	blok->vormgegevens->rand=waar;
+
+	//TODO: Ontbreekt?
+	Groep* logo = maakLogo((Vec3f){0, 0, 0}, (Vec3f){1, 1, 1}, (Vec3f){0, 0, 0});
+	lijstVoeg(tekenlijst, &logo);
+
+	// Beginnen:
 	lus();
 }

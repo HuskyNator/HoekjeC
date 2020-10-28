@@ -6,6 +6,15 @@
 #include <stddef.h>
 #include <stdio.h>
 
+/**
+ * @file
+ * @short Een zelfgroeiende lijst.
+ *
+ * Houdt een geheugenblok bij dat verduppelt van grootte zodra deze vol is.
+ * Er wordt gebruik maakt van verwijzingen om dingen over te schrijven naar de lijst,
+ * om zo een algemene uitvoering mogelijk te kunnen maken.
+ */
+
 typedef struct lijst Lijst;
 struct lijst {
 	unsigned int grootte;
@@ -25,6 +34,7 @@ booleaan lijstPlaats(Lijst* lijst, unsigned int plek, void* onderdeel);
 booleaan lijstVind(Lijst* lijst, const void* onderdeel, unsigned int* plek);
 
 booleaan lijstVerwijder(Lijst* lijst, unsigned int plek);
+booleaan lijstVindVerwijder(Lijst* lijst, const void* onderdeel);
 /**
  * Verwijdert de lijst & bevrijdt de verwijzing.
  * Indien 'bevrijd' waar is wordt de inhoudt gelezen als verwijzingen & bevrijd.
