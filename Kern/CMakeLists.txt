@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10.0)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 
-project(KERN VERSION 0.3.1)
+project(KERN VERSION 0.3.2)
 add_compile_definitions(GLEW_STATIC)
 add_compile_definitions(KERN_VERSIE="${PROJECT_VERSION}")
 

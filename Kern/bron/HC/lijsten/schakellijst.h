@@ -5,6 +5,13 @@
 
 #include <stddef.h>
 
+/**
+ * @file
+ * @short Een schakellijst.
+ *
+ * Gebruikt opeenvolgende schakels voor alles wat toegevoegd wordt.
+ */
+
 typedef struct schakel Schakel;
 struct schakel {
 	Schakel* volgende;

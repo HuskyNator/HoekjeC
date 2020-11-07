@@ -67,9 +67,13 @@ void verwijderVerver(Verver verver) { glDeleteProgram(verver); }
 void gebruikVerver(Verver verver) {
 	if (krijg_huidige_verver() != verver) glUseProgram(verver);
 
-	Vec3d plek = krijg_plek();
-	zetVerverDouble3v(verver, "zicht_plek", &plek.x);
+	zetVerverDouble3v(verver, "zicht_plek", (double*)&plek);
 	zetVerverMat4f(verver, "zicht_matrix", &zichtM);
+}
+
+void zetVerverUint(Verver verver, const char* naam, unsigned int waarde) {
+	int verwijzing = glGetUniformLocation(verver, naam);
+	glUniform1ui(verwijzing, waarde);
 }
 
 void zetVerverInt(Verver verver, const char* naam, int waarde) {

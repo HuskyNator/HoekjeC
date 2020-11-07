@@ -3,7 +3,12 @@
 
 #include "HC/booleaan.h"
 
-// Vectoren
+/**
+ * @file
+ * @short Verzameling van lineaire wiskunde.
+ */
+
+/**		VECTOREN		**/
 
 typedef struct vec2i Vec2i;
 typedef struct vec3i Vec3i;
@@ -25,20 +30,20 @@ struct vec4i {
 	int w;
 };
 
-typedef struct vec2ui Vec2ui;
-typedef struct vec3ui Vec3ui;
-typedef struct vec4ui Vec4ui;
+typedef struct vec2u Vec2u;
+typedef struct vec3u Vec3u;
+typedef struct vec4u Vec4u;
 
-struct vec2ui {
+struct vec2u {
 	unsigned int x;
 	unsigned int y;
 };
-struct vec3ui {
+struct vec3u {
 	unsigned int x;
 	unsigned int y;
 	unsigned int z;
 };
-struct vec4ui {
+struct vec4u {
 	unsigned int x;
 	unsigned int y;
 	unsigned int z;
@@ -85,7 +90,89 @@ struct vec4d {
 	double w;
 };
 
-// Matrixen.
+/*	PLUS	*/
+
+Vec2i Vec2iP(Vec2i een, Vec2i twee);
+Vec3i Vec3iP(Vec3i een, Vec3i twee);
+Vec4i Vec4iP(Vec4i een, Vec4i twee);
+
+Vec2u Vec2uP(Vec2u een, Vec2u twee);
+Vec3u Vec3uP(Vec3u een, Vec3u twee);
+Vec4u Vec4uP(Vec4u een, Vec4u twee);
+
+Vec2f Vec2fP(Vec2f een, Vec2f twee);
+Vec3f Vec3fP(Vec3f een, Vec3f twee);
+Vec4f Vec4fP(Vec4f een, Vec4f twee);
+
+Vec2d Vec2dP(Vec2d een, Vec2d twee);
+Vec3d Vec3dP(Vec3d een, Vec3d twee);
+Vec4d Vec4dP(Vec4d een, Vec4d twee);
+
+/*	MIN	*/
+
+Vec2i Vec2iP(Vec2i een, Vec2i twee);
+Vec3i Vec3iP(Vec3i een, Vec3i twee);
+Vec4i Vec4iP(Vec4i een, Vec4i twee);
+
+Vec2u Vec2uP(Vec2u een, Vec2u twee);
+Vec3u Vec3uP(Vec3u een, Vec3u twee);
+Vec4u Vec4uP(Vec4u een, Vec4u twee);
+
+Vec2f Vec2fP(Vec2f een, Vec2f twee);
+Vec3f Vec3fP(Vec3f een, Vec3f twee);
+Vec4f Vec4fP(Vec4f een, Vec4f twee);
+
+Vec2d Vec2dP(Vec2d een, Vec2d twee);
+Vec3d Vec3dP(Vec3d een, Vec3d twee);
+Vec4d Vec4dP(Vec4d een, Vec4d twee);
+
+/*	KEER	*/
+
+Vec2i Vec2ii(Vec2i v, int a);
+Vec3i Vec3ii(Vec3i v, int a);
+Vec4i Vec4ii(Vec4i v, int a);
+Vec2u Vec2uu(Vec2u v, unsigned int a);
+Vec3u Vec3uu(Vec3u v, unsigned int a);
+Vec4u Vec4uu(Vec4u v, unsigned int a);
+Vec2f Vec2ff(Vec2f v, float a);
+Vec3f Vec3ff(Vec3f v, float a);
+Vec4f Vec4ff(Vec4f v, float a);
+Vec2d Vec2dd(Vec2d v, double a);
+Vec3d Vec3dd(Vec3d v, double a);
+Vec4d Vec4dd(Vec4d v, double a);
+
+/*	INPRODUCT	*/
+
+int inproduct2i(Vec2i a, Vec2i b);
+int inproduct3i(Vec3i a, Vec3i b);
+int inproduct4i(Vec4i a, Vec4i b);
+
+float inproduct2f(Vec2f a, Vec2f b);
+float inproduct3f(Vec3f a, Vec3f b);
+float inproduct4f(Vec4f a, Vec4f b);
+
+/*	UITPRODUCT	*/
+
+Vec3i uitproducti(Vec3i a, Vec3i b);
+Vec3f uitproductf(Vec3f a, Vec3f b);
+
+/*	LENGTE	*/
+
+float Vec3f_lengte_kw(Vec3f v);
+float Vec3f_lengte(Vec3f v);
+
+/*	NORMALISATIE	*/
+
+Vec3f Vec3fn(Vec3f v);
+
+/*	OVERGANG	*/
+
+Vec4f Vec3n4f(Vec3f v, float w);
+Vec3f Vec4n3f(Vec4f v, booleaan verwerp_w);
+
+Vec3f Vec3dn3f(Vec3d v);
+
+/**		MATRIXEN		**/
 
 typedef struct mat2i Mat2i;
 typedef struct mat3i Mat3i;
@@ -127,56 +214,43 @@ struct mat4f {
 	Vec4f k4;
 };
 
-// Inproducten
-
-int inproduct2i(Vec2i a, Vec2i b);
-int inproduct3i(Vec3i a, Vec3i b);
-int inproduct4i(Vec4i a, Vec4i b);
-
-float inproduct2f(Vec2f a, Vec2f b);
-float inproduct3f(Vec3f a, Vec3f b);
-float inproduct4f(Vec4f a, Vec4f b);
-
-// Uitproducten
-
-Vec3i uitproducti(Vec3i a, Vec3i b);
-Vec3f uitproductf(Vec3f a, Vec3f b);
-
-// Lente
-
-float Vec3f_lengte_kw(Vec3f v);
-
-// Overgangen
-
-Vec3f Vec3fn(Vec3f v);
-Vec4f Vec3n4f(Vec3f v, float w);
-Vec3f Vec4n3f(Vec4f v, booleaan verwerp_w);
-
-Vec3f Vec3dn3f(Vec3d v);
+/*	KANTEL	*/
 
 Mat4f kantelMat4f(Mat4f m);
 
-// Vermenigvuldigingen
+/*	PLUS	*/
 
-Vec4f Vec4ff(Vec4f v, float f);
-Vec3f Vec3ff(Vec3f v, float f);
-Mat4f Mat4fMat4f(Mat4f L, Mat4f R);
+/*	MIN	*/
+
+/*	KEER	*/
+
 Vec4f Mat4fVec4f(Mat4f L, Vec4f R);
+Mat4f Mat4fMat4f(Mat4f L, Mat4f R);
 
-// Draaiingen
+/*	DETERMINANT	*/
+
+/*	ADJUDANT	*/
+
+/*	INVERSE	*/
+
+/*	DRAAI	*/
 
 Mat4f draaiMatrixx(float draai);
 Mat4f draaiMatrixy(float draai);
 Mat4f draaiMatrixz(float draai);
 
-// Matrixen
+/*	HANDIG	*/
 
-#define identiteitsMatrix (Mat4f){{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}}
+#define identiteitsMatrix                                        \
+	(Mat4f) {                                                    \
+		{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, { 0, 0, 0, 1 } \
+	}
 Mat4f verplaatsMatrix(float x, float y, float z);
 Mat4f perspectiefMatrix(float voorvlak, float achtervlak, double zichthoek, float schermverhouding);
 Mat4f voorwerpMatrixPlekGrootte(Vec3f plek, Vec3f grootte);
 
-// Printen
+/**		PRINTEN		**/
+
 void printVec2f(Vec2f* v);
 void printVec3f(Vec3f* v);
 void printVec4f(Vec4f* v);

@@ -4,6 +4,11 @@
 #include "HC/wiskunde/lineair.h"
 #include "materiaal.h"
 
+/**
+ * @file
+ * @short Versimpeling van opengl shaders.
+ */
+
 typedef unsigned int Verver;
 
 Verver maakVerver(const char* hoekVerfLocatie, const char* scherfVerfLocatie);
@@ -11,6 +16,8 @@ void verwijderVerver(Verver verver);
 
 // Stelt deze verver in voor gebruik indien deze dit nog niet was, en werkt zicht waardes bij.
 void gebruikVerver(Verver verver);
+
+void zetVerverUint(Verver verver, const char* naam, unsigned int waarde);
 void zetVerverInt(Verver verver, const char* naam, int waarde);
 
 void zetVerverFloat(Verver verver, const char* naam, float waarde);

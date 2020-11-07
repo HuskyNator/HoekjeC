@@ -1,130 +1,203 @@
 #ifndef KOPPELING_H
 #define KOPPELING_H
-#include "wiskunde/lineair.h"
 #include "verf/verver.h"
+#include "wiskunde/lineair.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#define SCHERM_BREEDTE (1920.0 / 2.0)
-#define SCHERM_HOOGTE (1080.0 / 2.0)
-#define VOORVLAK 0.1
-#define ACHTERVLAK 50.0
-#define ZICHTHOEK 100.0
-
-/**		ZICHT		**/
-
 /**
- * De zicht matrix bestaat uit de aaneenschakeling van de projectie, draai en plek matrixen.
+ * @file
+ * @short Koppeling tussen gebruik en HoekjeC.
+ *
+ * Bevat de kern van de koppeling tussen gebruik & HoekjeC (en zo eveneens opengl),
+ * met verdere versimpelingen voor gemak, zoals muisbeweging, verplaatsing & een programmalus.
  */
-Mat4f zichtM, projectieM, draaiM, plekM;
 
-/**		KRIJG & ZET OPDRACHTEN		**/
-/*		HOEKJEC		*/
+/**		HOEKJEC		**/
 
 char* krijg_kern_versie();
 
-/*	SCHERM EIGENSCHAPPEN	*/
+/**		SCHERM		**/
 
+extern int schermbreedte;
+extern int schermhoogte;
+extern double schermverhouding;
+
+void zet_schermnaam(const char* naam);
 int krijg_schermbreedte();
 int krijg_schermhoogte();
 double krijg_schermverhouding();
-void zet_schermnaam(const char* naam);
 
-/*	PROJECTIE EIGENSCHAPPEN	*/
+/**		ZICHT MATRIXEN		**/
 
-float krijg_voorvlak();
-float krijg_achtervlak();
-float krijg_zichthoek();
+extern Mat4f plekM;		  // Tranfsormatiematrix van wereld naar plekrelatieve wereld. Verplaatst de wereld in plaats van het zicht.
+extern Mat4f draai1M;	  // De eerste draaimatrix.
+extern Mat4f draai2M;	  // De tweede draaimatrix.
+extern Mat4f draai3M;	  // De derde draaimatrix.
+extern Mat4f draaiM;	  // Transformatiematrix van plekrelatieve wereld naar relatieve wereld. Gelijk aan: draai3M * draai2M * draai1M.
+extern Mat4f projectieM;  // Transformatiematrix van relatieve wereld naar zicht.
+extern Mat4f zichtM;	  // Transformatiematrix van wereld naar zicht. Gelijk aan: projectieM * draaiM * plekM.
+
+extern booleaan bijwerkbaar_plekM;		 // Of de matrix bij te werken is.
+extern booleaan bijwerkbaar_draai1M;	 // Of de matrix bij te werken is.
+extern booleaan bijwerkbaar_draai2M;	 // Of de matrix bij te werken is.
+extern booleaan bijwerkbaar_draai3M;	 // Of de matrix bij te werken is.
+extern booleaan bijwerkbaar_draaiM;		 // Of de matrix bij te werken is.
+extern booleaan bijwerkbaar_projectieM;	 // Of de matrix bij te werken is.
+extern booleaan bijwerkbaark_zichtM;	 // Of de matrix bij te werken is.
+
+void werk_M_bij();	// Werkt de matrixen afzonderlijk bij, enkel als dit nodig is.
+
+/*	PLEK	*/
+
+/**
+ * Deze getallen zijn niet bindend.
+ * @param  plekx: Plek langs de x as.
+ * @param  pleky: Plek langs de y as.
+ * @param  plekz: Plek langs de z as.
+ */
+typedef Mat4f (*plek_maak_opdracht)(double plekx, double pleky, double plekz);
+Mat4f standaard_plek_maker(double plekx, double pleky, double plekz);
+
+extern Vec3d plek;
+
+void zet_plek_maker(plek_maak_opdracht opdracht);
+void zet_plekx(double nieuw);
+void zet_pleky(double nieuw);
+void zet_plekz(double nieuw);
+void zet_plek(Vec3d nieuw);
+void wijzig_plekx(double verandering);
+void wijzig_pleky(double verandering);
+void wijzig_plekz(double verandering);
+void wijzig_plek(Vec3d verandering);
+
+void werk_plekM_bij();
+
+/*	DRAAI	*/
+
+/**
+ * Deze getallen zijn niet bindend.
+ * @param  muisx: Horizontale muisplek.
+ * @param  muisy : Verticale muisplek.
+ */
+typedef Mat4f (*draai_maak_opdracht)(double muisx, double muisy);
+
+Mat4f standaard_draaix_maker(double muisx, double muisy);
+Mat4f standaard_draaiy_maker(double muisx, double muisy);
+Mat4f standaard_draaiz_maker(double muisx, double muisy);
+
+void zet_draai1_maker(draai_maak_opdracht opdracht);
+void zet_draai2_maker(draai_maak_opdracht opdracht);
+void zet_draai3_maker(draai_maak_opdracht opdracht);
+
+void werk_draaiM_bij();
+
+/*	PROJECTIE	*/
+
+/**
+ * Deze getallen zijn niet bindend.
+ * @param  voorvlak: Beginafstand van het zichtveld.
+ * @param  achtervlak: Eindafstand van het zichtveld.
+ * @param  zichthoek: Zichthoek van het zichtveld.
+ * @param  schermverhouding: Verhouding van het zichtveld, breedte/hoogte.
+ */
+typedef Mat4f (*projectie_maak_opdracht)(float voorvlak, float achtervlak, float zichthoek, double schermverhouding);
+Mat4f standaard_projectie_maker(float voorvlak, float achtervlak, float zichthoek, double schermverhouding);
+
+extern float voorvlak;
+extern float achtervlak;
+extern float zichthoek;
+
+void zet_projectie_maker(projectie_maak_opdracht opdracht);
 void zet_voorvlak(float nieuw);
 void zet_achtervlak(float nieuw);
 void zet_zichthoek(float nieuw);
 
-/*	PLEK	*/
+void werk_projectieM_bij();
 
-double krijg_plekx();
-double krijg_pleky();
-double krijg_plekz();
-Vec3d krijg_plek();
-void zet_plekx(double nieuw);
-void zet_pleky(double nieuw);
-void zet_plekz(double nieuw);
-void zet_plek(double x, double y, double z);
-void wijzig_plekx(double verandering);
-void wijzig_pleky(double verandering);
-void wijzig_plekz(double verandering);
-void wijzig_plek(double vx, double vy, double vz);
+/*	ZICHT	*/
+
+void werk_zichtM_bij();
+
+/**		MUIS		**/
 
 /*	MUISPLEK	*/
 
-double krijg_muisx();
-double krijg_muisy();
+extern double muisx;
+extern double muisy;
+extern float muisgevoeligheid;
+extern double muisgrens;
+
 void zet_muis(double x, double y);
+void zet_muisgevoeligheid(float gevoeligheid);
+void zet_muisgrens(double grens);
+
+/*	MUISKNOP	*/
+
+/**
+ * @param  knop: De knop die is gebruikt.
+ * @param  handeling: Wat er met de knop is gedaan.
+ * @param  toevoeging: Binair aangifte van welke toevoegingen ingedrukt zijn (NUMLOCK, CAPSLOCK, SUPER, ALT, CONTROL, SHIFT).
+ * @see GLFW_MOUSE_BUTTON_1 & GLFW_MOD_SHIFT
+ */
+typedef void (*muisknop_terugroep_opdracht)(int knop, int handeling, int toevoeging);
+void standaard_muisknop_terugroeper(int knop, int handeling, int toevoeging);
+
+void zet_muisknop_terugroeper(muisknop_terugroep_opdracht opdracht);
+
+/**		TOETSEN		**/
+
+/**
+ * @param  toets: De toets die is gebruikt onder de aanname dat een VS toetsenbord gebruikt wordt.
+ * @param  toets2: Een alternatief toetsgetal, welk altijd onveranderlijk en uniek is.
+ * @param  handeling: Wat er met de toets is gedaan.
+ * @param  toevoeging: Binaire aangifte van welke toevoegingen ingedrukt zijn (NUMLOCK, CAPSLOCK, SUPER, ALT, CONTROL, SHIFT).
+ */
+typedef void (*toets_terugroep_opdracht)(int toets, int toets2, int handeling, int toevoeging);
+void standaard_toets_terugroeper(int toets, int toets2, int handeling, int toevoeging);
+
+void zet_toets_terugroeper(toets_terugroep_opdracht opdracht);
 
 /*	TPS	*/
 
-// Krijg aantal teken oproepen per seconde.
-double krijg_TPS();
+extern double vorigeTijd;	  // Tijd van vorige teken oproep.
+extern double tijdsverschil;  // Tijd tussen laatste en voorlopende teken oproepen.
+double krijg_TPS();			  // Tekenoproepen per seconde.
 
 /*	VERF	*/
 
 // Krijg huidig gebruikte verver.
 Verver krijg_huidige_verver();
 
-/**		TERUGROEPEN		**/
-/*	TOETSEN	*/
+/*	ACHTERGROND	*/
 
-typedef void (*toets_terugroep_opdracht)(int toets, int toets2, int handeling, int toevoeging);
-void zet_toets_terugroeper(toets_terugroep_opdracht opdracht);
-void standaard_toets_terugroeper(int toets, int toets2, int handeling, int toevoeging);
-
-/**		MATRIXEN		**/
-/*	MAKEN	*/
-
-// Een opdracht die de projectie matrix levert. De doorgegeven waarden zijn niet bindend.
-typedef Mat4f (*projectie_maak_opdracht)(float voorvlak, float achtervlak, float zichthoek, double schermverhouding);
-// Een opdracht die de draai matrix levert.
-typedef Mat4f (*draai_maak_opdracht)(double muisx, double muisy);
-// Eeen opdracht die de plek matrix levert.
-typedef Mat4f (*plek_maak_opdracht)(double plekx, double pleky, double plekz);
-
-void zet_projectie_maker(projectie_maak_opdracht opdracht);
-void zet_draai_maker(draai_maak_opdracht opdracht);
-void zet_plek_maker(plek_maak_opdracht opdracht);
-
-/*	STANDAARD	*/
-
-Mat4f standaard_projectie_maker(float voorvlak, float achtervlak, float zichthoek, double schermverhouding);
-Mat4f standaard_draai_maker(double muisx, double muisy);
-Mat4f standaard_plek_maker(double plekx, double pleky, double plekz);
-
-/*	BIJWERKEN	*/
-
-// Werk alle matrixen bij, indien nodig.
-void werk_M_bij();
+extern Vec4f achtergrond_kleur;
 
 /**		TEKENEN		**/
 /*	DENKER	*/
 
-typedef void (*denk_opdracht)(double tijdsverschil);
 /**
  * Is verantwoordelijk voor het doen van denkstappen voor het programma.
  * Hier onder vallen verplaatsingen en voorwerp schepping/verwijdering.
  * Wordt opgeroepen voor (bijgewerkte) voorwerpen worden getekend.
  */
-void zet_denker(denk_opdracht opdracht);
+typedef void (*denk_opdracht)(double tijdsverschil);
 void standaard_denker(double tijdsverschil);
+
+void zet_denker(denk_opdracht opdracht);
 
 /*	TEKENAAR	*/
 
-typedef void (*teken_opdracht)();
 /**
  * Is verantwoordelijk voor het tekenen van voorwerpen.
  * Het aanpassen van plekken / draaiïngen van dezen heeft mogelijk geen gevolg.
  * Wordt opgeroepen na oproeping van de denker.
  */
-void zet_tekenaar(teken_opdracht opdracht);
+typedef void (*teken_opdracht)();
 void standaard_tekenaar();
+
+void zet_tekenaar(teken_opdracht opdracht);
 
 /*	BESTURING	*/
 

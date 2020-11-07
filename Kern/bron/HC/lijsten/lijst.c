@@ -79,8 +79,14 @@ booleaan lijstVerwijder(Lijst* lijst, unsigned int plek) {
 		return onwaar;
 	}
 	lijst->tel--;
-	memcpy(lijst->inhoud + (plek + 1) * lijst->onderdeel_grootte, &lijst->inhoud + plek * lijst->onderdeel_grootte,
-		   lijst->tel - plek);
+	memcpy(lijst->inhoud + (plek + 1) * lijst->onderdeel_grootte, &lijst->inhoud + plek * lijst->onderdeel_grootte, lijst->tel - plek);
+	return waar;
+}
+
+booleaan lijstVindVerwijder(Lijst* lijst, const void* onderdeel) {
+	unsigned int plek;
+	if (!lijstVind(lijst, onderdeel, &plek)) return onwaar;
+	lijstVerwijder(lijst, plek);
 	return waar;
 }
 
