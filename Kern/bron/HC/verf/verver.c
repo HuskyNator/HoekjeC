@@ -67,8 +67,7 @@ void verwijderVerver(Verver verver) { glDeleteProgram(verver); }
 void gebruikVerver(Verver verver) {
 	if (krijg_huidige_verver() != verver) glUseProgram(verver);
 
-	Vec3d plek = krijg_plek();
-	zetVerverDouble3v(verver, "zicht_plek", &plek.x);
+	zetVerverDouble3v(verver, "zicht_plek", (double*)&plek);
 	zetVerverMat4f(verver, "zicht_matrix", &zichtM);
 }
 

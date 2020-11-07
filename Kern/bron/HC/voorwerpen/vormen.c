@@ -105,13 +105,13 @@ Vierkant* maakVierkant() {
 }
 
 /**		Blok		**/
-
+// TODO: Maak blok lijnen gelijkspiegelig.
 static const Vec3f Blok_plekken[] = {{-0.5, -0.5, -0.5}, {0.5, -0.5, -0.5}, {0.5, 0.5, -0.5}, {-0.5, 0.5, -0.5},
 									 {-0.5, -0.5, 0.5},	 {0.5, -0.5, 0.5},	{0.5, 0.5, 0.5},  {-0.5, 0.5, 0.5}};
 static const Vec3f Blok_normalen[] = {{0, 0, -1}, {0, -1, 0}, {0, 0, -1}, {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}, {1, 0, 0}, {0, 0, 1}};
 static const Vec2f Blok_verfplekken[] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}, {1, 1}, {0, 1}, {0, 0}, {1, 0}};
-static const Vec3ui Blok_tallen[] = {{3, 0, 2}, {0, 1, 2}, {2, 1, 6}, {1, 5, 6}, {6, 5, 7}, {5, 4, 7},
-									 {3, 7, 4}, {0, 3, 4}, {0, 4, 1}, {6, 7, 3},{2, 6, 3}, {4, 5, 1}};
+static const Vec3u Blok_tallen[] = {{3, 0, 2}, {0, 1, 2}, {2, 1, 6}, {1, 5, 6}, {6, 5, 7}, {5, 4, 7},
+									{3, 7, 4}, {0, 3, 4}, {0, 4, 1}, {6, 7, 3}, {2, 6, 3}, {4, 5, 1}};
 static unsigned int Blok_VAO;
 static unsigned int Blok_VBOs[3];
 static unsigned int Blok_EBO;

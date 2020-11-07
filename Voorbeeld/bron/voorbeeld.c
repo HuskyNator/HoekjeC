@@ -26,6 +26,9 @@ char looptx = 0;
 char loopty = 0;
 char looptz = 0;
 booleaan rent = onwaar;
+booleaan klikt = onwaar;
+Verver verver;
+Lijst* tekenlijst;
 
 static void toets_terugroeper(int toets, int toets2, int handeling, int toevoeging) {
 	if (handeling == GLFW_PRESS) {
@@ -82,20 +85,49 @@ static void toets_terugroeper(int toets, int toets2, int handeling, int toevoegi
 	}
 }
 
+static void muisknop_terugroeper(int knop, int handeling, int toevoeging) {
+	if (handeling == GLFW_PRESS) {
+		switch (knop) {
+			case GLFW_MOUSE_BUTTON_LEFT:
+				klikt = waar;
+				break;
+		}
+	}
+}
+
+static boolean geklikt = onwaar;
+static Blok* geklikteblok;
 static void denker(double tijdsverschil) {
-	if (looptx != 0 || looptz != 0 || loopty != 0) {
-		Mat4f richtingsMatrix = draaiMatrixy(krijg_muisx() * krijg_muisgevoeligheid());
+	if (looptx != 0 || looptz != 0 || loopty != 0 || geklikt || klikt) {
+		Mat4f richtingsMatrix = draaiMatrixy(muisx * muisgevoeligheid);
 		Vec3f xRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){1, 0, 0, 1}), onwaar);
 		Vec3f zRichting = Vec4n3f(Mat4fVec4f(richtingsMatrix, (Vec4f){0, 0, 1, 1}), onwaar);
 		double snelheid = tijdsverschil * (rent ? RENSNELHEID : LOOPSNELHEID);
 		wijzig_plekx(snelheid * (looptx * xRichting.x + looptz * zRichting.x));
 		wijzig_plekz(snelheid * (looptx * xRichting.z + looptz * zRichting.z));
 		wijzig_pleky(snelheid * loopty);
+		if (geklikt || klikt) {
+			Vec3f klik_richting = Vec4n3f(Mat4fVec4f(draaiMatrixx(muisy * muisgevoeligheid), (Vec4f){0, 0, 0.55, 1}), onwaar);
+			klik_richting.y = fabsf(klik_richting.y);
+			float afstand = klik_richting.z / klik_richting.y;
+			Vec3f klikplek = (Vec3f){zRichting.x * afstand + plek.x, zRichting.y * afstand + plek.y, zRichting.z * afstand + plek.z};
+			if (geklikt) voorwerpZetPlek(geklikteblok, (Vec3f){klikplek.x, klikplek.y - 0.4, klikplek.z});
+			if (klikt) {
+				Blok* klikblok = maakBlok();
+				klikblok->vormgegevens->rand=waar;
+				voorwerpZetPlek(klikblok, klikplek);
+				lijstVoeg(tekenlijst, &klikblok);
+				if (!geklikt) {
+					geklikt = waar;
+					voorwerpZetGrootte(klikblok, (Vec3f){0.1, 0.1, 0.1});
+					vormZetKleur(klikblok, &Groen);
+					geklikteblok = klikblok;
+				}
+			}
+		}
 	}
+	klikt = onwaar;
 }
-
-Verver verver;
-Lijst* tekenlijst;
 
 static void tekenaar() {
 	gebruikVerver(verver);
@@ -126,6 +158,7 @@ int main() {
 	free(versie);
 
 	zet_toets_terugroeper(toets_terugroeper);
+	zet_muisknop_terugroeper(muisknop_terugroeper);
 	zet_denker(denker);
 	zet_tekenaar(tekenaar);
 
@@ -134,7 +167,7 @@ int main() {
 	tekenlijst = maakLijst(3, sizeof(Voorwerp*));
 
 	Driehoek* driehoek = maakKant();
-	lijstVoeg(tekenlijst, &driehoek);
+	// lijstVoeg(tekenlijst, &driehoek);
 	voorwerpZetPlek(driehoek, (Vec3f){-0.5, -0.5, -1.01});
 
 	Vierkant* vierkant = maakVierkant();
@@ -142,17 +175,17 @@ int main() {
 	voorwerpZetDraai(vierkant, (Vec3f){M_PI_2, 0, 0});
 	voorwerpZetGrootte(vierkant, (Vec3f){1000, 1000, 1000});
 	voorwerpZetPlek(vierkant, (Vec3f){0, -0.51, 0});
-	vormZetKleur(vierkant, &DonkerGrijs);
+	vormZetKleur(vierkant, &Grijs);
 
 	Blok* blok = maakBlok();
-	lijstVoeg(tekenlijst, &blok);
+	// lijstVoeg(tekenlijst, &blok);
 	voorwerpZetGrootte(blok, (Vec3f){1, 1, 2});
 	vormZetKleur(blok, &Blauw);
-	blok->vormgegevens->rand=waar;
+	blok->vormgegevens->rand = waar;
 
-	//TODO: Ontbreekt?
+	// TODO: Ontbreekt?
 	Groep* logo = maakLogo((Vec3f){0, 0, 0}, (Vec3f){1, 1, 1}, (Vec3f){0, 0, 0});
-	lijstVoeg(tekenlijst, &logo);
+	// lijstVoeg(tekenlijst, &logo);
 
 	// Beginnen:
 	lus();
