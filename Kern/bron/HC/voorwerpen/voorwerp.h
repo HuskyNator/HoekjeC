@@ -1,7 +1,7 @@
 #ifndef VOORWERP2_H
 #define VOORWERP2_H
 
-#include "HC/booleaan.h"
+#include "HC/algemeen.h"
 #include "HC/lijsten/lijst.h"
 #include "HC/verf/verver.h"
 #include "HC/wiskunde/lineair.h"

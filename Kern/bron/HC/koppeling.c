@@ -232,6 +232,8 @@ void zet_muisgrens(double grens) { muisgrens = grens; }
 static void muisplek_terugroep(GLFWwindow* scherm, double x, double y) {
 	muisx = x;
 	if (fabs(muisy + y) * muisgevoeligheid < muisgrens) muisy = y;
+	else
+		glfwSetCursorPos(scherm, muisx, muisy);
 	bijwerkbaar_draaiM = waar;
 }
 

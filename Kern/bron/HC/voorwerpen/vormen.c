@@ -1,7 +1,7 @@
 #include "vormen.h"
 
 #include "GL/glew.h"
-#include "booleaan.h"
+#include "algemeen.h"
 #include "kleuren.h"
 #include "voowerp_gegevens.h"
 #include "wiskunde/lineair.h"

@@ -1,4 +1,4 @@
-#include "HC/booleaan.h"
+#include "HC/algemeen.h"
 #include "HC/kleuren.h"
 #include "HC/koppeling.h"
 #include "HC/lezers/bestandslezer.h"
@@ -133,7 +133,7 @@ static void tekenaar() {
 	gebruikVerver(verver);
 	const unsigned int tel = tekenlijst->tel;
 	for (unsigned int i = 0; i < tel; i++) {
-		voorwerpTeken(lijstKrijg(tekenlijst, i, Voorwerp*), verver);
+		voorwerpTeken(*lijstKrijg(tekenlijst, i, Voorwerp*), verver);
 	}
 }
 

@@ -2,8 +2,9 @@
 
 #include "lijsten/lijst.h"
 #include "lijsten/sleutellijst.h"
-#include "wiskunde/lineair.h"
 #include "verf/materiaal.h"
+#include "wiskunde/lineair.h"
+
 // #include "voorwerpen/vorm.h"
 
 #include <math.h>
@@ -11,7 +12,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-char* leesBestand(const char* bestandsnaam) {
+char* leesBestand(const char* bestandsnaam, size_t* grootte) {
+	size_t anders;
+	if (grootte == NULL) grootte = &anders;
 	FILE* bestand = fopen(bestandsnaam, "rb");
 	if (bestand == NULL) {
 		fprintf(stderr, "Bestand '%s' bestaat niet.\n", bestandsnaam);
@@ -19,12 +22,12 @@ char* leesBestand(const char* bestandsnaam) {
 	}
 
 	fseek(bestand, 0, SEEK_END);
-	long grootte = ftell(bestand);
+	*grootte = ftell(bestand);
 	fseek(bestand, 0, SEEK_SET);
 
-	char* inhoud = malloc(grootte + 1);
-	fread(inhoud, 1, grootte, bestand);
-	*(inhoud + grootte) = '\0';
+	char* inhoud = malloc(*grootte + 1);
+	fread(inhoud, 1, *grootte, bestand);
+	*(inhoud + *grootte) = '\0';
 	fclose(bestand);
 	return inhoud;
 }

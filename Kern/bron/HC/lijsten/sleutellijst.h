@@ -7,32 +7,61 @@
  * @file
  * @short Een sleutellijst.
  *
- * Houdt lijsten bij, 'snippers', elk sloten bevattend, sleutel & waarde tweetallen.
+ * Houdt lijsten bij, 'emmers', elk sloten bevattend, sleutel & waarde tweetallen.
  * Tijdens het invoegen van een slot wordt door middel van zijn sleutel door de sleutelaar bepaald tot welke snipper het slot behoort.
  * Op deze manier kan een waarde terug gevonden worden al heeft men haar sleutel.
  */
 
 typedef unsigned int (*sleutel_opdracht)(const void* sleutel);
 
+typedef struct slot Slot;
+struct slot {
+	void* sleutel;
+	void* waarde;
+};
+
 typedef struct sleutellijst SleutelLijst;
 struct sleutellijst {
 	size_t sleutel_grootte;
 	size_t waarde_grootte;
-	size_t slot_grootte;
-	unsigned int grootte;
-	unsigned int tal;
+	unsigned int emmer_aantal;
+	unsigned int tel;
 	sleutel_opdracht sleutelaar;
-	SchakelLijst* snippers[];
+	vergelijk_opdracht vergelijker;
+	SchakelLijst* emmers[];
 };
 
-SleutelLijst* maakSleutelLijst(size_t sleutel_grootte, size_t waarde_grootte, unsigned int grootte, sleutel_opdracht sleutelaar);
+/**		MAAK		**/
 
-void sleutellijstVoeg(SleutelLijst* lijst, void* sleutel, void* waarde);
+SleutelLijst* maakSleutelLijst(size_t sleutel_grootte, size_t waarde_grootte, unsigned int emmer_aantal, sleutel_opdracht sleutelaar,
+							   vergelijk_opdracht vergelijker);
 
+/**		GEBRUIK		**/
+
+/*	Voegen	*/
+void sleutellijstVoeg(SleutelLijst* lijst, const void* sleutel, const void* waarde);
+
+/*	Krijgen	*/
 booleaan sleutellijstVind(SleutelLijst* lijst, void* sleutel, void* gevonden_waarde);
 
-booleaan sleutellijstVerwijder(SleutelLijst* lijst, void* sleutel);
+/*	Verbeteren	*/
+// Probeert de sleutellijst een bezettingsgraad van 75% te geven.
+SleutelLijst* sleutellijstVerbeter(SleutelLijst* lijst);
 
-void verwijderSleutelLijst(SleutelLijst* lijst);
+/*	Verwijderen	*/
+booleaan sleutellijstVerwijder(SleutelLijst* lijst, void* sleutel, verwijder_opdracht sleutel_opdracht, verwijder_opdracht waarde_opdracht);
+
+/*	Voor Elk	*/
+#define voor_elk_sleutel(lijst, i)                                                                                                       \
+	unsigned int _emmer;                                                                                                                 \
+	Schakel* _schakel;                                                                                                                   \
+	Slot* i;                                                                                                                             \
+	for (_emmer = 0, _schakel = lijst->emmers[0]->begin, i = _schakel->inhoud; !(_emmer == lijst->emmer_aantal - 1 && _schakel == NULL); \
+		 ((_schakel == NULL) ? (_emmer++, _schakel = lijst->emmers[_emmer]->begin) : (_schakel = _schakel->volgende)),                   \
+		i = _schakel->inhoud)
+
+/**		VERWIJDER		**/
+
+void verwijderSleutelLijst(SleutelLijst* lijst, verwijder_opdracht sleutel_opdracht, verwijder_opdracht waarde_opdracht);
 
 #endif

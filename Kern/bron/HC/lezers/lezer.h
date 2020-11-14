@@ -2,8 +2,11 @@
 #define LEZER_H
 
 #include "lijsten/lijst.h"
+#include "schrift.h"
 
 #include <stdio.h>
+
+Schrift* leesTot(FILE* bestand, char tot);
 
 /**
  * @file

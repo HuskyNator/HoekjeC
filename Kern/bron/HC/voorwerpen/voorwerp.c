@@ -117,6 +117,6 @@ void voorwerpZetDraai(Voorwerp* voorwerp, Vec3f draai) {
 void verwijderVoorwerp(Voorwerp* voorwerp) {
 	voorwerp->opdrachten->verwijder_opdracht(voorwerp);
 	if (voorwerp->verzamelM != &voorwerp->voorwerpM) free(voorwerp->verzamelM);
-	if (voorwerp->ouder != NULL) lijstVindVerwijder(voorwerp->ouder->groepkinderen, voorwerp);
+	if (voorwerp->ouder != NULL) lijstVindVerwijder(voorwerp->ouder->groepkinderen, voorwerp, geheugen_vergelijker, NULL);
 	free(voorwerp);
 }

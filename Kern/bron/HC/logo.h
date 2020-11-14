@@ -7,7 +7,7 @@
 #include "HC/voorwerpen/voorwerp.h"
 #include "HC/voorwerpen/vormen.h"
 #include "HC/wiskunde/lineair.h"
-#include "booleaan.h"
+#include "algemeen.h"
 
 #include <GL/glew.h>
 #include <stdlib.h>

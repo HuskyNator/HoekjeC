@@ -8,7 +8,7 @@
  * @short Leest verschillende soorten bestanden uit.
  */
 
-char* leesBestand(const char* bestandsnaam);
+char* leesBestand(const char* bestandsnaam, size_t* grootte);
 // Vorm* leesObj(const char* bestandsnaam);
 // void leesMtl(const char* bestandsnaam, Lijst* materialen);
 

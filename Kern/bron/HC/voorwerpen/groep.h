@@ -1,7 +1,7 @@
 #ifndef GROEP_H
 #define GROEP_H
 
-#include "HC/booleaan.h"
+#include "HC/algemeen.h"
 #include "voorwerp.h"
 
 /**

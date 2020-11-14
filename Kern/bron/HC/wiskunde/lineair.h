@@ -1,7 +1,7 @@
 #ifndef LINEAR_H
 #define LINEAR_H
 
-#include "HC/booleaan.h"
+#include "HC/algemeen.h"
 
 /**
  * @file

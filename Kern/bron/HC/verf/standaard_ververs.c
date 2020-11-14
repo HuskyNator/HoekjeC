@@ -1,6 +1,6 @@
 #include "standaard_ververs.h"
 
-#include "booleaan.h"
+#include "algemeen.h"
 #include "verver.h"
 
 #define KLEUR_VERVER_VERT "Kern/Ververs/Kleur.vert"
