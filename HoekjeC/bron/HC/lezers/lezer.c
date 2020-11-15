@@ -1,6 +1,7 @@
 #include "lezer.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 Schrift* leesTot(FILE* bestand, char tot) {
 	Schrift* schrift = maakSchrift(NULL);
@@ -45,8 +46,8 @@ char* leesWoord(FILE* bestand) {
 	unsigned int grootte = 40;
 	char* woord = malloc(grootte * sizeof(char));
 	char teken = getc(bestand);
-	while (lijstVind(&witruimte_lijst, geheugen_vergelijker, teken, NULL)) teken = getc(bestand);
-	while (teken != EOF & !lijstVind(&witruimte_lijst, teken, geheugen_vergelijker, NULL)) {
+	while (lijstVind(&witruimte_lijst, &teken, geheugen_vergelijker, NULL)) teken = getc(bestand);
+	while (teken != EOF & !lijstVind(&witruimte_lijst, &teken, geheugen_vergelijker, NULL)) {
 		if (tel == grootte) {
 			grootte *= 2;
 			woord = realloc(woord, grootte * sizeof(char));
@@ -75,7 +76,7 @@ Lijst* woordSplits(char* woord, char teken) {
 		if (woord[tel] == teken) {
 			unsigned int grootte = tel - begin;
 			char* deelwoord = malloc((grootte + 1) * sizeof(char));
-			memcpy(deelwoord, woord[begin], grootte);
+			memcpy(deelwoord, &woord[begin], grootte);
 			deelwoord[grootte] = '\0';
 			lijstVoeg(lijst, &deelwoord);
 			begin = tel;

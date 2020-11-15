@@ -52,13 +52,14 @@ SleutelLijst* sleutellijstVerbeter(SleutelLijst* lijst);
 booleaan sleutellijstVerwijder(SleutelLijst* lijst, void* sleutel, verwijder_opdracht sleutel_opdracht, verwijder_opdracht waarde_opdracht);
 
 /*	Voor Elk	*/
-#define voor_elk_sleutel(lijst, i)                                                                                                       \
-	unsigned int _emmer;                                                                                                                 \
-	Schakel* _schakel;                                                                                                                   \
-	Slot* i;                                                                                                                             \
-	for (_emmer = 0, _schakel = lijst->emmers[0]->begin, i = _schakel->inhoud; !(_emmer == lijst->emmer_aantal - 1 && _schakel == NULL); \
-		 ((_schakel == NULL) ? (_emmer++, _schakel = lijst->emmers[_emmer]->begin) : (_schakel = _schakel->volgende)),                   \
-		i = _schakel->inhoud)
+#define voor_elk_sleutel(lijst, i)                                                                                     \
+	unsigned int _emmer;                                                                                               \
+	Schakel* _schakel;                                                                                                 \
+	Slot* i;                                                                                                           \
+	for (_emmer = 0, _schakel = lijst->emmers[0]->begin, i = (Slot*)_schakel->inhoud;                                  \
+		 !(_emmer == lijst->emmer_aantal - 1 && _schakel == NULL);                                                     \
+		 ((_schakel == NULL) ? (_emmer++, _schakel = lijst->emmers[_emmer]->begin) : (_schakel = _schakel->volgende)), \
+		i = (Slot*)_schakel->inhoud)
 
 /**		VERWIJDER		**/
 

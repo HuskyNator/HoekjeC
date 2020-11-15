@@ -63,7 +63,7 @@ Voorwerp* maakVoorwerp();
  * @retval None
  */
 void maak_voorwerp_bruikbaar(unsigned int* VAO, unsigned int* VBOs, unsigned int* EBO, const Vec3f* plekken, const Vec3f* normalen,
-				   const Vec2f* verfplekken, const unsigned int* tekentallen, unsigned int hoek_aantal, unsigned int tekental_aantal);
+							 const Vec2f* verfplekken, const Vec3u* tekentallen, unsigned int hoek_aantal, unsigned int tekental_aantal);
 
 void voorwerpZetPlek(Voorwerp* voorwerp, Vec3f plek);
 void voorwerpZetGrootte(Voorwerp* voorwerp, Vec3f grootte);

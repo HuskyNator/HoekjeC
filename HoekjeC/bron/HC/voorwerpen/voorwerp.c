@@ -25,8 +25,7 @@ Voorwerp* maakVoorwerp() {
 }
 
 void maak_voorwerp_bruikbaar(unsigned int* VAO, unsigned int* VBOs, unsigned int* EBO, const Vec3f* plekken, const Vec3f* normalen,
-							 const Vec2f* verfplekken, const unsigned int* tekentallen, unsigned int hoek_aantal,
-							 unsigned int tekental_aantal) {
+							 const Vec2f* verfplekken, const Vec3u* tekentallen, unsigned int hoek_aantal, unsigned int tekental_aantal) {
 	glGenVertexArrays(1, VAO);
 	glGenBuffers(3, VBOs);
 	glGenBuffers(1, EBO);
@@ -49,7 +48,7 @@ void maak_voorwerp_bruikbaar(unsigned int* VAO, unsigned int* VBOs, unsigned int
 	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, tekental_aantal * sizeof(unsigned int), tekentallen, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * tekental_aantal * sizeof(unsigned int), tekentallen, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
 }

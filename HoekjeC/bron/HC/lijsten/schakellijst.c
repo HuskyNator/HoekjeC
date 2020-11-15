@@ -26,7 +26,7 @@ void schakellijstVoeg(SchakelLijst* lijst, void* onderdeel) {
 
 Schakel* schakellijstKrijg_v(SchakelLijst* lijst, unsigned int plek) {
 	if (plek >= lijst->tel) return NULL;
-	if (plek == lijst->tel - 1) return lijst->einde->inhoud;
+	if (plek == lijst->tel - 1) return lijst->einde;
 	Schakel* zoek_plek = lijst->begin;
 	for (unsigned int i = 0; i < plek; i++) {
 		zoek_plek = zoek_plek->volgende;

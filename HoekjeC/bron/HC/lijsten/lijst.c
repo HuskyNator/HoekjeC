@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-inline static void* lijst_krijg(Lijst* lijst, unsigned int plek) { return lijst->inhoud + lijst->onderdeel_grootte * plek; }
+inline static void* lijst_krijg(const Lijst* lijst, unsigned int plek) { return lijst->inhoud + lijst->onderdeel_grootte * plek; }
 
 static void groei(Lijst* lijst) {
 	if (lijst->tel == lijst->grootte) {
@@ -30,17 +30,17 @@ void lijstGroei(Lijst* lijst, unsigned int grootte) {
 }
 
 void lijstKrimp(Lijst* lijst) {
-	lijst->inhoud = (lijst->inhoud, lijst->tel * lijst->onderdeel_grootte);
+	lijst->inhoud = realloc(lijst->inhoud, lijst->tel * lijst->onderdeel_grootte);
 	lijst->grootte = lijst->tel;
 }
 
-void lijstVoeg(Lijst* lijst, void* inhoud) {
+void lijstVoeg(Lijst* lijst, const void* inhoud) {
 	groei(lijst);
 	memcpy(lijst->inhoud + lijst->tel * lijst->onderdeel_grootte, inhoud, lijst->onderdeel_grootte);
 	lijst->tel++;
 }
 
-void lijstVoegMeer(Lijst* lijst, void* inhoud, unsigned int aantal) {
+void lijstVoegMeer(Lijst* lijst, const void* inhoud, unsigned int aantal) {
 	lijstGroei(lijst, lijst->tel + aantal);
 	memcpy(lijst->inhoud + lijst->tel, inhoud, aantal * lijst->onderdeel_grootte);
 }
@@ -68,11 +68,10 @@ booleaan lijstPlaatsMeer(Lijst* lijst, unsigned int plek, const void* inhoud, un
 	memcpy(lijst_krijg(lijst, plek), inhoud, aantal * lijst->onderdeel_grootte);
 }
 
-booleaan lijstVind(Lijst* lijst, void* onderdeel, vergelijk_opdracht vergelijker, unsigned int* plek) {
+booleaan lijstVind(const Lijst* lijst, const void* onderdeel, vergelijk_opdracht vergelijker, unsigned int* plek) {
 	for (unsigned int i = 0; i < lijst->tel; i++) {
 		void* ander = lijst_krijg(lijst, i);
 		if (vergelijker(ander, onderdeel, lijst->onderdeel_grootte)) {
-			if (onderdeel != NULL) memcpy(onderdeel, ander, lijst->onderdeel_grootte);
 			if (plek != NULL) *plek = i;
 			return waar;
 		}

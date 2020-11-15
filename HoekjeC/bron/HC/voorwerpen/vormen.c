@@ -55,7 +55,7 @@ static Vorm* maakVorm() {
 static const Vec3f Driekant_plekken[] = {{0, 0, 0}, {1, 0, 0}, {0.5, 1, 0}};
 static const Vec3f Driekant_normalen[] = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}};
 static const Vec2f Driekant_verfplekken[] = {{0, 0}, {1, 0}, {0.5, 1}};
-static const unsigned int Driekant_tallen[] = {0, 1, 2};
+static const Vec3u Driekant_tallen[] = {{0, 1, 2}};
 static unsigned int Driekant_VAO;
 static unsigned int Driekant_VBOs[3];
 static unsigned int Driekant_EBO;
@@ -65,7 +65,7 @@ Driekant* maakKant() {
 	if (!Driekant_opgezet) {
 		maak_voorwerp_bruikbaar(&Driekant_VAO, Driekant_VBOs, &Driekant_EBO, Driekant_plekken, Driekant_normalen, Driekant_verfplekken,
 								Driekant_tallen, sizeof(Driekant_plekken) / (3 * sizeof(float)),
-								sizeof(Driekant_tallen) / sizeof(unsigned int));
+								sizeof(Driekant_tallen) / (3 * sizeof(unsigned int)));
 		Driekant_opgezet = waar;
 	}
 	Driekant* driekant = maakVorm();
@@ -82,7 +82,7 @@ Driekant* maakKant() {
 static const Vec3f Vierkant_plekken[] = {{-1, -1, 0}, {1, -1, 0}, {1, 1, 0}, {-1, 1, 0}};
 static const Vec3f Vierkant_normalen[] = {{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}};
 static const Vec2f Vierkant_verfplekken[] = {{0, 0}, {1, 0}, {1, 1}, {1, 0}};
-static const unsigned int Vierkant_tallen[] = {0, 1, 2, 0, 2, 3};
+static const Vec3u Vierkant_tallen[] = {{0, 1, 2}, {0, 2, 3}};
 static unsigned int Vierkant_VAO;
 static unsigned int Vierkant_VBOs[3];
 static unsigned int Vierkant_EBO;
@@ -92,7 +92,7 @@ Vierkant* maakVierkant() {
 	if (!Vierkant_opgezet) {
 		maak_voorwerp_bruikbaar(&Vierkant_VAO, Vierkant_VBOs, &Vierkant_EBO, Vierkant_plekken, Vierkant_normalen, Vierkant_verfplekken,
 								Vierkant_tallen, sizeof(Vierkant_plekken) / (3 * sizeof(float)),
-								sizeof(Vierkant_tallen) / sizeof(unsigned int));
+								sizeof(Vierkant_tallen) / (3 * sizeof(unsigned int)));
 		Vierkant_opgezet = waar;
 	}
 	Vierkant* vierkant = maakVorm();
@@ -120,7 +120,7 @@ static booleaan Blok_opgezet = onwaar;
 Blok* maakBlok() {
 	if (!Blok_opgezet) {
 		maak_voorwerp_bruikbaar(&Blok_VAO, Blok_VBOs, &Blok_EBO, Blok_plekken, Blok_normalen, Blok_verfplekken, Blok_tallen,
-								sizeof(Blok_plekken) / (3 * sizeof(float)), sizeof(Blok_tallen) / sizeof(unsigned int));
+								sizeof(Blok_plekken) / (3 * sizeof(float)), sizeof(Blok_tallen) / (3 * sizeof(unsigned int)));
 		Blok_opgezet = waar;
 	}
 	Blok* blok = maakVorm();
@@ -134,18 +134,16 @@ Blok* maakBlok() {
 
 /**		Driehoek		**/
 
-static const unsigned int Driehoek_tekentallen[] = {0, 1, 2};
 Driehoek* maakDriehoek(const Vec3f* plekken, const Vec3f* normalen, const Vec2f* verfplekken) {
 	Driehoek* driehoek = maakVorm();
-	maak_voorwerp_bruikbaar(&driehoek->VAO, driehoek->VBOs, &driehoek->EBO, plekken, normalen, verfplekken, Driehoek_tekentallen, 3, 3);
+	maak_voorwerp_bruikbaar(&driehoek->VAO, driehoek->VBOs, &driehoek->EBO, plekken, normalen, verfplekken, Driekant_tallen, 3, 1);
 	return driehoek;
 }
 
 /**		Vierhoek		**/
 
-static const unsigned int Vierhoek_tekentallen[] = {0, 1, 3, 1, 2, 3};
 Vierhoek* maakVierhoek(const Vec3f* plekken, const Vec3f* normalen, const Vec2f* verfplekken) {
 	Vierhoek* vierhoek = maakVorm();
-	maak_voorwerp_bruikbaar(&vierhoek->VAO, vierhoek->VBOs, &vierhoek->EBO, plekken, normalen, verfplekken, Vierhoek_tekentallen, 4, 6);
+	maak_voorwerp_bruikbaar(&vierhoek->VAO, vierhoek->VBOs, &vierhoek->EBO, plekken, normalen, verfplekken, Vierkant_tallen, 4, 2);
 	return vierhoek;
 }
