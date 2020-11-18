@@ -51,8 +51,8 @@ SleutelLijst* sleutellijstVerbeter(SleutelLijst* lijst);
 /*	Verwijderen	*/
 booleaan sleutellijstVerwijder(SleutelLijst* lijst, void* sleutel, verwijder_opdracht sleutel_opdracht, verwijder_opdracht waarde_opdracht);
 
-/*	Voor Elk	*/
-#define voor_elk_sleutel(lijst, i)                                                                                     \
+/*	Lus	*/
+#define sleutellijstLus(lijst, i)                                                                                      \
 	unsigned int _emmer;                                                                                               \
 	Schakel* _schakel;                                                                                                 \
 	Slot* i;                                                                                                           \
@@ -60,6 +60,9 @@ booleaan sleutellijstVerwijder(SleutelLijst* lijst, void* sleutel, verwijder_opd
 		 !(_emmer == lijst->emmer_aantal - 1 && _schakel == NULL);                                                     \
 		 ((_schakel == NULL) ? (_emmer++, _schakel = lijst->emmers[_emmer]->begin) : (_schakel = _schakel->volgende)), \
 		i = (Slot*)_schakel->inhoud)
+
+/*	Afdrukken	*/
+void sleutellijstAfdrukken(SleutelLijst* lijst, afdruk_opdracht sleutel_opdracht, afdruk_opdracht waarde_opdracht);
 
 /**		VERWIJDER		**/
 

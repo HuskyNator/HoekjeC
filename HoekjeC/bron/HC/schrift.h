@@ -45,6 +45,9 @@ booleaan schriftDeelGelijk(const Schrift* schrift1, unsigned int plek, const Sch
 /*	Sleutelen	*/
 unsigned int schriftSleutel(Schrift* schrift);
 
+/*	Printen	*/
+void schriftPrint(Schrift* schrift);
+
 /**		VERWIJDER		**/
 
 void verwijderSchrift(Schrift* schrift);

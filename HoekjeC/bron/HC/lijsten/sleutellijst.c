@@ -1,5 +1,6 @@
 #include "sleutellijst.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -18,11 +19,11 @@ SleutelLijst* maakSleutelLijst(size_t sleutel_grootte, size_t waarde_grootte, un
 	return lijst;
 }
 
-SleutelLijst* sleutellijstVerbeter(SleutelLijst* lijst) {  // TODO
+SleutelLijst* sleutellijstVerbeter(SleutelLijst* lijst) {
 	unsigned int emmer_aantal = (float)lijst->tel / 0.75 + 1;
 	SleutelLijst* nieuw =
 		maakSleutelLijst(lijst->sleutel_grootte, lijst->waarde_grootte, emmer_aantal, lijst->sleutelaar, lijst->vergelijker);
-	voor_elk_sleutel(lijst, i) { sleutellijstVoeg(lijst, i->sleutel, i->waarde); }
+	sleutellijstLus(lijst, i) { sleutellijstVoeg(lijst, i->sleutel, i->waarde); }
 	verwijderSleutelLijst(lijst, NULL, NULL);
 	return nieuw;
 }
@@ -45,7 +46,7 @@ void sleutellijstVoeg(SleutelLijst* lijst, const void* sleutel, const void* waar
 booleaan sleutellijstVind(SleutelLijst* lijst, void* sleutel, void* gevonden_waarde) {
 	int plek = lijst->sleutelaar(sleutel) % lijst->emmer_aantal;
 	SchakelLijst* emmer = lijst->emmers[plek];
-	voor_elk_schakel(emmer, i, Slot) {
+	schakellijstLus(emmer, i, Slot) {
 		if (lijst->vergelijker(i->sleutel, sleutel, lijst->sleutel_grootte)) {
 			if (gevonden_waarde != NULL) memcpy(gevonden_waarde, i->waarde, lijst->waarde_grootte);
 			return waar;
@@ -60,7 +61,7 @@ booleaan sleutellijstVerwijder(SleutelLijst* lijst, void* sleutel, verwijder_opd
 	SchakelLijst* emmer = lijst->emmers[plek];
 
 	unsigned int i_plek = 0;
-	voor_elk_schakel(emmer, i, Slot) {
+	schakellijstLus(emmer, i, Slot) {
 		if (lijst->vergelijker(i->sleutel, sleutel, lijst->sleutel_grootte)) {
 			if (sleutel_opdracht != NULL) sleutel_opdracht(i->sleutel);
 			if (waarde_opdracht != NULL) waarde_opdracht(i->waarde);
@@ -73,11 +74,28 @@ booleaan sleutellijstVerwijder(SleutelLijst* lijst, void* sleutel, verwijder_opd
 	return onwaar;
 }
 
+/*	Afdrukken	*/
+void sleutellijstAfdrukken(SleutelLijst* lijst, afdruk_opdracht sleutel_opdracht, afdruk_opdracht waarde_opdracht) {
+	putchar('{');
+	const unsigned int aantal = lijst->tel;
+	unsigned int tel = 1;
+	sleutellijstLus(lijst, i) {
+		sleutel_opdracht(i->sleutel);
+		putchar(':');
+		waarde_opdracht(i->waarde);
+		if (aantal != tel) {
+			putchar(' ');
+			putchar(',');
+		}
+	}
+	putchar('}');
+}
+
 void verwijderSleutelLijst(SleutelLijst* lijst, verwijder_opdracht sleutel_opdracht, verwijder_opdracht waarde_opdracht) {
 	for (unsigned int i = 0; i < lijst->emmer_aantal; i++) {
 		SchakelLijst* emmer = lijst->emmers[i];
 		if (sleutel_opdracht != NULL || waarde_opdracht != NULL) {
-			voor_elk_schakel(emmer, j, Slot) {
+			schakellijstLus(emmer, j, Slot) {
 				if (sleutel_opdracht != NULL) sleutel_opdracht(j->sleutel);
 				if (waarde_opdracht != NULL) waarde_opdracht(j->waarde);
 			}

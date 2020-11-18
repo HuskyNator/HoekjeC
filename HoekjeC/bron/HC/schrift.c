@@ -85,6 +85,12 @@ unsigned int schriftSleutel(Schrift* schrift) {
 	return sleutel;
 }
 
+/*	Printen	*/
+void schriftPrint(Schrift* schrift) {
+	lijstLus(schrift, i, char) { putchar(*i); }
+	putchar('\n');
+}
+
 /**		VERWIJDER		**/
 
 void verwijderSchrift(Schrift* schrift) { verwijderLijst(schrift, onwaar); }

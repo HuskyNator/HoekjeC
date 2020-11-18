@@ -1,5 +1,6 @@
 #include "schakellijst.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -36,7 +37,7 @@ Schakel* schakellijstKrijg_v(SchakelLijst* lijst, unsigned int plek) {
 
 booleaan schakellijstVind(SchakelLijst* lijst, const void* onderdeel, vergelijk_opdracht vergelijker, unsigned int* plek) {
 	unsigned int i_plek = 0;
-	voor_elk_schakel(lijst, i, void*) {
+	schakellijstLus(lijst, i, void*) {
 		if (vergelijker(i, onderdeel, lijst->onderdeel_grootte)) {
 			if (plek != NULL) *plek = i_plek;
 			return waar;
@@ -71,6 +72,19 @@ booleaan schakellijstVindVerwijder(SchakelLijst* lijst, void* onderdeel, vergeli
 	if (!schakellijstVind(lijst, onderdeel, vergelijker, &plek)) return onwaar;
 	schakellijstVerwijder(lijst, plek, opdracht);
 	return waar;
+}
+
+void schakellijstAfdrukken(SchakelLijst* lijst, afdruk_opdracht opdracht) {
+	putchar('<');
+	Schakel* teller = lijst->begin;
+	while (teller != lijst->einde) {
+		opdracht(teller->inhoud);
+		putchar(' ');
+		putchar(',');
+		teller = teller->volgende;
+	}
+	opdracht(teller->inhoud);
+	putchar('>');
 }
 
 void verwijderSchakelLijst(SchakelLijst* lijst, const verwijder_opdracht opdracht) {
