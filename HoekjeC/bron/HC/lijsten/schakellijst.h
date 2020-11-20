@@ -31,16 +31,17 @@ SchakelLijst* maakSchakelLijst(size_t onderdeel_grootte);
 /**		GEBRUIK		**/
 
 /*	Voegen	*/
-void schakellijstVoeg(SchakelLijst* lijst, void* onderdeel);
+void schakellijstVoeg(SchakelLijst* lijst, const void* onderdeel);
 // TODO void slijstVoegIn(SchakelLijst* lijst, unsigned int plek, void* onderdeel);
 
 /*	Krijgen & Vinden	*/
-#define schakellijstKrijg(lijst, plek, soort) (*(*soort)(schakellijstKrijg_v(lijst, plek)->inhoud))
+Schakel* schakellijstKrijg_schakel(SchakelLijst* lijst, unsigned int plek);
+#define schakellijstKrijg(lijst, plek, soort) ((soort*)(schakellijstKrijg_schakel(lijst, plek)->inhoud))
 booleaan schakellijstVind(SchakelLijst* lijst, const void* onderdeel, vergelijk_opdracht vergelijker, unsigned int* plek);
 
 /*	Verwijderen	*/
 void schakellijstVerwijder(SchakelLijst* lijst, unsigned int plek, verwijder_opdracht opdracht);
-booleaan schakellijstVindVerwijder(SchakelLijst* lijst, void* onderdeel, vergelijk_opdracht vergelijker, verwijder_opdracht opdracht);
+booleaan schakellijstVindVerwijder(SchakelLijst* lijst, const void* onderdeel, vergelijk_opdracht vergelijker, verwijder_opdracht opdracht);
 
 /*	Lus	*/
 #define schakellijstLus(lijst, i, soort)                                          \

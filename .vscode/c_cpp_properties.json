@@ -3,8 +3,8 @@
 		{
 			"name": "Win32",
 			"includePath": [
-				"${workspaceFolder}/Kern/include/**",
-				"${workspaceFolder}/Kern/bron/**"
+				"${workspaceFolder}/HoekjeC/include/**",
+				"${workspaceFolder}/HoekjeC/bron/**"
 			],
 			"defines": [
 				"_DEBUG",
@@ -14,7 +14,7 @@
 			"windowsSdkVersion": "10.0.18362.0",
 			"compilerPath": "C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/gcc.exe",
 			"intelliSenseMode": "gcc-x64",
-			"cStandard": "c18",
+			"cStandard": "c17",
 			"cppStandard": "c++20",
 			"configurationProvider": "ms-vscode.cmake-tools"
 		}

@@ -13,9 +13,10 @@ SchakelLijst* maakSchakelLijst(size_t onderdeel_grootte) {
 	return lijst;
 }
 
-void schakellijstVoeg(SchakelLijst* lijst, void* onderdeel) {
+void schakellijstVoeg(SchakelLijst* lijst, const void* onderdeel) {
 	Schakel* schakel = malloc(sizeof(Schakel) + lijst->onderdeel_grootte);
 	memcpy(schakel->inhoud, onderdeel, lijst->onderdeel_grootte);
+	schakel->volgende = NULL;
 
 	if (lijst->begin == NULL) lijst->begin = schakel;
 	else
@@ -25,7 +26,7 @@ void schakellijstVoeg(SchakelLijst* lijst, void* onderdeel) {
 	lijst->tel++;
 }
 
-Schakel* schakellijstKrijg_v(SchakelLijst* lijst, unsigned int plek) {
+Schakel* schakellijstKrijg_schakel(SchakelLijst* lijst, unsigned int plek) {
 	if (plek >= lijst->tel) return NULL;
 	if (plek == lijst->tel - 1) return lijst->einde;
 	Schakel* zoek_plek = lijst->begin;
@@ -42,32 +43,33 @@ booleaan schakellijstVind(SchakelLijst* lijst, const void* onderdeel, vergelijk_
 			if (plek != NULL) *plek = i_plek;
 			return waar;
 		}
-		i++;
+		i_plek++;
 	}
 	return onwaar;
 }
 
 void schakellijstVerwijder(SchakelLijst* lijst, unsigned int plek, verwijder_opdracht opdracht) {
 	if (plek >= lijst->tel) return;
-	Schakel* schakel;
-	if (plek == 0) {
+
+	Schakel *schakel, *vorige;
+	vorige = schakellijstKrijg_schakel(lijst, plek - 1);
+	if (vorige == NULL) {
 		schakel = lijst->begin;
-		if (opdracht != NULL) opdracht(schakel->inhoud);
-
 		lijst->begin = schakel->volgende;
-		if (lijst->tel == 1) lijst->einde = NULL;
 	} else {
-		Schakel* vorige = schakellijstKrijg_v(lijst, plek - 1);
 		schakel = vorige->volgende;
-		if (opdracht != NULL) opdracht(schakel->inhoud);
-
 		vorige->volgende = schakel->volgende;
 	}
+	if (schakel->volgende == NULL) lijst->einde = vorige;
+
+	if (opdracht != NULL) opdracht(schakel->inhoud);
+
 	lijst->tel--;
 	free(schakel);
 }
 
-booleaan schakellijstVindVerwijder(SchakelLijst* lijst, void* onderdeel, vergelijk_opdracht vergelijker, verwijder_opdracht opdracht) {
+booleaan schakellijstVindVerwijder(SchakelLijst* lijst, const void* onderdeel, vergelijk_opdracht vergelijker,
+								   verwijder_opdracht opdracht) {
 	unsigned int plek;
 	if (!schakellijstVind(lijst, onderdeel, vergelijker, &plek)) return onwaar;
 	schakellijstVerwijder(lijst, plek, opdracht);
