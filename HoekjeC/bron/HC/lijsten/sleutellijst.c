@@ -23,17 +23,17 @@ SleutelLijst* sleutellijstVerbeter(SleutelLijst* lijst) {
 	unsigned int emmer_aantal = (float)lijst->tel / 0.75 + 1;
 	SleutelLijst* nieuw =
 		maakSleutelLijst(lijst->sleutel_grootte, lijst->waarde_grootte, emmer_aantal, lijst->sleutelaar, lijst->vergelijker);
-	sleutellijstLus(lijst, i) { sleutellijstVoeg(lijst, i->sleutel, i->waarde); }
+	sleutellijstLus(lijst, i) { sleutellijstVoeg(nieuw, i->sleutel, i->waarde); }
 	verwijderSleutelLijst(lijst, NULL, NULL);
 	return nieuw;
 }
 
 // TODO: wat als de sleutel het zelfde is?
 void sleutellijstVoeg(SleutelLijst* lijst, const void* sleutel, const void* waarde) {
-	int plek = lijst->sleutelaar(sleutel) % lijst->emmer_aantal;
+	unsigned int plek = lijst->sleutelaar(sleutel) % lijst->emmer_aantal;
 	SchakelLijst* emmer = lijst->emmers[plek];
 
-	Slot slot;
+	Slot slot = {};
 	slot.sleutel = malloc(lijst->sleutel_grootte);
 	slot.waarde = malloc(lijst->waarde_grootte);
 	memcpy(slot.sleutel, sleutel, lijst->sleutel_grootte);
@@ -43,7 +43,7 @@ void sleutellijstVoeg(SleutelLijst* lijst, const void* sleutel, const void* waar
 	lijst->tel++;
 }
 
-booleaan sleutellijstVind(SleutelLijst* lijst, void* sleutel, void* gevonden_waarde) {
+booleaan sleutellijstVind(SleutelLijst* lijst, const void* sleutel, void* gevonden_waarde) {
 	int plek = lijst->sleutelaar(sleutel) % lijst->emmer_aantal;
 	SchakelLijst* emmer = lijst->emmers[plek];
 	schakellijstLus(emmer, i, Slot) {
@@ -55,7 +55,7 @@ booleaan sleutellijstVind(SleutelLijst* lijst, void* sleutel, void* gevonden_waa
 	return onwaar;
 }
 
-booleaan sleutellijstVerwijder(SleutelLijst* lijst, void* sleutel, verwijder_opdracht sleutel_opdracht,
+booleaan sleutellijstVerwijder(SleutelLijst* lijst, const void* sleutel, verwijder_opdracht sleutel_opdracht,
 							   verwijder_opdracht waarde_opdracht) {
 	unsigned int plek = lijst->sleutelaar(sleutel) % lijst->emmer_aantal;
 	SchakelLijst* emmer = lijst->emmers[plek];
@@ -74,6 +74,39 @@ booleaan sleutellijstVerwijder(SleutelLijst* lijst, void* sleutel, verwijder_opd
 	return onwaar;
 }
 
+/*	Lus	*/
+
+struct SleutelLijst_lusser sleutellijst_maakLusser(SleutelLijst* lijst) {
+	struct SleutelLijst_lusser lusser = {.lijst = lijst, .schakel = NULL, .emmer = 0};
+	if (lijst->tel == 0) return lusser;
+	for (unsigned int i = 0; i < lijst->emmer_aantal; i++) {
+		SchakelLijst* emmer = lijst->emmers[i];
+		if (emmer->begin != NULL) {
+			lusser.emmer = i;
+			lusser.schakel = emmer->begin;
+			return lusser;
+		}
+	}
+	fputs("Sleutellijst_lusser wordt gemaakt maar kon geen schakel vinden, terwijl de lijst niet leeg is!", stderr);
+	exit(1);
+}
+
+void sleutellijst_lusserVolgende(struct SleutelLijst_lusser* lusser) {
+	if (lusser->schakel != NULL) lusser->schakel = lusser->schakel->volgende;
+	if (lusser->schakel != NULL) return;  // Schakel gevonden.
+
+	const SleutelLijst* lijst = lusser->lijst;
+	const unsigned int emmer_aantal = lijst->emmer_aantal;
+	for (unsigned int i = lusser->emmer + 1; i < emmer_aantal; i++) {
+		SchakelLijst* emmer = lijst->emmers[i];
+		if (emmer->tel == 0) continue;
+		lusser->emmer = i;
+		lusser->schakel = emmer->begin;
+		return;	 // Schakel gevonden.
+	}
+	return;	 // Kan niet meer vinden.
+}
+
 /*	Afdrukken	*/
 void sleutellijstAfdrukken(SleutelLijst* lijst, afdruk_opdracht sleutel_opdracht, afdruk_opdracht waarde_opdracht) {
 	putchar('{');
@@ -87,6 +120,7 @@ void sleutellijstAfdrukken(SleutelLijst* lijst, afdruk_opdracht sleutel_opdracht
 			putchar(' ');
 			putchar(',');
 		}
+		tel++;
 	}
 	putchar('}');
 }

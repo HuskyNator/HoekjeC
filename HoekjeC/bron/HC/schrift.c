@@ -71,10 +71,13 @@ booleaan schriftDeelGelijk(const Schrift* schrift1, unsigned int plek, const Sch
 	}
 	return waar;
 }
+inline booleaan schriftVergelijker(const Schrift* schrift1, const Schrift* schrift2, size_t sleutel_grootte) {
+	return schriftGelijk(schrift1, schrift2);
+}
 
 /*	Sleutelen	*/
 // Bron: https://stackoverflow.com/a/7666668/12640952
-unsigned int schriftSleutel(Schrift* schrift) {
+unsigned int schriftSleutel(const Schrift* schrift) {
 	unsigned int sleutel = 0x55555555;
 
 	for (unsigned int i = 0; i < schrift->tel; i++) {
@@ -86,9 +89,8 @@ unsigned int schriftSleutel(Schrift* schrift) {
 }
 
 /*	Printen	*/
-void schriftPrint(Schrift* schrift) {
+void schriftAfdrukken(const Schrift* schrift) {
 	lijstLus(schrift, i, char) { putchar(*i); }
-	putchar('\n');
 }
 
 /**		VERWIJDER		**/

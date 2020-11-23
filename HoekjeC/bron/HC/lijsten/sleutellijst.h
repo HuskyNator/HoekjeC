@@ -42,24 +42,31 @@ SleutelLijst* maakSleutelLijst(size_t sleutel_grootte, size_t waarde_grootte, un
 void sleutellijstVoeg(SleutelLijst* lijst, const void* sleutel, const void* waarde);
 
 /*	Krijgen	*/
-booleaan sleutellijstVind(SleutelLijst* lijst, void* sleutel, void* gevonden_waarde);
+booleaan sleutellijstVind(SleutelLijst* lijst, const void* sleutel, void* gevonden_waarde);
 
 /*	Verbeteren	*/
 // Probeert de sleutellijst een bezettingsgraad van 75% te geven.
 SleutelLijst* sleutellijstVerbeter(SleutelLijst* lijst);
 
 /*	Verwijderen	*/
-booleaan sleutellijstVerwijder(SleutelLijst* lijst, void* sleutel, verwijder_opdracht sleutel_opdracht, verwijder_opdracht waarde_opdracht);
+booleaan sleutellijstVerwijder(SleutelLijst* lijst, const void* sleutel, verwijder_opdracht sleutel_opdracht, verwijder_opdracht waarde_opdracht);
 
 /*	Lus	*/
-#define sleutellijstLus(lijst, i)                                                                                      \
-	unsigned int _emmer;                                                                                               \
-	Schakel* _schakel;                                                                                                 \
-	Slot* i;                                                                                                           \
-	for (_emmer = 0, _schakel = lijst->emmers[0]->begin, i = (Slot*)_schakel->inhoud;                                  \
-		 !(_emmer == lijst->emmer_aantal - 1 && _schakel == NULL);                                                     \
-		 ((_schakel == NULL) ? (_emmer++, _schakel = lijst->emmers[_emmer]->begin) : (_schakel = _schakel->volgende)), \
-		i = (Slot*)_schakel->inhoud)
+
+struct SleutelLijst_lusser {
+	SleutelLijst* lijst;
+	Schakel* schakel;
+	unsigned int emmer;
+};
+
+struct SleutelLijst_lusser sleutellijst_maakLusser(SleutelLijst* lijst);
+void sleutellijst_lusserVolgende(struct SleutelLijst_lusser* lusser);
+
+#define sleutellijstLus(lijst, i)                                                                 \
+	struct SleutelLijst_lusser _lusser;                                                           \
+	Slot* i;                                                                                      \
+	for (_lusser = sleutellijst_maakLusser(lijst), i = (Slot*)_lusser.schakel->inhoud; i != NULL; \
+		 sleutellijst_lusserVolgende(&_lusser), i = _lusser.schakel == NULL ? NULL : (Slot*)_lusser.schakel->inhoud)
 
 /*	Afdrukken	*/
 void sleutellijstAfdrukken(SleutelLijst* lijst, afdruk_opdracht sleutel_opdracht, afdruk_opdracht waarde_opdracht);

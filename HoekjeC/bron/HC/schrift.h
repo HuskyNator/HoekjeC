@@ -41,12 +41,13 @@ void schriftVervang(Schrift* schrift, char oud, char nieuw);
 /*	Vergelijken	*/
 booleaan schriftGelijk(const Schrift* schrift1, const Schrift* schrift2);
 booleaan schriftDeelGelijk(const Schrift* schrift1, unsigned int plek, const Schrift* schrift2);
+booleaan schriftVergelijker(const Schrift* schrift1, const Schrift* schrift2, size_t sleutel_grootte);
 
 /*	Sleutelen	*/
-unsigned int schriftSleutel(Schrift* schrift);
+unsigned int schriftSleutel(const Schrift* schrift);
 
 /*	Printen	*/
-void schriftPrint(Schrift* schrift);
+void schriftAfdrukken(const Schrift* schrift);
 
 /**		VERWIJDER		**/
 

@@ -1,6 +1,7 @@
 #include "HC/algemeen.h"
 #include "HC/lijsten/lijst.h"
 #include "HC/lijsten/schakellijst.h"
+#include "HC/lijsten/sleutellijst.h"
 #include "HC/schrift.h"
 
 #include <stdio.h>
@@ -251,7 +252,80 @@ char* test_schakellijst(int argc, char** argv) {
 	return NULL;
 }
 
-char* test_sleutellijst(int argc, char** argv) { return "De Sleutellijsttest is niet af."; }
+char* test_sleutellijst(int argc, char** argv) {
+	// MaakSleutelLijst
+	SleutelLijst* lijst =
+		maakSleutelLijst(sizeof(Schrift), sizeof(int), 20, (sleutel_opdracht)schriftSleutel, (vergelijk_opdracht)schriftVergelijker);
+	if (lijst->emmer_aantal != 20 || lijst->sleutel_grootte != sizeof(Schrift) || lijst->sleutelaar != (sleutel_opdracht)schriftSleutel ||
+		lijst->tel != 0 || lijst->vergelijker != (vergelijk_opdracht)schriftVergelijker || lijst->waarde_grootte != sizeof(int))
+		return "Kon sleutellijst niet maken.";
+	for (unsigned int i = 0; i < lijst->emmer_aantal; i++) {
+		if (lijst->emmers[i] == NULL) return "Kon sleutellijst niet maken.";
+	}
+	puts("[S] - MaakSchakelLijst werkt.");
+
+	// SleutellijstVoeg
+	const Schrift* een_s = maakSchrift("een");
+	const int een = 1;
+	sleutellijstVoeg(lijst, een_s, &een);
+	unsigned int emmer = schriftSleutel(een_s) % 20;  // Aanname.
+	if (*(int*)((Slot*)lijst->emmers[emmer]->begin->inhoud)->waarde != een) return "Sleutellijst voegt niet goed.";
+	puts("[S] - SleutellijstVoeg werkt.");
+
+	// SleutellijstVind
+	const Schrift* twee_s = maakSchrift("twee");
+	int waarde = 0;
+	booleaan gevonden = sleutellijstVind(lijst, een_s, &waarde);
+	if (!gevonden || waarde != een) return "Sleutellijst vindt niet goed. (1)";
+	gevonden = sleutellijstVind(lijst, een_s, NULL);
+	if (!gevonden) return "Sleutellijst vindt niet goed. (2)";
+	gevonden = sleutellijstVind(lijst, twee_s, &waarde);
+	if (gevonden) return "Sleutellijst vindt niet goed. (3)";
+	puts("[S] - SleutellijstVind werkt.");
+
+	// SleutellijstVerbeter
+	const unsigned int emmer_aantal = lijst->emmer_aantal;
+	lijst = sleutellijstVerbeter(lijst);
+	if (lijst->tel != 1 || lijst->emmer_aantal >= emmer_aantal) return "Sleutellijst verbetert niet goed. (1)";
+	waarde = 0;
+	gevonden = sleutellijstVind(lijst, een_s, &waarde);
+	if (!gevonden || waarde != een) return "Sleutellijst verbetert niet goed. (2)";
+	puts("[S] - SleutellijstVerbeter werkt.");
+
+	// SleutellijstVerwijder
+	booleaan verwijderd = onwaar;
+	verwijderde_tel = 0;
+	verwijderde_waarde = 0;
+	verwijderd = sleutellijstVerwijder(lijst, twee_s, verwijder_opdracht_tel, (verwijder_opdracht)verwijder_opdracht_waarde);
+	if (verwijderd || verwijderde_tel != 0 || verwijderde_waarde != 0) return "Sleutellijst verwijdert niet goed. (1)";
+	verwijderd = sleutellijstVerwijder(lijst, een_s, verwijder_opdracht_tel, (verwijder_opdracht)verwijder_opdracht_waarde);
+	if (!verwijderd || verwijderde_tel != 1 || verwijderde_waarde != 1 || lijst->tel != 0) return "Sleutellijst verwijdert niet goed. (2)";
+	puts("[S] - SleutellijstVerwijder werkt.");
+
+	// SleutelLijstLus
+	const int twee = 2;
+	sleutellijstVoeg(lijst, een_s, &twee);
+	sleutellijstVoeg(lijst, twee_s, &een);
+	unsigned int lus_tel = 0;
+	sleutellijstLus(lijst, i) { lus_tel += *(int*)i->waarde; }
+	if (lus_tel != een + twee) return "Sleutellijst lust niet goed.";
+	puts("[S] - SleutellijstLus werkt.");
+
+	// SleutellijstAfdrukken
+	fputs("[S] - Afdrukken: ", stdout);
+	sleutellijstAfdrukken(lijst, (afdruk_opdracht)schriftAfdrukken, (afdruk_opdracht)getal_afdrukker);
+	putchar('\n');
+
+	// VerwijderSleutelLijst
+	verwijderde_tel = 0;
+	verwijderde_waarde = 0;
+	sleutellijstVerwijder(lijst, twee_s, NULL, NULL);
+	verwijderSleutelLijst(lijst, verwijder_opdracht_tel, (verwijder_opdracht)verwijder_opdracht_waarde);
+	if (verwijderde_tel != 1 || verwijderde_waarde != twee) return "Kon sleutellijst niet verwijderen.";
+	puts("[S] - VerwijderSleutelLijst werkt.");
+
+	return NULL;
+}
 
 int main(int argc, char** argv) {
 	if (argc < 2) return 1;
