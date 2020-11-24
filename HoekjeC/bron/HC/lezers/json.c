@@ -46,7 +46,7 @@ static Schrift* lees_schrift() {
 
 static JLid lees_voorwerp() {
 	JVoorwerp voorwerp =
-		maakSleutelLijst(sizeof(Schrift*), sizeof(JLid), 10, (sleutel_opdracht)schriftSleutel, (vergelijk_opdracht)schriftGelijk);
+		maakSleutelLijst(sizeof(Schrift*), sizeof(JLid), 10, (sleutel_opdracht)schriftSleutel, schriftVergelijker);
 	JLid jlid = (JLid){.soort = JVOORWERP, .waarde = {.voorwerp = voorwerp}};
 	lees_witruimte();
 

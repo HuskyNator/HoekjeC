@@ -5,5 +5,8 @@
 		"*.vert": "glsl",
 		"type_traits": "c"
 	},
-	"cmake.configureOnOpen": false
+	"cmake.configureOnOpen": false,
+	"cmake.debugConfig": {
+        "cwd": "${command:cmake.launchTargetDirectory}"
+    },
 }

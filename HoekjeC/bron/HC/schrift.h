@@ -9,7 +9,7 @@ typedef Lijst Schrift;	// char[]
 
 /**		MAAK		**/
 
-Schrift* maakSchrift(char* inhoud);
+Schrift* maakSchrift(const char* inhoud);
 Schrift* leesSchrift(FILE* bestand);
 
 #define maakSchrift_const(tekens) \
@@ -27,8 +27,6 @@ void schriftVoegVoor_s(Schrift* schrift, char* c, unsigned int lengte);
 void schriftVoegNa_s(Schrift* schrift, char* c, unsigned int lengte);
 void schriftVoegIn_s(Schrift* schrift, unsigned int plek, char* c, unsigned int lengte);
 
-// TODO: Verwijderen
-
 /*	Krimpen	*/
 #define schriftKrimp(schrift) lijstKrimp(schrift);
 
@@ -37,6 +35,8 @@ char schriftKrijg(const Schrift* schrift, unsigned int plek);
 
 /*	Vervangen	*/
 void schriftVervang(Schrift* schrift, char oud, char nieuw);
+// TODO vervang op plek.
+// TODO verwijder op plek.
 
 /*	Vergelijken	*/
 booleaan schriftGelijk(const Schrift* schrift1, const Schrift* schrift2);
@@ -48,6 +48,8 @@ unsigned int schriftSleutel(const Schrift* schrift);
 
 /*	Printen	*/
 void schriftAfdrukken(const Schrift* schrift);
+
+// TODO Lus
 
 /**		VERWIJDER		**/
 

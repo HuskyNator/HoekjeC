@@ -7,7 +7,7 @@ const char nulteken = '\0';
 
 /**		MAAK		**/
 
-Schrift* maakSchrift(char* inhoud) {
+Schrift* maakSchrift(const char* inhoud) {
 	if (inhoud == NULL) return maakLijst(10, sizeof(char));
 
 	char* teller = inhoud;
@@ -95,7 +95,7 @@ void schriftAfdrukken(const Schrift* schrift) {
 
 /**		VERWIJDER		**/
 
-void verwijderSchrift(Schrift* schrift) { verwijderLijst(schrift, onwaar); }
+void verwijderSchrift(Schrift* schrift) { verwijderLijst(schrift, NULL); }
 
 /**		VERANDER		**/
 

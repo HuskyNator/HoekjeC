@@ -41,20 +41,19 @@ void lijstVoegMeer(Lijst* lijst, const void* inhoud, unsigned int aantal) {
 }
 
 booleaan lijstPlaats(Lijst* lijst, unsigned int plek, const void* onderdeel) {
-	if (plek >= lijst->tel) {
+	if (plek > lijst->tel) {
 		fputs("Plek is buiten lijst.", stdout);
 		return onwaar;
 	}
 	groei(lijst);
-	memcpy(lijst->inhoud + (plek + 1) * lijst->onderdeel_grootte, lijst->inhoud + plek * lijst->onderdeel_grootte,
-		   (lijst->tel - plek) * lijst->onderdeel_grootte);
+	memcpy(lijst_krijg(lijst, plek + 1), lijst_krijg(lijst, plek), (lijst->tel - plek) * lijst->onderdeel_grootte);
 	memcpy(lijst->inhoud + plek * lijst->onderdeel_grootte, onderdeel, lijst->onderdeel_grootte);
 	lijst->tel++;
 	return waar;
 }
 
 booleaan lijstPlaatsMeer(Lijst* lijst, unsigned int plek, const void* inhoud, unsigned int aantal) {
-	if (plek >= lijst->tel) {
+	if (plek > lijst->tel) {
 		fputs("Plek is buiten lijst.", stdout);
 		return onwaar;
 	}

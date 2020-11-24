@@ -11,7 +11,7 @@ Schrift* leesTot(FILE* bestand, char tot) {
 		lijstVoeg(schrift, &c);
 	}
 	if (c == EOF) {
-		verwijderLijst(schrift, onwaar);
+		verwijderLijst(schrift, NULL);
 		return NULL;
 	}
 	lijstGroei(schrift, schrift->tel + 1);	// Bespaart geheugen & een krimp.

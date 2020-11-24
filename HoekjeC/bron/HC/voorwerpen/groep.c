@@ -20,7 +20,7 @@ void groep_verwijder_opdracht(Groep* groep) {
 			verwijderVoorwerp(kind);
 		}
 	}
-	verwijderLijst(groep->groepkinderen, onwaar);
+	verwijderLijst(groep->groepkinderen, NULL);
 	verwijderVoorwerp(groep);
 }
 

@@ -14,12 +14,12 @@ get_target_property(HoekjeC_SOURCE_DIR HoekjeC SOURCE_DIR)
 
 # Tekenaar bestanden.
 
-add_custom_command(TARGET VOORBEELD POST_BUILD
-					COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Ververs ${RUNTIME_OUTPUT_DIRECTORY}/Voorbeeld/Ververs
-					COMMENT "Ververs Kopieren van ${CMAKE_CURRENT_SOURCE_DIR}/Ververs naar ${RUNTIME_OUTPUT_DIRECTORY}/Voorbeeld/Ververs" VERBATIM
-)
-
-add_custom_command(TARGET VOORBEELD POST_BUILD
-					COMMAND ${CMAKE_COMMAND} -E copy_directory ${HoekjeC_SOURCE_DIR}/Ververs ${RUNTIME_OUTPUT_DIRECTORY}/HoekjeC/Ververs
-					COMMENT "Ververs Kopieren van ${HoekjeC_SOURCE_DIR}/Ververs naar ${RUNTIME_OUTPUT_DIRECTORY}/HoekjeC/Ververs" VERBATIM
+add_custom_target(Ververs_overzetten ALL
+					COMMAND ${CMAKE_COMMAND} -E copy_directory
+						${CMAKE_CURRENT_SOURCE_DIR}/Ververs
+						${RUNTIME_OUTPUT_DIRECTORY}/Voorbeeld/Ververs
+					COMMAND ${CMAKE_COMMAND} -E copy_directory
+						${HoekjeC_SOURCE_DIR}/Ververs
+						${RUNTIME_OUTPUT_DIRECTORY}/HoekjeC/Ververs
+					COMMENT "Ververs overzetten van ${CMAKE_CURRENT_SOURCE_DIR}/Ververs & ${HoekjeC_SOURCE_DIR}/Ververs naar ${RUNTIME_OUTPUT_DIRECTORY}/Voorbeeld/Ververs & ${RUNTIME_OUTPUT_DIRECTORY}/HoekjeC/Ververs." VERBATIM
 )
