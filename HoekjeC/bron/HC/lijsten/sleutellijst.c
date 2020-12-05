@@ -23,7 +23,12 @@ SleutelLijst* sleutellijstVerbeter(SleutelLijst* lijst) {
 	unsigned int emmer_aantal = (float)lijst->tel / 0.75 + 1;
 	SleutelLijst* nieuw =
 		maakSleutelLijst(lijst->sleutel_grootte, lijst->waarde_grootte, emmer_aantal, lijst->sleutelaar, lijst->vergelijker);
-	sleutellijstLus(lijst, i) { sleutellijstVoeg(nieuw, i->sleutel, i->waarde); }
+	struct SleutelLijst_lusser _lusser;
+	Slot* i;
+	for (_lusser = sleutellijst_maakLusser(lijst), i = (Slot*)_lusser.schakel->inhoud; i != NULL;
+		 sleutellijst_lusserVolgende(&_lusser), i = _lusser.schakel == NULL ? NULL : (Slot*)_lusser.schakel->inhoud) {
+		sleutellijstVoeg(nieuw, i->sleutel, i->waarde);
+	}
 	verwijderSleutelLijst(lijst, NULL, NULL);
 	return nieuw;
 }

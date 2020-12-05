@@ -73,52 +73,52 @@ char* test(int argc, char const* argv[]) {
 	// SchriftVoegVoor_s
 	Schrift* voeg_voor_s = maakSchrift("0");
 	const char* voeg_voor_s_voegsel = "123";
-	schriftVoegVoor_s(voeg_voor_s, voeg_voor_s_voegsel, 0);
-	if (voeg_voor_s->tel != 1) return "Schrift kon niet goed meervoudig voor voegen. (1)";
+	schriftVoegVoorMeer(voeg_voor_s, voeg_voor_s_voegsel, 0);
+	if (voeg_voor_s->tel != 4) return "Schrift kon niet goed meervoudig voor voegen. (1)";
 
-	const char* voeg_voor_s_inhoud = "120";
-	schriftVoegVoor_s(voeg_voor_s, voeg_voor_s_voegsel, 2);
-	if (voeg_voor_s->tel != 3) return "Schrift kon niet goed meervoudig voor voegen. (2)";
-	for (unsigned int i = 0; i < 3; i++) {
+	const char* voeg_voor_s_inhoud = "121230";
+	schriftVoegVoorMeer(voeg_voor_s, voeg_voor_s_voegsel, 2);
+	if (voeg_voor_s->tel != 6) return "Schrift kon niet goed meervoudig voor voegen. (2)";
+	for (unsigned int i = 0; i < 6; i++) {
 		if (((char*)voeg_voor_s->inhoud)[i] != voeg_voor_s_inhoud[i]) return "Schrift kon niet goed meervoudig voor voegen. (3)";
 	}
-	puts("Schrift - schriftVoegVoor_s werkt.");
+	puts("Schrift - schriftVoegVoorMeer werkt.");
 
 	// SchriftVoegNa_s
 	Schrift* voeg_na_s = maakSchrift("0");
 	const char* voeg_na_s_voegsel = "123";
-	schriftVoegNa_s(voeg_na_s, voeg_na_s_voegsel, 0);
-	if (voeg_na_s->tel != 1) return "Schrift kon niet goed meervoudig na voegen. (1)";
+	schriftVoegNaMeer(voeg_na_s, voeg_na_s_voegsel, 0);
+	if (voeg_na_s->tel != 4) return "Schrift kon niet goed meervoudig na voegen. (1)";
 
-	const char* voeg_na_s_inhoud = "012";
-	schriftVoegNa_s(voeg_na_s, voeg_na_s_voegsel, 2);
-	if (voeg_na_s->tel != 3) return "Schrift kon niet goed meervoudig na voegen. (2)";
+	const char* voeg_na_s_inhoud = "012312";
+	schriftVoegNaMeer(voeg_na_s, voeg_na_s_voegsel, 2);
+	if (voeg_na_s->tel != 6) return "Schrift kon niet goed meervoudig na voegen. (2)";
 	for (unsigned int i = 0; i < 3; i++) {
 		if (((char*)voeg_na_s->inhoud)[i] != voeg_na_s_inhoud[i]) return "Schrift kon niet goed meervoudig na voegen. (3)";
 	}
-	puts("Schrift - schriftVoegNa_s werkt.");
+	puts("Schrift - schriftVoegNaMeer werkt.");
 
 	// SchriftVoegIn_s
 	Schrift* voeg_in_s = maakSchrift("0e");
 	const char* voeg_in_s_voegsel = "123";
-	schriftVoegIn_s(voeg_in_s, 0, voeg_in_s_voegsel, 0);
-	if (voeg_in_s->tel != 2) return "Schrift kon niet goed meervoudig in voegen. (1)";
+	schriftVoegInMeer(voeg_in_s, 0, voeg_in_s_voegsel, 0);
+	if (voeg_in_s->tel != 5) return "Schrift kon niet goed meervoudig in voegen. (1)";
 
-	schriftVoegIn_s(voeg_in_s, 4, voeg_in_s_voegsel, 1);  // Buiten schrift.
-	if (voeg_in_s->tel != 2) return "Schrift kon niet goed meervoudig in voegen. (2)";
+	schriftVoegInMeer(voeg_in_s, 4, voeg_in_s_voegsel, 1);  // Buiten schrift.
+	if (voeg_in_s->tel != 6) return "Schrift kon niet goed meervoudig in voegen. (2)";
 
-	const char* voeg_in_s_inhoud = "aa0beddd";
+	const char* voeg_in_s_inhoud = "aa1b2ddd301e";
 	const char* voeg_in_s_voegsel1 = "aaaa";
 	const char* voeg_in_s_voegsel2 = "bbbbb";
 	const char* voeg_in_s_voegsel3 = "ddddddddddddd";
-	schriftVoegIn_s(voeg_in_s, 0, voeg_in_s_voegsel1, 2);
-	schriftVoegIn_s(voeg_in_s, 3, voeg_in_s_voegsel2, 1);
-	schriftVoegIn_s(voeg_in_s, 5, voeg_in_s_voegsel3, 3);
-	if (voeg_in_s->tel != sizeof(voeg_in_s_inhoud)) return "Schrift kon niet goed meervoudig in voegen. (3)";
+	schriftVoegInMeer(voeg_in_s, 0, voeg_in_s_voegsel1, 2);
+	schriftVoegInMeer(voeg_in_s, 3, voeg_in_s_voegsel2, 1);
+	schriftVoegInMeer(voeg_in_s, 5, voeg_in_s_voegsel3, 3);
+	if (voeg_in_s->tel != 12) return "Schrift kon niet goed meervoudig in voegen. (3)";
 	for (unsigned int i = 0; i < sizeof(voeg_in_s_inhoud); i++) {
 		if (((char*)voeg_in_s->inhoud)[i] != voeg_in_s_inhoud[i]) return "Schrift kon niet goed meervoudig in voegen. (4)";
 	}
-	puts("Schrift - schriftVoegIn_s werkt.");
+	puts("Schrift - schriftVoegInMeer werkt.");
 
 	// SchriftKrimp
 	Schrift* krimp = maakSchrift(NULL);
@@ -143,12 +143,12 @@ char* test(int argc, char const* argv[]) {
 
 	// SchriftVervang
 	Schrift* vervang = maakSchrift("a2a2");
-	schriftVervang(vervang, '2', 'c');
+	schriftVervangChar(vervang, '2', 'c');
 	if (schriftKrijg(vervang, 0) != 'a') return "Schrift vervangt niet goed. (1)";
 	if (schriftKrijg(vervang, 1) != 'c') return "Schrift vervangt niet goed. (2)";
 	if (schriftKrijg(vervang, 2) != 'a') return "Schrift vervangt niet goed. (3)";
 	if (schriftKrijg(vervang, 3) != 'c') return "Schrift vervangt niet goed. (4)";
-	puts("Schrift - schriftVervang werkt.");
+	puts("Schrift - schriftVervangChar werkt.");
 
 	// SchriftGelijk (& SchriftVergelijker)
 	Schrift* gelijk1 = maakSchrift("abc12");

@@ -1,34 +1,34 @@
 #ifndef JSON_H
 #define JSON_H
 
-#include "algemeen.h"
-#include "lijsten/lijst.h"
-#include "lijsten/sleutellijst.h"
-#include "schrift.h"
+#include "HC/algemeen.h"
+#include "HC/lijsten/lijst.h"
+#include "HC/lijsten/sleutellijst.h"
+#include "HC/schrift.h"
 
 typedef enum JSOORT JSOORT;
-enum JSOORT { JNIKS, JFOUT, JNUL, JBOOLEAAN, JGETAL, JKOMMAGETAL, JSCHRIFT, JLIJST, JVOORWERP };
+enum JSOORT { JNIKS, JFOUT, JNULL, JBOOLEAAN, JGETAL, JKOMMAGETAL, JSCHRIFT, JLIJST, JVOORWERP };
 
-typedef SleutelLijst* JVoorwerp;  // JLid[Sleutel<Schrift>]
-typedef Lijst* JLijst;			  // JLid[]
+typedef SleutelLijst* JVoorwerp;  // Json[Sleutel<Schrift>]
+typedef Lijst* JLijst;			  // Json[]
 
 typedef union Jwaarde JWaarde;
 union Jwaarde {
 	JVoorwerp voorwerp;
 	JLijst lijst;
-	Schrift* letters;
+	Schrift* schrift;
 	int getal;
-	float kommagetal;
+	double kommagetal;
 	booleaan booleaan;
 };
 
-typedef struct Jlid JLid;
-struct Jlid {
+typedef struct json Json;
+struct json {
 	JSOORT soort;
 	JWaarde waarde;
 };
 
-JLid leesJSON(FILE* bestand);
+Json leesJson(FILE* bestand);
 
-void verwijderJLid(JLid* JLid);
+void verwijderJson(Json* Json);
 #endif

@@ -1,32 +1,35 @@
 #include "json.h"
 
-#include "lijsten/schakellijst.h"
 #include "schrift.h"
 #include "stdlib.h"
 
-static JLid lees_json();
+static Json lees_json();
 
 static const Schrift true_s = maakSchrift_const("true");
 static const Schrift false_s = maakSchrift_const("false");
-static const Schrift nul_s = maakSchrift_const("null");
+static const Schrift null_s = maakSchrift_const("null");
 
-static const JLid FOUT = (JLid){.soort = JFOUT};
+static const Json FOUT = (Json){.soort = JFOUT};
 
 static Schrift* schrift;
-static SchakelLijst* diepte;
-static unsigned int leeskop = 0;
+static unsigned int leeskop;
+static booleaan uitgelezen;
 static char leeswaarde;
 
 inline static booleaan is_witruimte(char c) { return c == ' ' || c == '\n' || c == '\t' || c == '\r'; }
-inline static booleaan is_getal(char c) { return c >= 30 && c <= 39; }
+inline static booleaan is_getal(char c) { return c >= '0' && c <= '9'; }
 
 inline static void lees_volgende() {
 	leeskop++;
-	leeswaarde = schriftKrijg(schrift, leeskop);
+	if (leeskop == schrift->tel) {
+		uitgelezen = waar;
+		return;
+	} else
+		leeswaarde = schriftKrijg(schrift, leeskop);
 }
 
 static void lees_witruimte() {
-	while (is_witruimte(leeswaarde) || leeswaarde == ',') {
+	while (!uitgelezen && (is_witruimte(leeswaarde) || leeswaarde == ',')) {
 		lees_volgende();
 	}
 }
@@ -34,60 +37,68 @@ static void lees_witruimte() {
 static Schrift* lees_schrift() {
 	Schrift* jschrift = maakSchrift(NULL);
 	booleaan ontsnapt = onwaar;
-	lees_volgende();
-	while ((leeswaarde != '"' || ontsnapt) && leeswaarde != EOF) {
+	while (leeswaarde != '"' || ontsnapt) {
+		if (uitgelezen) {
+			verwijderSchrift(jschrift);
+			return NULL;
+		}
 		schriftVoegNa(jschrift, leeswaarde);
 		lees_volgende();
 		ontsnapt = (leeswaarde == '\\') ? !ontsnapt : onwaar;
 	}
+	lees_volgende();
 	schriftKrimp(jschrift);
 	return jschrift;
 }
 
-static JLid lees_voorwerp() {
+static Json lees_voorwerp() {
 	JVoorwerp voorwerp =
-		maakSleutelLijst(sizeof(Schrift*), sizeof(JLid), 10, (sleutel_opdracht)schriftSleutel, schriftVergelijker);
-	JLid jlid = (JLid){.soort = JVOORWERP, .waarde = {.voorwerp = voorwerp}};
+		maakSleutelLijst(sizeof(Schrift), sizeof(Json), 10, (sleutel_opdracht)schriftSleutel, (vergelijk_opdracht)schriftVergelijker);
 	lees_witruimte();
 
 	while (leeswaarde != '}') {
 		Schrift* sleutel;
 
 		if (leeswaarde != '\"') {
-		VOORWERP_SLOT_FOUT:
+		VOORWERP_FOUT:
 			verwijderSchrift(sleutel);
-			verwijderJLid(&jlid);
+			verwijderSleutelLijst(voorwerp, (verwijder_opdracht)verwijderSchrift, (verwijder_opdracht)verwijderJson);
 			return FOUT;
 		}
 
+		lees_volgende();
 		sleutel = lees_schrift();
+		if (sleutel == NULL) goto VOORWERP_FOUT;
+
+		lees_witruimte();
+		if (leeswaarde != ':') goto VOORWERP_FOUT;
+		lees_volgende();
 		lees_witruimte();
 
-		if (leeswaarde != ':') goto VOORWERP_SLOT_FOUT;
+		Json waarde = lees_json();
+		if (waarde.soort == JFOUT) goto VOORWERP_FOUT;
 		lees_witruimte();
-		if (leeswaarde != '\"') goto VOORWERP_SLOT_FOUT;
 
-		JLid waarde = lees_json();
-		if (waarde.soort == JFOUT) goto VOORWERP_SLOT_FOUT;
-
-		sleutellijstVoeg(voorwerp, &sleutel, &waarde);
+		sleutellijstVoeg(voorwerp, sleutel, &waarde);
 	}
 
-	sleutellijstVerbeter(voorwerp);
+	voorwerp = sleutellijstVerbeter(voorwerp);
+	Json jlid = (Json){.soort = JVOORWERP, .waarde = {.voorwerp = voorwerp}};
 	lees_volgende();
 	return jlid;
 }
 
-static JLid lees_lijst() {
-	JLijst lijst = maakLijst(10, sizeof(JLid));
-	JLid jlid = (JLid){.soort = JLIJST, .waarde = {.lijst = lijst}};
+static Json lees_lijst() {
+	JLijst lijst = maakLijst(10, sizeof(Json));
+	Json jlid = (Json){.soort = JLIJST, .waarde = {.lijst = lijst}};
 
 	lees_witruimte();
 	while (leeswaarde != ']') {
-		JLid onderdeel = lees_json();
+		Json onderdeel = lees_json();
+		lees_witruimte();
 
-		if (onderdeel.soort == JFOUT) {
-			verwijderLijst(lijst, (verwijder_opdracht)verwijderJLid);
+		if (onderdeel.soort == JFOUT || uitgelezen) {
+			verwijderLijst(lijst, (verwijder_opdracht)verwijderJson);
 			return FOUT;
 		}
 
@@ -99,7 +110,7 @@ static JLid lees_lijst() {
 	return jlid;
 }
 
-static JLid lees_getal() {
+static Json lees_getal() {
 	Schrift* getal_schrift = maakSchrift(NULL);
 	booleaan punt = onwaar;
 	booleaan macht = onwaar;
@@ -116,7 +127,7 @@ VERPLICHT_GETAL:
 		return FOUT;
 	}
 
-	while (is_getal(leeswaarde)) {
+	while (is_getal(leeswaarde) && !uitgelezen) {
 		schriftVoegNa(getal_schrift, leeswaarde);
 		lees_volgende();
 	}
@@ -129,46 +140,57 @@ VERPLICHT_GETAL:
 	}
 
 	if ((leeswaarde == 'e' || leeswaarde == 'E') && !macht) {
+		macht = waar;
 		schriftVoegNa(getal_schrift, leeswaarde);
 		lees_volgende();
 		goto MINPLUS_VERPLICHT_GETAL;
 	}
 
 	char* getal_cs = schriftNaarChar(getal_schrift);
-	if (punt) {
-		float getal = strtof(getal_cs, NULL);
+	if (punt || macht) {
+		double getal = atof(getal_cs);
 		free(getal_cs);
-		return (JLid){.soort = JGETAL, .waarde = {.kommagetal = getal}};
+		return (Json){.soort = JKOMMAGETAL, .waarde = {.kommagetal = getal}};
 	} else {
 		int getal = atoi(getal_cs);
 		free(getal_cs);
-		return (JLid){.soort = JKOMMAGETAL, .waarde = {.getal = getal}};
+		return (Json){.soort = JGETAL, .waarde = {.getal = getal}};
 	}
 }
 
-static JLid lees_json() {
-	switch (schriftKrijg(schrift, leeskop)) {
+static Json lees_json() {
+	if (uitgelezen) return FOUT;
+	switch (leeswaarde) {
 		case '{':
+			lees_volgende();
 			return lees_voorwerp();
 		case '[':
+			lees_volgende();
 			return lees_lijst();
 		case '\"':
-			return (JLid){.soort = JSCHRIFT, .waarde = {.letters = lees_schrift()}};
+			lees_volgende();
+			return (Json){.soort = JSCHRIFT, .waarde = {.schrift = lees_schrift()}};
 		case 't':
-			if (schriftDeelGelijk(schrift, leeskop, &true_s)) return (JLid){.soort = JBOOLEAAN, .waarde = {.booleaan = waar}};
-			return FOUT;
+			if (!schriftDeelGelijk(schrift, leeskop, &true_s)) return FOUT;
+			leeskop += 3;
+			lees_volgende();
+			return (Json){.soort = JBOOLEAAN, .waarde = {.booleaan = waar}};
 		case 'f':
-			if (schriftDeelGelijk(schrift, leeskop, &false_s)) return (JLid){.soort = JBOOLEAAN, .waarde = {.booleaan = onwaar}};
-			return FOUT;
+			if (!schriftDeelGelijk(schrift, leeskop, &false_s)) return FOUT;
+			leeskop += 4;
+			lees_volgende();
+			return (Json){.soort = JBOOLEAAN, .waarde = {.booleaan = onwaar}};
 		case 'n':
-			if (schriftDeelGelijk(schrift, leeskop, &nul_s)) return (JLid){.soort = JNUL};
-			return FOUT;
+			if (!schriftDeelGelijk(schrift, leeskop, &null_s)) return FOUT;
+			leeskop += 3;
+			lees_volgende();
+			return (Json){.soort = JNULL};
 		default:
 			return lees_getal();
 	}
 }
 
-JLid leesJSON(FILE* bestand) {
+Json leesJson(FILE* bestand) {
 	schrift = leesSchrift(bestand);
 	if (schrift->tel == 0) {
 		verwijderSchrift(schrift);
@@ -176,24 +198,32 @@ JLid leesJSON(FILE* bestand) {
 	}
 	schriftKrimp(schrift);
 
-	diepte = maakSchakelLijst(sizeof(JSOORT));
 	leeskop = 0;
+	uitgelezen = onwaar;
 	leeswaarde = schriftKrijg(schrift, 0);
 
 	lees_witruimte();
+	if (uitgelezen) return (Json){.soort = JNIKS};
 
-	return lees_json();
+	Json inhoud = lees_json();
+
+	lees_witruimte();
+	if (!uitgelezen) {
+		verwijderJson(&inhoud);
+		return FOUT;
+	} else
+		return inhoud;
 }
 
-void verwijderJLid(JLid* jlid) {
+void verwijderJson(Json* jlid) {
 	switch (jlid->soort) {
 		case JVOORWERP:
-			verwijderSleutelLijst(jlid->waarde.voorwerp, (verwijder_opdracht)verwijderSchrift, (verwijder_opdracht)verwijderJLid);
+			verwijderSleutelLijst(jlid->waarde.voorwerp, (verwijder_opdracht)verwijderSchrift, (verwijder_opdracht)verwijderJson);
 			return;
 		case JLIJST:
-			verwijderLijst(jlid->waarde.lijst, (verwijder_opdracht)verwijderJLid);
+			verwijderLijst(jlid->waarde.lijst, (verwijder_opdracht)verwijderJson);
 			return;
 		case JSCHRIFT:
-			verwijderSchrift(jlid->waarde.letters);
+			verwijderSchrift(jlid->waarde.schrift);
 	}
 }

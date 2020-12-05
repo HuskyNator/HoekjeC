@@ -1,0 +1,11 @@
+{
+	"Onderwerp": "Thom's boodschappen",
+	"Appelmoes": 1,
+	"Tomaat": "Tomaat is vies",
+	"Depressie": true,
+	"Hekelonderwerpen": [
+		"Paul",
+		15,
+		null
+	]
+}

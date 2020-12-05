@@ -23,9 +23,17 @@ void schriftVoegNa(Schrift* schrift, char c);
 void schriftVoegIn(Schrift* schrift, unsigned int plek, char c);
 
 /*	Veelvoud Voegen	*/
-void schriftVoegVoor_s(Schrift* schrift, char* c, unsigned int lengte);
-void schriftVoegNa_s(Schrift* schrift, char* c, unsigned int lengte);
-void schriftVoegIn_s(Schrift* schrift, unsigned int plek, char* c, unsigned int lengte);
+void schriftVoegVoorMeer(Schrift* schrift, char* c, unsigned int lengte);
+void schriftVoegNaMeer(Schrift* schrift, char* c, unsigned int lengte);
+void schriftVoegInMeer(Schrift* schrift, unsigned int plek, char* c, unsigned int lengte);
+
+/**
+ * @brief  Voegt een veelvoud aan karakters in.
+ * @param  plek: Waar het ingevoegd moet worden. (meetellend)
+ * @param  nieuw: Wat ingevoegd moet worden.
+ * @param  lengte: Hoe veel hiervan ingevoegd moet worden. Indien 0 wordt ingevoegd tot een '\\0' tegengekomen wordt.
+ */
+void schriftVoegMeer(Schrift* schrift, unsigned int plek, char* nieuw, unsigned int lengte);
 
 /*	Krimpen	*/
 #define schriftKrimp(schrift) lijstKrimp(schrift);
@@ -34,9 +42,13 @@ void schriftVoegIn_s(Schrift* schrift, unsigned int plek, char* c, unsigned int 
 char schriftKrijg(const Schrift* schrift, unsigned int plek);
 
 /*	Vervangen	*/
-void schriftVervang(Schrift* schrift, char oud, char nieuw);
-// TODO vervang op plek.
-// TODO verwijder op plek.
+void schriftVervangChar(Schrift* schrift, char oud, char nieuw);
+char schriftVervang(Schrift* schrift, unsigned int plek, char nieuw);  // Geeft vorige char terug, indien mogelijk.
+void schriftVervangDeel(Schrift* schrift, unsigned int plek, char* nieuw, unsigned int lengte);
+
+/* Verwijderen	*/
+void schriftVerwijder(Schrift* schrift, unsigned int plek);								// Verwijdert char op plek, indien mogelijk.
+void schriftVerwijderReeks(Schrift* schrift, unsigned int van, unsigned int tot);
 
 /*	Vergelijken	*/
 booleaan schriftGelijk(const Schrift* schrift1, const Schrift* schrift2);

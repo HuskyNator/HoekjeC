@@ -89,6 +89,18 @@ booleaan lijstVerwijder(Lijst* lijst, unsigned int plek, verwijder_opdracht opdr
 	return waar;
 }
 
+booleaan lijstVerwijderReeks(Lijst* lijst, unsigned int van, unsigned int tot, verwijder_opdracht opdracht) {
+	if (van >= tot || tot > lijst->tel) return onwaar;
+	if (opdracht != NULL) {
+		for (unsigned int i = van; i < tot; i++) {
+			opdracht(lijst_krijg(lijst, i));
+		}
+	}
+	if (tot != lijst->tel) memcpy(lijst_krijg(lijst, van), lijst_krijg(lijst, tot), lijst->tel - tot);
+	lijst->tel = lijst->tel + van - tot;
+	return waar;
+}
+
 booleaan lijstVindVerwijder(Lijst* lijst, const void* onderdeel, vergelijk_opdracht vergelijker, verwijder_opdracht opdracht) {
 	unsigned int plek;
 	if (!lijstVind(lijst, onderdeel, vergelijker, &plek)) return onwaar;

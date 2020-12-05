@@ -28,3 +28,9 @@ add_executable(test_schrift test_schrift.c)
 target_link_libraries(test_schrift PUBLIC -static HoekjeC)
 
 add_test(schrift_test test_schrift)
+
+# Json
+add_executable(test_json test_json.c)
+target_link_libraries(test_json PUBLIC -static HoekjeC)
+
+add_test(json_test test_json)

@@ -45,6 +45,8 @@ booleaan lijstVind(const Lijst* lijst, const void* onderdeel, vergelijk_opdracht
 
 /*	Verwijderen & Legen	*/
 booleaan lijstVerwijder(Lijst* lijst, unsigned int plek, verwijder_opdracht opdracht);
+booleaan lijstVerwijderReeks(Lijst* lijst, unsigned int van, unsigned int tot,
+							 verwijder_opdracht opdracht);	// Verwijdert inhoud vanaf & met 'van', tot & zonder 'tot'.
 booleaan lijstVindVerwijder(Lijst* lijst, const void* onderdeel, vergelijk_opdracht vergelijker, verwijder_opdracht opdracht);
 void lijstLeeg(Lijst* lijst, verwijder_opdracht opdracht);
 // TODO lijstVerwijderMeer
