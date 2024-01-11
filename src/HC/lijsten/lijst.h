@@ -11,7 +11,7 @@ struct lijst {
 	unsigned int grootte;
 	unsigned int tel;
 	size_t onderdeel_grootte;
-	void* inhoud;
+	char* inhoud;
 };
 
 Lijst* maakLijst(unsigned int grootte, size_t onderdeel_grootte);

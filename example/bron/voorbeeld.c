@@ -7,12 +7,10 @@
 #include "HC/wiskunde/lineair.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <windows.h>
-
-#ifndef VOORBEELD_VERSIE
-#define VOORBEELD_VERSIE "onbekend"
-#endif
+#include <GLFW/glfw3.h>
 
 Voorwerp* blokVoorwerp;
 Voorwerp* vloerVoorwerp;
@@ -99,24 +97,24 @@ int main() {
 	// HWND achtergrondScherm = GetConsoleWindow();
 	// ShowWindow(achtergrondScherm, SW_HIDE);
 
-	const char* versie_vorm = "HoekjeC %s - Voorbeeld %s :3";
+	const char* HC = "HoekjeC ";
 	const char* kern_versie = krijg_kern_versie();
-	const char* voorbeeld_versie = VOORBEELD_VERSIE;
-	char* versie = malloc(strlen(versie_vorm) - 4 + strlen(kern_versie) + strlen(voorbeeld_versie) + 1);
-	sprintf(versie, versie_vorm, kern_versie, voorbeeld_versie);
-	fputs("\n> ", stdout);
-	fputs(versie, stdout);
-	fputs("\n\n", stdout);
+	char* window_name = malloc(strlen(HC) + strlen(kern_versie) + 1);
+	strcpy(window_name, HC);
+	strcat(window_name, kern_versie);
+	puts(window_name);
 
 	opzetten();
 
-	zet_schermnaam(versie);
-	free(versie);
+	zet_schermnaam(window_name);
+	free(window_name);
 
-	verver = maakVerver("shaders/kleur_voorwerp.vert", "shaders/kleur_voorwerp.frag");
+	verver = maakVerver("files/shaders/kleur_voorwerp.vert", "files/shaders/kleur_voorwerp.frag");
+	fputs("A11\n", stdout);
 	gebruikVerver(verver);
+	fputs("A12\n", stdout);
 
-	Vorm* blok = leesObj("wagen.obj");
+	Vorm* blok = leesObj("files/objects/bugatti.obj");
 
 	Lijst* blokKleuren = maakLijst(blok->hoek_aantal, sizeof(Vec4f));
 	for (int h = 0; h < blok->hoek_aantal; h++) {
@@ -136,5 +134,6 @@ int main() {
 	zet_toets_terugroeper(toets_terugroeper);
 	zet_denker(denker);
 	zet_tekenaar(tekenaar);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	lus();
 }

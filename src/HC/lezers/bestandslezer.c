@@ -75,7 +75,7 @@ static char verwerpRuimte(Bestand* bestand) {
 }
 
 static void verwerpRegel(Bestand* bestand) {
-	char teken;
+	char teken = '\0';
 	while (teken != '\n' && teken != EOF) {
 		teken = getc(bestand->bestand);
 	}
@@ -125,7 +125,7 @@ static void leesRegel(Bestand* bestand) {
 }
 
 static unsigned int vervang(char* woord, char aanwezig, char vervanging) {
-	unsigned int tel;
+	unsigned int tel = 0;
 	char teken = ' ';
 	for (int i = 0; teken != '\0'; i++) {
 		teken = woord[i];
@@ -246,14 +246,21 @@ static void leesVlak() {
 	}
 }
 
-static void leesMaterialen(Lijst* materialen) {
+static void leesMaterialen(Lijst* materialen, const char* parent_dir) {
 	leesRegel(&obj_bestand);
 	if (obj_bestand.regel->tel == 0) {
 		fputs("Vewachtte materiaal bestandsnamen.", stderr);
 		return;
 	}
 	for (unsigned int i = 0; i < obj_bestand.regel->tel; i++) {
-		leesMtl(lijstKrijg(obj_bestand.regel, i, char*), materialen);
+		char* mtl_file = lijstKrijg(obj_bestand.regel, i, char*);
+		char* mtl_path = malloc(strlen(mtl_file) + strlen(parent_dir) + 1);
+		strcpy(mtl_path, parent_dir);
+		strcat(mtl_path, mtl_file);
+
+		leesMtl(mtl_path, materialen);
+
+		free(mtl_path);
 	}
 }
 
@@ -276,7 +283,9 @@ static void gebruikAnderMateriaal() {
 		}
 	}
 	if (!gevonden) {
+		#ifndef NDEBUG
 		fprintf(stderr, "Verzocht materiaal '%s' is niet gevonden.\n", mtlNaam);
+		#endif
 		return;
 	}
 
@@ -301,18 +310,25 @@ static unsigned int hoektallen_sleutelaar(Hoektallen* hoektallen) {
 }
 
 Vorm* leesObj(const char* bestandsnaam) {
-	const char* voorvoegsel = "vormen/";
-	char* volle_naam = malloc(strlen(voorvoegsel) + strlen(bestandsnaam) + 1);
-	strcpy(volle_naam, voorvoegsel);
-	strcat(volle_naam, bestandsnaam);
-
-	FILE* bestand = fopen(volle_naam, "rb");
+	FILE* bestand = fopen(bestandsnaam, "rb");
 	if (bestand == NULL) {
-		fprintf(stderr, "Bestand '%s' bestaat niet.\n", volle_naam);
-		free(volle_naam);
+		fprintf_s(stderr, "Bestand '%s' bestaat niet.\n", bestandsnaam);
 		return NULL;
 	}
-	free(volle_naam);
+
+	// Find parent directory
+	char* parent_dir = malloc(strlen(bestandsnaam) + 1);
+	strcpy(parent_dir, bestandsnaam);
+	int last_slash = 0;
+	for(int i=0;i<strlen(bestandsnaam); i++){
+		if(bestandsnaam[i] == '/'){
+			last_slash = i;
+		}
+	}
+	parent_dir[last_slash+1] = '\0';
+	if(last_slash == 0){
+		parent_dir[0] = '.';
+	}
 
 	fseek(bestand, 0, SEEK_END);
 	long grootte = ftell(bestand);
@@ -362,9 +378,11 @@ Vorm* leesObj(const char* bestandsnaam) {
 		} else if (strcmp(woord, "usemtl") == 0) {
 			gebruikAnderMateriaal();
 		} else if (strcmp(woord, "mtllib") == 0) {
-			leesMaterialen(materialen);
+			leesMaterialen(materialen, parent_dir);
 		} else {
+			#ifndef NDEBUG
 			fprintf(stderr, "Onbekend begin van obj regel: %s\n", woord);
+			#endif
 			if (!obj_bestand.regeleind_gevonden) verwerpRegel(&obj_bestand);
 		}
 		free(woord);
@@ -392,6 +410,7 @@ Vorm* leesObj(const char* bestandsnaam) {
 
 	verwijderSleutelLijst(hoekentallen_plek_sloten);
 
+	free(parent_dir);
 	return vorm;
 }
 
@@ -441,18 +460,11 @@ void leesUChar(Bestand* bestand, unsigned char* getal) {
 
 // Materiaal*[]
 void leesMtl(const char* bestandsnaam, Lijst* materialen) {
-	const char* voorvoegsel = "vormen/";
-	char* volle_naam = malloc(strlen(voorvoegsel) + strlen(bestandsnaam) + 1);
-	strcpy(volle_naam, voorvoegsel);
-	strcat(volle_naam, bestandsnaam);
-
-	FILE* bestand = fopen(volle_naam, "rb");
+	FILE* bestand = fopen(bestandsnaam, "rb");
 	if (bestand == NULL) {
-		fprintf(stderr, "Bestand '%s' bestaat niet.\n", volle_naam);
-		free(volle_naam);
+		fprintf(stderr, "Bestand '%s' bestaat niet.\n", bestandsnaam);
 		return;
 	}
-	free(volle_naam);
 
 	mtl_bestand = (Bestand){.bestand = bestand,
 							.regel = maakLijst(10, sizeof(char*)),
@@ -471,7 +483,6 @@ void leesMtl(const char* bestandsnaam, Lijst* materialen) {
 		// else
 		if (strcmp(woord, "newmtl") == 0) {
 			Materiaal* nieuw_materiaal = malloc(sizeof(Materiaal));
-			*nieuw_materiaal = (Materiaal){};
 
 			char* naam = leesWoord(&mtl_bestand);
 			if (naam == NULL) {
@@ -507,7 +518,9 @@ void leesMtl(const char* bestandsnaam, Lijst* materialen) {
 		// } else if (strcmp(woord, "map_Ns") == 0) {	// TODO
 		// } else if (strcmp(woord, "map_d") == 0) {	// TODO
 		else {
+			#ifndef NDEBUG
 			fprintf(stderr, "Onbekend begin van mtl regel: %s\n", woord);
+			#endif
 			if (!mtl_bestand.regeleind_gevonden) verwerpRegel(&mtl_bestand);
 		}
 	}
