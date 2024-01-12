@@ -110,9 +110,7 @@ int main() {
 	free(window_name);
 
 	verver = maakVerver("files/shaders/kleur_voorwerp.vert", "files/shaders/kleur_voorwerp.frag");
-	fputs("A11\n", stdout);
 	gebruikVerver(verver);
-	fputs("A12\n", stdout);
 
 	Vorm* blok = leesObj("files/objects/bugatti.obj");
 
