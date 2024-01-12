@@ -16,8 +16,9 @@ A prebuilt binary is provided in the last release. Note this may not support you
 
 Note the library will be located in `build/Debug`/`build/Release`/etc. while the executable, along with requires files will be located in `build/example/Debug`/`build/example/Release`/etc.
 
-### Example Controls
+_Also note the example assume argv[0] provides the (local) path to the executable._
 
+### Example Controls
 	- w,a,s,d : horizontal/lateral movements
 	- control,space : vertical movement
 	- shift - faster movement

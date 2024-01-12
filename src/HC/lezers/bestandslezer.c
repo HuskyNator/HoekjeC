@@ -254,9 +254,7 @@ static void leesMaterialen(Lijst* materialen, const char* parent_dir) {
 	}
 	for (unsigned int i = 0; i < obj_bestand.regel->tel; i++) {
 		char* mtl_file = lijstKrijg(obj_bestand.regel, i, char*);
-		char* mtl_path = malloc(strlen(mtl_file) + strlen(parent_dir) + 1);
-		strcpy(mtl_path, parent_dir);
-		strcat(mtl_path, mtl_file);
+		char* mtl_path = strConcat(parent_dir, mtl_file);
 
 		leesMtl(mtl_path, materialen);
 
@@ -309,6 +307,38 @@ static unsigned int hoektallen_sleutelaar(Hoektallen* hoektallen) {
 	return sleutel_plek;
 }
 
+char* strConcat(const char* first, const char* second){
+	char* concat = malloc(strlen(first)+strlen(second)+1);
+	strcpy(concat, first);
+	strcat(concat,second);
+	return concat;
+}
+
+char* findDir(const char* filePath){
+	size_t path_length = strlen(filePath);
+	if(path_length == 0){
+		char* parent_dir = malloc(2);
+		parent_dir[0] = '.';
+		parent_dir[1] = '\0';
+		return parent_dir;
+	}
+
+	char* parent_dir = malloc(path_length + 1);
+	strcpy(parent_dir, filePath);
+	int last_slash = 0;
+	for(int i=strlen(filePath);i>0; i--){
+		if(filePath[i] == '/' || filePath[i] == '\\'){
+			last_slash = i;
+			break;
+		}
+	}
+	parent_dir[last_slash+1] = '\0';
+	if(last_slash == 0){
+		parent_dir[0] = '.';
+	}
+	return parent_dir;
+}
+
 Vorm* leesObj(const char* bestandsnaam) {
 	FILE* bestand = fopen(bestandsnaam, "rb");
 	if (bestand == NULL) {
@@ -316,19 +346,7 @@ Vorm* leesObj(const char* bestandsnaam) {
 		return NULL;
 	}
 
-	// Find parent directory
-	char* parent_dir = malloc(strlen(bestandsnaam) + 1);
-	strcpy(parent_dir, bestandsnaam);
-	int last_slash = 0;
-	for(int i=0;i<strlen(bestandsnaam); i++){
-		if(bestandsnaam[i] == '/'){
-			last_slash = i;
-		}
-	}
-	parent_dir[last_slash+1] = '\0';
-	if(last_slash == 0){
-		parent_dir[0] = '.';
-	}
+	char* parent_dir = findDir(bestandsnaam);
 
 	fseek(bestand, 0, SEEK_END);
 	long grootte = ftell(bestand);

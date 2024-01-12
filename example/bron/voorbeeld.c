@@ -93,7 +93,14 @@ static void denker(double tijdsverschil) {
 
 static void tekenaar() { tekenVoorwerp(blokVoorwerp, verver); }
 
-int main() {
+int main(int argc, char* argv[]) {
+	if(argc == 0){
+		puts("argv[0] seems to be missing");
+		return -2;
+	}
+
+	char* dir_path = findDir(argv[0]);
+
 	// HWND achtergrondScherm = GetConsoleWindow();
 	// ShowWindow(achtergrondScherm, SW_HIDE);
 
@@ -109,25 +116,23 @@ int main() {
 	zet_schermnaam(window_name);
 	free(window_name);
 
-	verver = maakVerver("files/shaders/kleur_voorwerp.vert", "files/shaders/kleur_voorwerp.frag");
+	char* vert_path = strConcat(dir_path, "files/shaders/kleur_voorwerp.vert");
+	char* frag_path = strConcat(dir_path, "files/shaders/kleur_voorwerp.frag");
+
+	verver = maakVerver(vert_path, frag_path);
 	gebruikVerver(verver);
+	free(vert_path);
+	free(frag_path);
 
-	Vorm* blok = leesObj("files/objects/bugatti.obj");
+	char* default_obj_path = strConcat(dir_path, "files/objects/bugatti.obj");
+	const char* obj_path = (argc>1)?argv[1]:default_obj_path;
+	Vorm* vorm = leesObj(obj_path);
+	free(default_obj_path);
 
-	Lijst* blokKleuren = maakLijst(blok->hoek_aantal, sizeof(Vec4f));
-	for (int h = 0; h < blok->hoek_aantal; h++) {
-		float r = (float)rand() / RAND_MAX;
-		float g = (float)rand() / RAND_MAX;
-		float b = (float)rand() / RAND_MAX;
-		Vec4f h = {r, g, b, 1};
-		lijstVoeg(blokKleuren, &h);
-	}
-	vormVoegInhoudToe(blok, blokKleuren, 3);
-
-	Vec3f blokPlaats = {0, 0, 0};
-	Vec3f blokGrootte = {1, 1, 1};
-	Vec3f blokDraai = {0, 0, 0};
-	blokVoorwerp = maakVoorwerp(blok, blokPlaats, blokGrootte, blokDraai);
+	Vec3f vormPlaats = {0, 0, 0};
+	Vec3f vormGrootte = {1, 1, 1};
+	Vec3f vormDraai = {0, 0, 0};
+	blokVoorwerp = maakVoorwerp(vorm, vormPlaats, vormGrootte, vormDraai);
 
 	zet_toets_terugroeper(toets_terugroeper);
 	zet_denker(denker);
