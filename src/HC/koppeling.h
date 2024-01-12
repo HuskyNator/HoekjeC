@@ -72,6 +72,9 @@ typedef void (*toets_terugroep_opdracht)(int toets, int toets2, int handeling, i
 void zet_toets_terugroeper(toets_terugroep_opdracht opdracht);
 void standaard_toets_terugroeper(int toets, int toets2, int handeling, int toevoeging);
 
+typedef void (*muisknop_terugroep_opdracht)(int knop, int handeling, int toevoeging);
+void zet_muisknop_terugroeper(muisknop_terugroep_opdracht opdracht);
+void standaard_muisknop_terugroeper(int knop, int handeling, int toevoeging);
 /**		MATRIXEN		**/
 /*	MAKEN	*/
 

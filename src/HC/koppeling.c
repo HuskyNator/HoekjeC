@@ -147,6 +147,17 @@ void zet_toets_terugroeper(toets_terugroep_opdracht opdracht) {
 }
 void standaard_toets_terugroeper(int toets, int toets2, int handeling, int toevoeging) {}
 
+/* MUISKNOP */
+static muisknop_terugroep_opdracht muisknop_terugroeper;
+static void muisknop_terugroep(GLFWwindow* scherm, int knop, int handeling, int toevoeging) {
+	muisknop_terugroeper(knop, handeling, toevoeging);
+}
+
+void zet_muisknop_terugroeper(muisknop_terugroep_opdracht opdracht) {
+	muisknop_terugroeper = (opdracht == NULL) ? standaard_muisknop_terugroeper : opdracht;
+}
+void standaard_muisknop_terugroeper(int muisknop, int handeling, int toevoeging) {}
+
 /*	MUIS	*/
 
 static void muisplek_terugroep(GLFWwindow* scherm, double x, double y) {
@@ -298,6 +309,9 @@ void opzetten() {
 	// > Terugroepen
 	zet_toets_terugroeper(NULL);
 	glfwSetKeyCallback(scherm, toets_terugroep);
+
+	zet_muisknop_terugroeper(NULL);
+	glfwSetMouseButtonCallback(scherm, muisknop_terugroep);
 
 	glfwSetCursorPosCallback(scherm, muisplek_terugroep);
 	glfwSetInputMode(scherm, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

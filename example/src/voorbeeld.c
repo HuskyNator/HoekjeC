@@ -24,6 +24,19 @@ char loopty = 0;
 char looptz = 0;
 booleaan rent = onwaar;
 
+static void muisknop_terugroeper(int knop, int handeling, int toevoeging) {
+	if (handeling == GLFW_PRESS) {
+		switch(knop){
+			case GLFW_MOUSE_BUTTON_LEFT:
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				break;
+			case GLFW_MOUSE_BUTTON_RIGHT:
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				break;
+		}
+	}
+}
+
 static void toets_terugroeper(int toets, int toets2, int handeling, int toevoeging) {
 	if (handeling == GLFW_PRESS) {
 		switch (toets) {
@@ -135,6 +148,7 @@ int main(int argc, char* argv[]) {
 	blokVoorwerp = maakVoorwerp(vorm, vormPlaats, vormGrootte, vormDraai);
 
 	zet_toets_terugroeper(toets_terugroeper);
+	zet_muisknop_terugroeper(muisknop_terugroeper);
 	zet_denker(denker);
 	zet_tekenaar(tekenaar);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
