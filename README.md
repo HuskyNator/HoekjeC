@@ -5,7 +5,7 @@ _HoekjeC is een grafische motor in aanbouw voor vermaak :)_
 ---
 
 ## HoekjeC
-This repo is archived, though I created a refactored build that fixes some compilation issues & enables calling the example executable with an optional .obj path argument `Example.exe <obj>`
+This repo is archived, though I created a refactored build that fixes some compilation issues & enables calling the example executable with an optional .obj path argument (eg. `Example.exe <obj>`). Loading the default `bugatti.obj` may take a a minute.
 
 Although it was a good way to practice using C, I don't intend on making further changes to this repo (save for potentially translating the variable names used). For more see my [VertexD](https://github.com/HuskyNator/VertexD) and [Ray](https://huskynator.github.io/Ray/) repos.
 

@@ -95,7 +95,7 @@ static void tekenaar() { tekenVoorwerp(blokVoorwerp, verver); }
 
 int main(int argc, char* argv[]) {
 	if(argc == 0){
-		puts("argv[0] seems to be missing");
+		puts("argv[0] is missing");
 		return -2;
 	}
 
